@@ -35,7 +35,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.ground = None
         self.car = None
 
-        self.initialize_environment()
         self.initialize_ground()
         self.initialize_car()
         self.initialize_lights()
@@ -44,10 +43,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.render.setAntialias(panda3d.core.AntialiasAttrib.MMultisample)
 
         self.taskMgr.add(self.spin_camera, "SpinCameraTask")
-
-    def initialize_environment(self):
-
-        self.set_background_color(0.0, 0.0, 0.0)
 
     def initialize_ground(self):
 
