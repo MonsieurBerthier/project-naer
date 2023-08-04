@@ -63,7 +63,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
     def initialize_lights(self):
 
-        self.light_on_camera = direct.showbase.ShowBase.PointLight("PointLightCamera")
+        self.light_on_camera = direct.showbase.ShowBase.PointLight("CameraLight")
         self.light_on_camera_node = self.render.attachNewNode(self.light_on_camera)
         self.light_on_camera.setAttenuation((0, 0, 0.005))
         self.render.setLight(self.light_on_camera_node)
@@ -74,25 +74,25 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.light_node_top.setPos((0, 0, 7))
         self.render.setLight(self.light_node_top)
 
-        self.light_left = direct.showbase.ShowBase.PointLight("PointLight1")
+        self.light_left = direct.showbase.ShowBase.PointLight("LeftLight")
         self.light_left.setAttenuation((0, 0, 0.02))
         self.light_node_left = self.render.attachNewNode(self.light_left)
         self.light_node_left.setPos((10, 0, 5))
         self.render.setLight(self.light_node_left)
 
-        self.light_right = direct.showbase.ShowBase.PointLight("PointLight1")
+        self.light_right = direct.showbase.ShowBase.PointLight("RightLight")
         self.light_right.setAttenuation((0, 0, 0.02))
         self.light_node_right = self.render.attachNewNode(self.light_right)
         self.light_node_right.setPos((-10, 0, 5))
         self.render.setLight(self.light_node_right)
 
-        self.light_front = direct.showbase.ShowBase.PointLight("PointLight1")
+        self.light_front = direct.showbase.ShowBase.PointLight("FrontLight")
         self.light_front.setAttenuation((0, 0, 0.04))
         self.light_node_front = self.render.attachNewNode(self.light_front)
         self.light_node_front.setPos((0, -12, 2.5))
         self.render.setLight(self.light_node_front)
 
-        self.light_rear = direct.showbase.ShowBase.PointLight("PointLight1")
+        self.light_rear = direct.showbase.ShowBase.PointLight("RearLight")
         self.light_rear.setAttenuation((0, 0, 0.04))
         self.light_node_rear = self.render.attachNewNode(self.light_rear)
         self.light_node_rear.setPos((0, 12, 5))
