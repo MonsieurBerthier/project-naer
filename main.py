@@ -53,7 +53,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.ground = self.loader.loadModel(modelPath="content/grounds/concrete/concrete.glb")
         self.ground.reparentTo(self.render)
-        self.ground.setScale(1, 1, 1)
 
     def initialize_car(self):
 
@@ -65,41 +64,35 @@ class Main(direct.showbase.ShowBase.ShowBase):
     def initialize_lights(self):
 
         self.light_on_camera = direct.showbase.ShowBase.PointLight("PointLightCamera")
-        self.light_on_camera.setColor((1, 1, 1, 1))
         self.light_on_camera_node = self.render.attachNewNode(self.light_on_camera)
         self.light_on_camera.setAttenuation((0, 0, 0.005))
         self.render.setLight(self.light_on_camera_node)
 
         self.light_top = direct.showbase.ShowBase.PointLight("TopLight")
-        self.light_top.setColor((1, 1, 1, 1))
         self.light_top.setAttenuation((0, 0, 0.02))
         self.light_node_top = self.render.attachNewNode(self.light_top)
         self.light_node_top.setPos((0, 0, 7))
         self.render.setLight(self.light_node_top)
 
         self.light_left = direct.showbase.ShowBase.PointLight("PointLight1")
-        self.light_left.setColor((1, 1, 1, 1))
         self.light_left.setAttenuation((0, 0, 0.02))
         self.light_node_left = self.render.attachNewNode(self.light_left)
         self.light_node_left.setPos((10, 0, 5))
         self.render.setLight(self.light_node_left)
 
         self.light_right = direct.showbase.ShowBase.PointLight("PointLight1")
-        self.light_right.setColor((1, 1, 1, 1))
         self.light_right.setAttenuation((0, 0, 0.02))
         self.light_node_right = self.render.attachNewNode(self.light_right)
         self.light_node_right.setPos((-10, 0, 5))
         self.render.setLight(self.light_node_right)
 
         self.light_front = direct.showbase.ShowBase.PointLight("PointLight1")
-        self.light_front.setColor((1, 1, 1, 1))
         self.light_front.setAttenuation((0, 0, 0.04))
         self.light_node_front = self.render.attachNewNode(self.light_front)
         self.light_node_front.setPos((0, -12, 2.5))
         self.render.setLight(self.light_node_front)
 
         self.light_rear = direct.showbase.ShowBase.PointLight("PointLight1")
-        self.light_rear.setColor((1, 1, 1, 1))
         self.light_rear.setAttenuation((0, 0, 0.04))
         self.light_node_rear = self.render.attachNewNode(self.light_rear)
         self.light_node_rear.setPos((0, 12, 5))
