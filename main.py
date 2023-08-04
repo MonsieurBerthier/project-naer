@@ -18,7 +18,12 @@ class Main(direct.showbase.ShowBase.ShowBase):
     def __init__(self):
 
         super().__init__(self)
-        simplepbr.init(use_330=True, env_map="content/cubemaps/lightbars/lightbars.env")
+        simplepbr.init(env_map="content/cubemaps/lightbars/lightbars.env",
+                       use_occlusion_maps=True,
+                       use_emission_maps=True,
+                       use_normal_maps=True,
+                       enable_shadows=True,
+                       use_330=True)
 
         self.light_on_camera = None
         self.light_on_camera_node = None
