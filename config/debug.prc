@@ -1,7 +1,7 @@
 model-cache-dir
 fullscreen false
 win-size 1920 1080
-window-title Nissan 200SX Customizer
+window-title Project Naer
 
 # Anti-aliasing
 multisamples 32
