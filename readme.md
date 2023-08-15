@@ -1,3 +1,8 @@
+![license](https://img.shields.io/badge/Panda3D-1.10.13-blue.svg)
+![license](https://img.shields.io/badge/Python-3.7-blue.svg)
+![license](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-blue.svg)
+![license](https://img.shields.io/badge/Work%20In%20Progress-orange.svg)
+
 # project-naer
 
 Work in progress.
@@ -17,3 +22,7 @@ pip install typing-extensions
 pip install panda3d-gltf
 pip install panda3d-simplepbr
 ````
+
+## License
+
+This project is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
