@@ -1,3 +1,4 @@
+import json
 import math
 import simplepbr
 import panda3d.core
@@ -55,10 +56,23 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
     def initialize_car(self):
 
-        self.car = self.loader.loadModel(modelPath="content/cars/nissan_rs13/notexture.glb")
+        car_json = json.load(open("content/cars/nissan_rs13/config.json"))
+        wheels_json = json.load(open("content/wheels/japanracing_jr3/config.json"))
+
+        logger.debug(f"Loading car {car_json['name']}")
+        self.car = self.loader.loadModel(modelPath="content/cars/nissan_rs13/chassis.glb")
         self.car.reparentTo(self.render)
-        self.car.setScale(300, 300, 300)
-        self.car.setPos((0, 0, -0.05))
+        self.car.setPos(tuple(car_json["chassis"]["position"]))
+        self.car.setHpr(tuple(car_json["chassis"]["rotation"]))
+        self.car.setScale(tuple(car_json["chassis"]["scale"]))
+
+        for wheel in car_json["wheels"]:
+            logger.debug(f"Loading wheel {wheels_json['name']}")
+            wheel_x = self.loader.loadModel(modelPath="content/wheels/japanracing_jr3/model.glb")
+            wheel_x.setPos(tuple([a + b for a, b in zip(wheel["position"], wheels_json["position"])]))
+            wheel_x.setHpr(tuple([a + b for a, b in zip(wheel["rotation"], wheels_json["rotation"])]))
+            wheel_x.setScale(tuple([a * b for a, b in zip(wheel["scale"], wheels_json["scale"])]))
+            wheel_x.reparentTo(self.render)
 
     def initialize_lights(self):
 
