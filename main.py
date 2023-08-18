@@ -24,6 +24,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
     PATH_GROUNDS = os.path.join(PATH_CONTENT, "grounds")
     PATH_CUBEMAPS = os.path.join(PATH_CONTENT, "cubemaps")
     PATH_CARS = os.path.join(PATH_CONTENT, "cars")
+    PATH_CARS_CHASSIS = "chassis.glb"
     PATH_WHEELS = os.path.join(PATH_CONTENT, "wheels")
 
     def __init__(self):
@@ -83,19 +84,26 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         car_path = os.path.join(Main.PATH_CARS, car)
         car_json = library.io.get_json(path=os.path.join(car_path, "config.json"))
-        car_chassis = library.io.get_file_path(path=car_path, extension="glb")
 
-        logger.debug(f"Loading car {car_json['name']}")
-        self.car = self.loader.loadModel(modelPath=os.path.join(car_path, car_chassis))
+        logger.debug(f"Loading car \"{car}\"")
+        self.car = self.loader.loadModel(modelPath=os.path.join(car_path, Main.PATH_CARS_CHASSIS))
         self.car.reparentTo(self.render)
         self.car.setPos(tuple(car_json["chassis"]["position"]))
         self.car.setHpr(tuple(car_json["chassis"]["rotation"]))
         self.car.setScale(tuple(car_json["chassis"]["scale"]))
 
+        for part in car_json["default"]:
+            logger.debug(f"Loading car part \"{part}\"")
+            part_x = self.loader.loadModel(modelPath=os.path.join(car_path, part + ".glb"))
+            part_x.setPos(tuple(car_json["chassis"]["position"]))
+            part_x.setHpr(tuple(car_json["chassis"]["rotation"]))
+            part_x.setScale(tuple(car_json["chassis"]["scale"]))
+            part_x.reparentTo(self.render)
+
         # FIXME Use default wheels provided with the car instead
         wheels_json = library.io.get_json(path="content/wheels/japanracing_jr3/config.json")
         for wheel in car_json["wheels"]:
-            logger.debug(f"Loading wheel {wheels_json['name']}")
+            logger.debug(f"Loading wheel \"{'japanracing_jr3'}\"")
             wheel_x = self.loader.loadModel(modelPath="content/wheels/japanracing_jr3/model.glb")
             wheel_x.setPos(tuple([a + b for a, b in zip(wheel["position"], wheels_json["position"])]))
             wheel_x.setHpr(tuple([a + b for a, b in zip(wheel["rotation"], wheels_json["rotation"])]))
