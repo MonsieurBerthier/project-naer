@@ -57,6 +57,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         current_cubemap_path = os.path.join(Main.PATH_CUBEMAPS, cubemap)
 
+        logger.debug(f"Loading cubemap \"{cubemap}\"")
         return os.path.join(current_cubemap_path,
                             library.io.get_file_path(path=current_cubemap_path,
                                                      extension="env"))
@@ -66,6 +67,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         current_ground_path = os.path.join(Main.PATH_GROUNDS, ground)
         ground_glb = library.io.get_file_path(path=current_ground_path, extension="glb")
 
+        logger.debug(f"Loading ground \"{ground}\"")
         self.ground = self.loader.loadModel(modelPath=os.path.join(current_ground_path, ground_glb))
         self.ground.reparentTo(self.render)
 
