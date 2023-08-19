@@ -47,7 +47,6 @@ class Car:
         part_type = part.split("_")[0]
 
         if part_type in self._car_models:
-            logger.debug(self._car_models[part_type])
             self._car_models[part_type].removeNode()
 
         self._car_models[part_type] = self._main.loader.loadModel(modelPath=os.path.join(self._car_path, part + ".glb"))
