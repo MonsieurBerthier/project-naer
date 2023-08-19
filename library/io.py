@@ -1,8 +1,10 @@
 import os
 import json
 
+from typing import Union
 
-def get_json(path):
+
+def get_json(path: str) -> dict:
     """
     Returns the JSON file pointed by ``path``.
 
@@ -16,7 +18,7 @@ def get_json(path):
     return json.load(open(path))
 
 
-def get_file_path(path, extension, number=1):
+def get_file_path(path: str, extension: str, number: int = 1) -> Union[list, str]:
     """
     Search in ``path`` for files of type ``extension`` and returns the first ``number`` files.
 
