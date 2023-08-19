@@ -1,13 +1,13 @@
+import os
 import math
-import os.path
 
-import car
 import simplepbr
 import panda3d.core
 import direct.task.Task
 import direct.gui.DirectGui
 import direct.showbase.ShowBase
 
+import car
 import library.io
 
 from config.logger import logger
