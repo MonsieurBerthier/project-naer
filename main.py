@@ -7,6 +7,7 @@ import direct.task.Task
 import direct.gui.DirectGui
 import direct.showbase.ShowBase
 
+import ui
 import car
 import ground
 import library.io
@@ -53,41 +54,10 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.ground = ground.Ground(main=self, ground=self.config_json["default"]["ground"])
         self.car = car.Car(main=self, car=self.config_json["default"]["car"])
+        self.ui = ui.Menu(main=self, ground=self.ground, car=self.car)
 
         self.initialize_lights()
         self.initialize_camera()
-
-        self.font_menu = self.loader.loadFont(Main.PATH_FONT_MENU)
-
-        # TODO Following button are just for test purpose
-        self.button_zenki = direct.gui.DirectGui.DirectButton(text="Zenki",
-                                                              text_font=self.font_menu,
-                                                              pos=(-0.2, 0, -0.9),
-                                                              scale=.05,
-                                                              text_fg=(1, 1, 1, 1),
-                                                              text_bg=(1, 0, 0, 1),
-                                                              relief=None,
-                                                              borderWidth=(0.2, 0.2),
-                                                              command=self.car.load_part,
-                                                              extraArgs=["frontbumper_oemzenki"])
-        self.button_zenki = direct.gui.DirectGui.DirectButton(text="Chuki",
-                                                              text_font=self.font_menu,
-                                                              pos=(0, 0, -0.9),
-                                                              scale=.05,
-                                                              text_fg=(1, 1, 1, 1),
-                                                              text_bg=(1, 0, 0, 1),
-                                                              relief=None,
-                                                              command=self.car.load_part,
-                                                              extraArgs=["frontbumper_oemchuki"])
-        self.button_zenki = direct.gui.DirectGui.DirectButton(text="Kouki",
-                                                              text_font=self.font_menu,
-                                                              pos=(0.2, 0, -0.9),
-                                                              scale=.05,
-                                                              text_fg=(1, 1, 1, 1),
-                                                              text_bg=(1, 0, 0, 1),
-                                                              relief=None,
-                                                              command=self.car.load_part,
-                                                              extraArgs=["frontbumper_oemkouki"])
 
         self.render.setAntialias(panda3d.core.AntialiasAttrib.MMultisample)
 
