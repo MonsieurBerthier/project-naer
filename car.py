@@ -21,7 +21,8 @@ class Car:
 
         logger.debug(f"Loading car \"{self._car_name}\"")
 
-        self._car_models["chassis"] = self._main.loader.loadModel(modelPath=os.path.join(self._car_path, self._main.PATH_CARS_CHASSIS))
+        self._car_models["chassis"] = self._main.loader.loadModel(modelPath=os.path.join(self._car_path,
+                                                                                         self._main.PATH_CARS_CHASSIS))
         self._car_models["chassis"].reparentTo(self._main.render)
         self._car_models["chassis"].setPos(tuple(self._car_json["chassis"]["position"]))
         self._car_models["chassis"].setHpr(tuple(self._car_json["chassis"]["rotation"]))
