@@ -54,7 +54,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.ground = ground.Ground(main=self, ground=self.config_json["default"]["ground"])
         self.car = car.Car(main=self, car=self.config_json["default"]["car"])
-        self.ui = ui.Menu(main=self, ground=self.ground, car=self.car)
+        self.ui = ui.MainMenu(main=self, ground=self.ground, car=self.car)
 
         self.initialize_lights()
         self.initialize_camera()
