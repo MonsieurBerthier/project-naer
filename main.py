@@ -8,6 +8,7 @@ import direct.gui.DirectGui
 import direct.showbase.ShowBase
 
 import car
+import ground
 import library.io
 
 from config.logger import logger
@@ -26,6 +27,9 @@ class Main(direct.showbase.ShowBase.ShowBase):
     PATH_CONTENT = "content"
     PATH_GROUNDS = os.path.join(PATH_CONTENT, "grounds")
     PATH_CUBEMAPS = os.path.join(PATH_CONTENT, "cubemaps")
+
+    PATH_FONTS = os.path.join(PATH_CONTENT, "fonts")
+    PATH_FONT_MENU = os.path.join(PATH_FONTS, "gobold/Gobold Regular.otf")
 
     PATH_CARS = os.path.join(PATH_CONTENT, "cars")
     PATH_CARS_CONFIG = "config.json"
@@ -46,28 +50,42 @@ class Main(direct.showbase.ShowBase.ShowBase):
                        use_330=True)
 
         self.light_on_camera_node = None
-        self.ground = None
 
-        self.initialize_ground(ground=self.config_json["default"]["ground"])
+        self.ground = ground.Ground(main=self, ground=self.config_json["default"]["ground"])
+        self.car = car.Car(main=self, car=self.config_json["default"]["car"])
+
         self.initialize_lights()
         self.initialize_camera()
 
-        self.car = car.Car(main=self, car=self.config_json["default"]["car"])
+        self.font_menu = self.loader.loadFont(Main.PATH_FONT_MENU)
 
         # TODO Following button are just for test purpose
         self.button_zenki = direct.gui.DirectGui.DirectButton(text="Zenki",
+                                                              text_font=self.font_menu,
                                                               pos=(-0.2, 0, -0.9),
                                                               scale=.05,
+                                                              text_fg=(1, 1, 1, 1),
+                                                              text_bg=(1, 0, 0, 1),
+                                                              relief=None,
+                                                              borderWidth=(0.2, 0.2),
                                                               command=self.car.load_part,
                                                               extraArgs=["frontbumper_oemzenki"])
         self.button_zenki = direct.gui.DirectGui.DirectButton(text="Chuki",
+                                                              text_font=self.font_menu,
                                                               pos=(0, 0, -0.9),
                                                               scale=.05,
+                                                              text_fg=(1, 1, 1, 1),
+                                                              text_bg=(1, 0, 0, 1),
+                                                              relief=None,
                                                               command=self.car.load_part,
                                                               extraArgs=["frontbumper_oemchuki"])
         self.button_zenki = direct.gui.DirectGui.DirectButton(text="Kouki",
+                                                              text_font=self.font_menu,
                                                               pos=(0.2, 0, -0.9),
                                                               scale=.05,
+                                                              text_fg=(1, 1, 1, 1),
+                                                              text_bg=(1, 0, 0, 1),
+                                                              relief=None,
                                                               command=self.car.load_part,
                                                               extraArgs=["frontbumper_oemkouki"])
 
@@ -84,15 +102,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
         return os.path.join(current_cubemap_path,
                             library.io.get_file_path(path=current_cubemap_path,
                                                      extension="env"))
-
-    def initialize_ground(self, ground):
-
-        current_ground_path = os.path.join(Main.PATH_GROUNDS, ground)
-        ground_glb = library.io.get_file_path(path=current_ground_path, extension="glb")
-
-        logger.debug(f"Loading ground \"{ground}\"")
-        self.ground = self.loader.loadModel(modelPath=os.path.join(current_ground_path, ground_glb))
-        self.ground.reparentTo(self.render)
 
     def initialize_lights(self):
 
@@ -131,8 +140,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         light_node_rear.setPos((0, 12, 6))
         self.render.setLight(light_node_rear)
 
-        self.ground.setLightOff()
-        self.ground.setLight(light_node_top)
+        self.ground.get_ground_model().setLight(light_node_top)
 
     def initialize_camera(self):
 
