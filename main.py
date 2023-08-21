@@ -110,7 +110,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         light_node_rear.setPos((0, 12, 6))
         self.render.setLight(light_node_rear)
 
-        self.ground.get_ground_model().setLight(light_node_top)
+        self.ground.model.setLight(light_node_top)
 
     def initialize_camera(self):
 
