@@ -6,10 +6,10 @@ from config.logger import logger
 
 class Ground:
 
-    def __init__(self, main, ground: str) -> None:
+    def __init__(self, main, name: str) -> None:
 
         self.main = main
-        self.name = ground
+        self.name = name
 
         self.path = os.path.join(self.main.PATH_GROUNDS, self.name)
         self.model = None
