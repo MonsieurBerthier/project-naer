@@ -52,8 +52,8 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.light_on_camera_node = None
 
-        self.ground = ground.Ground(main=self, ground=self.config_json["default"]["ground"])
-        self.car = car.Car(main=self, car=self.config_json["default"]["car"])
+        self.ground = ground.Ground(main=self, name=self.config_json["default"]["ground"])
+        self.car = car.Car(main=self, name=self.config_json["default"]["car"])
         self.ui = ui.MainMenu(main=self, ground=self.ground, car=self.car)
 
         self.initialize_lights()
