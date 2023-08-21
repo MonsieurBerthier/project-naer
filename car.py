@@ -6,10 +6,10 @@ from config.logger import logger
 
 class Car:
 
-    def __init__(self, main, car: str) -> None:
+    def __init__(self, main, name: str) -> None:
 
         self.main = main
-        self.name = car
+        self.name = name
 
         self.path = os.path.join(self.main.PATH_CARS, self.name)
         self.json = library.io.get_json(path=os.path.join(self.path, self.main.PATH_CARS_CONFIG))
