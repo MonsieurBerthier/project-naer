@@ -21,6 +21,9 @@ SUBMENU1_BUTTON_Y_POSITIONS = [MARGIN,
                                MARGIN + (6 * BUTTON_Y_SIZE)]
 SUBMENU2_MENU_BUTTON_X_SIZE_ = 280
 TEXT_PADDING_LEFT = 20
+TEXT_JUSTIFY_LEFT = 0
+TEXT_JUSTIFY_RIGHT = 1
+TEXT_JUSTIFY_CENTER = 2
 
 
 class MainButton:
@@ -74,14 +77,18 @@ class MenuButton:
                                                       text_fg=WHITE,
                                                       text_font=font,
                                                       text_scale=FONT_SIZE,
-                                                      text_pos=(position_x + TEXT_PADDING_LEFT, -BUTTON_Y_SIZE + 7, 0),
+                                                      text_align=TEXT_JUSTIFY_LEFT,
+                                                      text_pos=(TEXT_PADDING_LEFT, -BUTTON_Y_SIZE + 7, 0),
                                                       frameSize=(0, SUBMENU1_MENU_BUTTON_X_SIZE, 0, -BUTTON_Y_SIZE),
                                                       pos=(position_x, 0, -position_y),
                                                       state=direct.gui.DirectGui.DGG.NORMAL,
                                                       parent=main.pixel2d)
+        # TODO Add logos to each submenu1 entry
 
 
 class MainMenu:
+
+    # TODO Detect a click outside the menu to close it
 
     def __init__(self, main, ground, car) -> None:
 
