@@ -17,7 +17,7 @@ class Car:
 
         self.load_car()
 
-    def load_car(self):
+    def load_car(self) -> None:
 
         logger.debug(f"Loading car \"{self.name}\"")
 
