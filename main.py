@@ -38,7 +38,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
     PATH_WHEELS = os.path.join(PATH_CONTENT, "wheels")
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.config_json = library.io.get_json(path=Main.PATH_CONFIG_JSON)
 
@@ -64,7 +64,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.taskMgr.add(self.spin_camera, "SpinCameraTask")
 
     @staticmethod
-    def get_cubemap_path(cubemap):
+    def get_cubemap_path(cubemap) -> str:
 
         current_cubemap_path = os.path.join(Main.PATH_CUBEMAPS, cubemap)
 
@@ -73,7 +73,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
                             library.io.get_file_path(path=current_cubemap_path,
                                                      extension="env"))
 
-    def initialize_lights(self):
+    def initialize_lights(self) -> None:
 
         light_on_camera = direct.showbase.ShowBase.PointLight("CameraLight")
         self.light_on_camera_node = self.render.attachNewNode(light_on_camera)
@@ -112,7 +112,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.ground.model.setLight(light_node_top)
 
-    def initialize_camera(self):
+    def initialize_camera(self) -> None:
 
         self.cam.setPos(0, -4, 1.5)
         self.cam.lookAt((0, 0, 1.1))
