@@ -1,3 +1,4 @@
+import sys
 import direct.gui.DirectGui
 
 from config.logger import logger
@@ -97,50 +98,75 @@ class MainMenu:
 
         self.font = self.main.loader.loadFont(self.main.PATH_FONT_MENU)
 
-        self.main_button = MainButton(main=self.main, position_x=MARGIN, position_y=MARGIN)  # FIXME self.menu = {"main_button": MainButton(...)}
-        self.main_button.background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                         command=self.event_main_button_in)
+        self.menu = {"main_button": MainButton(main=self.main, position_x=MARGIN, position_y=MARGIN),
+                     "submenu1": [],
+                     "submenu2": [],
+                     "submenu3": []}
 
-        self.menu_1 = []
+        self.menu["main_button"].background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                                                 command=self.display_submenu1)
 
-    def event_main_button_in(self, _):
+        self.submenu1 = ["Grounds", "Cars", "Wheels", "Save Car", "Load Car", "Save Image", "Autorotate", "Exit"]
 
-        toto = direct.gui.DirectGui.DirectFrame(frameColor=TRANSPARENT,
-                                                frameSize=(0, 1920, 0, -1080),  # FIXME Use windows resolution instead
-                                                pos=(0, 0, 0),
-                                                state=direct.gui.DirectGui.DGG.NORMAL,
-                                                parent=self.main.pixel2d)
-        toto.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                  command=print,
-                  extraArgs=["exit main menu"])
+    def display_submenu1(self, _):
 
-        self.main_button.background.setColor(WHITE)
-        submenu1 = ["Grounds", "Cars", "Wheels", "Save Car", "Load Car", "Save Image", "Autorotate", "Exit"]
+        self.menu["close_button"] = direct.gui.DirectGui.DirectFrame(frameColor=TRANSPARENT,
+                                                                     frameSize=(0, 1920, 0, -1080),  # FIXME Use windows resolution instead
+                                                                     pos=(0, 0, 0),
+                                                                     state=direct.gui.DirectGui.DGG.NORMAL,
+                                                                     parent=self.main.pixel2d)
+        self.menu["close_button"].bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                       command=self.destroy_submenu1)
 
-        for i in range(len(submenu1)):
+        self.menu["main_button"].background.setColor(WHITE)
+
+        for i in range(len(self.submenu1)):
 
             button = MenuButton(main=self.main,
                                 position_x=MARGIN + BUTTON_Y_SIZE,
                                 position_y=SUBMENU1_BUTTON_Y_POSITIONS[i],
-                                text=submenu1[i],
+                                text=self.submenu1[i],
                                 font=self.font)
             button.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                              command=self.event_cursor_in,
+                              command=self.set_button_mouseover,
                               extraArgs=[button])
             button.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                              command=self.event_cursor_out,
+                              command=self.set_button_mouseout,
                               extraArgs=[button])
             button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                              command=print,
-                              extraArgs=[f"main menu button \"{submenu1[i]}\" clicked"])
-            self.menu_1.append(button)
+                              command=self.clic_on_button,
+                              extraArgs=[button])
+            self.menu["submenu1"].append(button)
 
-    def event_cursor_in(self, button, _):
+    @staticmethod
+    def set_button_mouseover(button, _):
 
         button.frame.setColor(WHITE)
         button.frame["text_fg"] = GREY
 
-    def event_cursor_out(self, button, _):
+    @staticmethod
+    def set_button_mouseout(button, _):
 
         button.frame.setColor(RED)
         button.frame["text_fg"] = WHITE
+
+    @staticmethod
+    def clic_on_button(button, _):
+
+        if button.frame["text"] == "Save Car":
+            pass
+        elif button.frame["text"] == "Load Car":
+            pass
+        elif button.frame["text"] == "Save Image":
+            pass
+        elif button.frame["text"] == "Autorotate":
+            pass
+        elif button.frame["text"] == "Exit":
+            sys.exit()
+
+    def destroy_submenu1(self, _):
+
+        for button in self.menu["submenu1"]:
+            button.frame.destroy()
+
+        self.menu["main_button"].background.setColor(TRANSPARENT)
