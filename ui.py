@@ -18,7 +18,8 @@ SUBMENU1_BUTTON_Y_POSITIONS = [MARGIN,
                                MARGIN + (3 * BUTTON_Y_SIZE),
                                MARGIN + (4 * BUTTON_Y_SIZE),
                                MARGIN + (5 * BUTTON_Y_SIZE),
-                               MARGIN + (6 * BUTTON_Y_SIZE)]
+                               MARGIN + (6 * BUTTON_Y_SIZE),
+                               MARGIN + (7 * BUTTON_Y_SIZE)]
 SUBMENU2_MENU_BUTTON_X_SIZE_ = 280
 TEXT_PADDING_LEFT = 20
 TEXT_JUSTIFY_LEFT = 0
@@ -88,8 +89,6 @@ class MenuButton:
 
 class MainMenu:
 
-    # TODO Detect a click outside the menu to close it
-
     def __init__(self, main, ground, car) -> None:
 
         self.main = main
@@ -98,7 +97,7 @@ class MainMenu:
 
         self.font = self.main.loader.loadFont(self.main.PATH_FONT_MENU)
 
-        self.main_button = MainButton(main=self.main, position_x=MARGIN, position_y=MARGIN)
+        self.main_button = MainButton(main=self.main, position_x=MARGIN, position_y=MARGIN)  # FIXME self.menu = {"main_button": MainButton(...)}
         self.main_button.background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                          command=self.event_main_button_in)
 
@@ -106,8 +105,17 @@ class MainMenu:
 
     def event_main_button_in(self, _):
 
+        toto = direct.gui.DirectGui.DirectFrame(frameColor=TRANSPARENT,
+                                                frameSize=(0, 1920, 0, -1080),  # FIXME Use windows resolution instead
+                                                pos=(0, 0, 0),
+                                                state=direct.gui.DirectGui.DGG.NORMAL,
+                                                parent=self.main.pixel2d)
+        toto.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                  command=print,
+                  extraArgs=["exit main menu"])
+
         self.main_button.background.setColor(WHITE)
-        submenu1 = ["Grounds", "Cars", "Wheels", "Save Car", "Load Car", "Save Image", "Exit"]
+        submenu1 = ["Grounds", "Cars", "Wheels", "Save Car", "Load Car", "Save Image", "Autorotate", "Exit"]
 
         for i in range(len(submenu1)):
 
@@ -122,6 +130,9 @@ class MainMenu:
             button.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
                               command=self.event_cursor_out,
                               extraArgs=[button])
+            button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                              command=print,
+                              extraArgs=[f"main menu button \"{submenu1[i]}\" clicked"])
             self.menu_1.append(button)
 
     def event_cursor_in(self, button, _):
