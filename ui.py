@@ -153,6 +153,13 @@ class MainMenu:
 
         if level == 0:
             self.button.background.setColor(WHITE)
+            self.close = direct.gui.DirectGui.DirectFrame(frameColor=TRANSPARENT,
+                                                          frameSize=(0, 1920, 0, -1080),  # FIXME Use windows resolution instead
+                                                          pos=(0, 0, 0),
+                                                          state=direct.gui.DirectGui.DGG.NORMAL,
+                                                          parent=self.main.pixel2d)
+            self.close.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                            command=self.callback_close_mainmenu)
             self.close_submenu(level=1)
 
         if level != 0:
@@ -197,6 +204,11 @@ class MainMenu:
         elif button.frame['text'] == SUBMENU_0_BUTTON_TEXT.EXIT.value:
 
             sys.exit()
+
+    def callback_close_mainmenu(self, _):
+
+        self.close_submenu(level=0)
+        self.button.background.setColor(TRANSPARENT)
 
     def close_submenu(self, level):
 
