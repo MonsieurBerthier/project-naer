@@ -1,7 +1,17 @@
+import os
 import sys
+import enum
+import logging
+import datetime
+
+import autologging
+
 import direct.gui.DirectGui
 
 from config.logger import logger
+
+logging.basicConfig(level=autologging.TRACE, stream=sys.stderr,
+                    format=f"{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')} | %(levelname)s | %(name)s.%(funcName)s@%(lineno)d : :%(message)s")
 
 
 MARGIN = 16
@@ -12,22 +22,36 @@ TRANSPARENT = (0, 0, 0, 0)
 FONT_SIZE = 20
 BUTTON_Y_SIZE = 32
 MAIN_BUTTON_BAR_Y_SIZE = 4
-SUBMENU1_MENU_BUTTON_X_SIZE = 140
-SUBMENU1_BUTTON_Y_POSITIONS = [MARGIN,
-                               MARGIN + BUTTON_Y_SIZE,
-                               MARGIN + (2 * BUTTON_Y_SIZE),
-                               MARGIN + (3 * BUTTON_Y_SIZE),
-                               MARGIN + (4 * BUTTON_Y_SIZE),
-                               MARGIN + (5 * BUTTON_Y_SIZE),
-                               MARGIN + (6 * BUTTON_Y_SIZE),
-                               MARGIN + (7 * BUTTON_Y_SIZE)]
-SUBMENU2_MENU_BUTTON_X_SIZE_ = 280
+SUBMENU_BUTTON_X_SIZE = [140, 280, 280, 280]
+SUBMENU_BUTTON_Y_POSITIONS = [MARGIN,
+                              MARGIN + BUTTON_Y_SIZE,
+                              MARGIN + (2 * BUTTON_Y_SIZE),
+                              MARGIN + (3 * BUTTON_Y_SIZE),
+                              MARGIN + (4 * BUTTON_Y_SIZE),
+                              MARGIN + (5 * BUTTON_Y_SIZE),
+                              MARGIN + (6 * BUTTON_Y_SIZE),
+                              MARGIN + (7 * BUTTON_Y_SIZE)]
 TEXT_PADDING_LEFT = 20
-TEXT_JUSTIFY_LEFT = 0
-TEXT_JUSTIFY_RIGHT = 1
-TEXT_JUSTIFY_CENTER = 2
 
 
+class SUBMENU_0_BUTTON_TEXT(enum.Enum):
+    CARS = "Cars"
+    WHEELS = "Wheels"
+    GROUNDS = "Grounds"
+    SAVE_CAR = "Save Car"
+    LOAD_CAR = "Load Car"
+    SAVE_IMAGE = "Save Image"
+    AUTOROTATE = "Autorotate"
+    EXIT = "Exit"
+
+
+class TEXT_JUSTIFY(enum.Enum):
+    LEFT = 0
+    RIGHT = 1
+    CENTER = 2
+
+
+@autologging.traced()
 class MainButton:
 
     def __init__(self, main, position_x: int, position_y: int) -> None:
@@ -70,25 +94,42 @@ class MainButton:
         # REMINDER  setPos(1, 0, 2)         (horizontal, 0, vertical)
 
 
+@autologging.traced()
 class MenuButton:
 
-    def __init__(self, main, position_x: int, position_y: int, text: str, font) -> None:
+    def __init__(self, main, position_x: int, position_y: int, text: str, font, menu_x_size: int) -> None:
 
         self.frame = direct.gui.DirectGui.DirectFrame(frameColor=RED,
                                                       text=text,
                                                       text_fg=WHITE,
                                                       text_font=font,
                                                       text_scale=FONT_SIZE,
-                                                      text_align=TEXT_JUSTIFY_LEFT,
+                                                      text_align=TEXT_JUSTIFY.LEFT.value,
                                                       text_pos=(TEXT_PADDING_LEFT, -BUTTON_Y_SIZE + 7, 0),
-                                                      frameSize=(0, SUBMENU1_MENU_BUTTON_X_SIZE, 0, -BUTTON_Y_SIZE),
+                                                      frameSize=(0, menu_x_size, 0, -BUTTON_Y_SIZE),
                                                       pos=(position_x, 0, -position_y),
                                                       state=direct.gui.DirectGui.DGG.NORMAL,
                                                       parent=main.pixel2d)
-        # TODO Add logos to each submenu1 entry
+        self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                        command=self.set_button_mouseover)
+        self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
+                        command=self.set_button_mouseout)
+
+    def set_button_mouseover(self, _):
+        self.frame.setColor(WHITE)
+        self.frame["text_fg"] = GREY
+
+    def set_button_mouseout(self, _):
+        self.frame.setColor(RED)
+        self.frame["text_fg"] = WHITE
 
 
+@autologging.traced()
 class MainMenu:
+
+    button = None
+    close = None
+    menus = []
 
     def __init__(self, main, ground, car) -> None:
 
@@ -96,77 +137,71 @@ class MainMenu:
         self.ground = ground
         self.car = car
 
-        self.font = self.main.loader.loadFont(self.main.PATH_FONT_MENU)
+        self.font = self.main.loader.loadFont(self.main.PATH_FONT_MENU)  # FIXME Avoid to reload the font x times
 
-        self.menu = {"main_button": MainButton(main=self.main, position_x=MARGIN, position_y=MARGIN),
-                     "submenu1": [],
-                     "submenu2": [],
-                     "submenu3": []}
+        self.button = MainButton(main=self.main, position_x=MARGIN, position_y=MARGIN)
+        self.button.background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                                    command=self.create_new_submenu,
+                                    extraArgs=[self.get_new_submenu_level(),
+                                               [t.value for t in SUBMENU_0_BUTTON_TEXT]])
 
-        self.menu["main_button"].background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                 command=self.display_submenu1)
+    def get_new_submenu_level(self):
 
-        self.submenu1 = ["Grounds", "Cars", "Wheels", "Save Car", "Load Car", "Save Image", "Autorotate", "Exit"]
+        return len(self.menus)
 
-    def display_submenu1(self, _):
+    def create_new_submenu(self, level, items, trash):
 
-        self.menu["close_button"] = direct.gui.DirectGui.DirectFrame(frameColor=TRANSPARENT,
-                                                                     frameSize=(0, 1920, 0, -1080),  # FIXME Use windows resolution instead
-                                                                     pos=(0, 0, 0),
-                                                                     state=direct.gui.DirectGui.DGG.NORMAL,
-                                                                     parent=self.main.pixel2d)
-        self.menu["close_button"].bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                       command=self.destroy_submenu1)
+        if level == 0:
+            self.button.background.setColor(WHITE)
+            self.close_submenu(level=1)
 
-        self.menu["main_button"].background.setColor(WHITE)
+        if level != 0:
+            items = sorted(items)
 
-        for i in range(len(self.submenu1)):
+        if len(self.menus) >= level:
+            self.close_submenu(level=level)
+
+        buttons = []
+        for i in range(len(items)):
 
             button = MenuButton(main=self.main,
-                                position_x=MARGIN + BUTTON_Y_SIZE,
-                                position_y=SUBMENU1_BUTTON_Y_POSITIONS[i],
-                                text=self.submenu1[i],
-                                font=self.font)
-            button.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                              command=self.set_button_mouseover,
-                              extraArgs=[button])
-            button.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                              command=self.set_button_mouseout,
-                              extraArgs=[button])
+                                position_x=MARGIN + BUTTON_Y_SIZE + sum(SUBMENU_BUTTON_X_SIZE[:level]),
+                                position_y=SUBMENU_BUTTON_Y_POSITIONS[i],
+                                text=items[i],
+                                font=self.font,
+                                menu_x_size=SUBMENU_BUTTON_X_SIZE[level])
             button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                               command=self.clic_on_button,
                               extraArgs=[button])
-            self.menu["submenu1"].append(button)
+            buttons.append(button)
 
-    @staticmethod
-    def set_button_mouseover(button, _):
+        self.menus.append(buttons)
 
-        button.frame.setColor(WHITE)
-        button.frame["text_fg"] = GREY
+    def clic_on_button(self, button, trash):
 
-    @staticmethod
-    def set_button_mouseout(button, _):
+        if button.frame['text'] == SUBMENU_0_BUTTON_TEXT.CARS.value:
 
-        button.frame.setColor(RED)
-        button.frame["text_fg"] = WHITE
+            cars_list = os.listdir(self.main.PATH_CARS)
+            self.create_new_submenu(level=1, items=cars_list, trash=trash)
 
-    @staticmethod
-    def clic_on_button(button, _):
+        elif button.frame['text'] == SUBMENU_0_BUTTON_TEXT.WHEELS.value:
 
-        if button.frame["text"] == "Save Car":
-            pass
-        elif button.frame["text"] == "Load Car":
-            pass
-        elif button.frame["text"] == "Save Image":
-            pass
-        elif button.frame["text"] == "Autorotate":
-            pass
-        elif button.frame["text"] == "Exit":
+            wheels_list = os.listdir(self.main.PATH_WHEELS)
+            self.create_new_submenu(level=1, items=wheels_list, trash=trash)
+
+        elif button.frame['text'] == SUBMENU_0_BUTTON_TEXT.GROUNDS.value:
+
+            grounds_list = os.listdir(self.main.PATH_GROUNDS)
+            self.create_new_submenu(level=1, items=grounds_list, trash=trash)
+
+        elif button.frame['text'] == SUBMENU_0_BUTTON_TEXT.EXIT.value:
+
             sys.exit()
 
-    def destroy_submenu1(self, _):
+    def close_submenu(self, level):
 
-        for button in self.menu["submenu1"]:
-            button.frame.destroy()
+        for menu in self.menus[level:]:
+            for button in menu:
+                button.frame.destroy()
 
-        self.menu["main_button"].background.setColor(TRANSPARENT)
+        self.menus = self.menus[:level]
