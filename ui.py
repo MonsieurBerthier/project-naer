@@ -11,7 +11,8 @@ import direct.gui.DirectGui
 from config.logger import logger
 
 logging.basicConfig(level=autologging.TRACE, stream=sys.stderr,
-                    format=f"{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')} | %(levelname)s | %(name)s.%(funcName)s@%(lineno)d : :%(message)s")
+                    format=f"{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')} "
+                           f"| %(levelname)s | %(name)s.%(funcName)s@%(lineno)d : :%(message)s")
 
 
 MARGIN = 16
@@ -154,7 +155,8 @@ class MainMenu:
         if level == 0:
             self.button.background.setColor(WHITE)
             self.close = direct.gui.DirectGui.DirectFrame(frameColor=TRANSPARENT,
-                                                          frameSize=(0, 1920, 0, -1080),  # FIXME Use windows resolution instead
+                                                          frameSize=(0, 1920, 0, -1080),
+                                                          # FIXME Use windows resolution instead
                                                           pos=(0, 0, 0),
                                                           state=direct.gui.DirectGui.DGG.NORMAL,
                                                           parent=self.main.pixel2d)
@@ -186,6 +188,8 @@ class MainMenu:
 
     def clic_on_button(self, button, trash):
 
+        logger.debug(f"Button \"{button.frame['text']}\" clicked")
+
         if button.frame['text'] == SUBMENU_0_BUTTON_TEXT.CARS.value:
 
             cars_list = os.listdir(self.main.PATH_CARS)
@@ -209,6 +213,7 @@ class MainMenu:
 
         self.close_submenu(level=0)
         self.button.background.setColor(TRANSPARENT)
+        self.close.destroy()
 
     def close_submenu(self, level):
 
