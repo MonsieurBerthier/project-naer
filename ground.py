@@ -6,10 +6,10 @@ from config.logger import logger
 
 class Ground:
 
-    def __init__(self, main, name: str) -> None:
+    def __init__(self, main) -> None:
 
         self.main = main
-        self.name = name
+        self.name = self.main.config_json["default"]["ground"]
 
         self.path = os.path.join(self.main.PATH_GROUNDS, self.name)
         self.model = None
