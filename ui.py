@@ -128,21 +128,30 @@ class MenuButton:
 @autologging.traced()
 class MainMenu:
 
+    # TODO If a button is activated it should stay WHITE
+    # TODO Code mouseover instead of clicks for menu buttons
+    # TODO Study if creating classes GroundsMenu, WheelsMenu could be interesting
+    # TODO Create the garage interface (ride height, wheels, camber, ...)
+    # TODO Create the body shop interface
+    # TODO Add icons to menu buttons
+
     button = None
     close = None
     menus = []
 
-    def __init__(self, main, ground, car) -> None:
+    def __init__(self, main) -> None:
 
         self.main = main
-        self.ground = ground
-        self.car = car
+        self.ground = self.main.ground
+        self.car = self.main.car
+        self.font = self.main.font
 
-        self.font = self.main.loader.loadFont(self.main.PATH_FONT_MENU)  # FIXME Avoid to reload the font x times
+        self.resolution_x = self.main.win.getXSize()
+        self.resolution_y = self.main.win.getYSize()
 
         self.button = MainButton(main=self.main, position_x=MARGIN, position_y=MARGIN)
         self.button.background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                    command=self.create_new_submenu,
+                                    command=self.callback_create_new_submenu,
                                     extraArgs=[self.get_new_submenu_level(),
                                                [t.value for t in SUBMENU_0_BUTTON_TEXT]])
 
@@ -150,13 +159,16 @@ class MainMenu:
 
         return len(self.menus)
 
-    def create_new_submenu(self, level, items, trash):
+    def callback_create_new_submenu(self, level, items, _):
+
+        self.create_new_submenu(level=level, items=items)
+
+    def create_new_submenu(self, level, items):
 
         if level == 0:
             self.button.background.setColor(WHITE)
             self.close = direct.gui.DirectGui.DirectFrame(frameColor=TRANSPARENT,
-                                                          frameSize=(0, 1920, 0, -1080),
-                                                          # FIXME Use windows resolution instead
+                                                          frameSize=(0, self.resolution_x, 0, -self.resolution_y),
                                                           pos=(0, 0, 0),
                                                           state=direct.gui.DirectGui.DGG.NORMAL,
                                                           parent=self.main.pixel2d)
@@ -180,30 +192,34 @@ class MainMenu:
                                 font=self.font,
                                 menu_x_size=SUBMENU_BUTTON_X_SIZE[level])
             button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                              command=self.clic_on_button,
+                              command=self.callback_clic_on_button,
                               extraArgs=[button])
             buttons.append(button)
 
         self.menus.append(buttons)
 
-    def clic_on_button(self, button, trash):
+    def callback_clic_on_button(self, button, _):
+
+        self.clic_on_button(button)
+
+    def clic_on_button(self, button):
 
         logger.debug(f"Button \"{button.frame['text']}\" clicked")
 
         if button.frame['text'] == SUBMENU_0_BUTTON_TEXT.CARS.value:
 
             cars_list = os.listdir(self.main.PATH_CARS)
-            self.create_new_submenu(level=1, items=cars_list, trash=trash)
+            self.create_new_submenu(level=1, items=cars_list)
 
         elif button.frame['text'] == SUBMENU_0_BUTTON_TEXT.WHEELS.value:
 
             wheels_list = os.listdir(self.main.PATH_WHEELS)
-            self.create_new_submenu(level=1, items=wheels_list, trash=trash)
+            self.create_new_submenu(level=1, items=wheels_list)
 
         elif button.frame['text'] == SUBMENU_0_BUTTON_TEXT.GROUNDS.value:
 
             grounds_list = os.listdir(self.main.PATH_GROUNDS)
-            self.create_new_submenu(level=1, items=grounds_list, trash=trash)
+            self.create_new_submenu(level=1, items=grounds_list)
 
         elif button.frame['text'] == SUBMENU_0_BUTTON_TEXT.EXIT.value:
 
