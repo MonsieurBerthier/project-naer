@@ -55,7 +55,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.ground = ground.Ground(main=self)
         self.car = car.Car(main=self)
         self.font = self.loader.loadFont(self.PATH_FONT_MENU)
-        self.ui = ui.MainMenu(main=self)
+        self.ui = ui.UI(main=self)
 
         self.initialize_lights()
         self.initialize_camera()
