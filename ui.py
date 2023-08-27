@@ -185,6 +185,9 @@ class MainMenu:
 
     def open_main_menu(self, _):
 
+        if self.menu_buttons:
+            return
+
         self.open_button["Background"]["frameColor"] = Base.WHITE
         self.close_button = direct.gui.DirectGui.DirectFrame(frameColor=Base.TRANSPARENT,
                                                              frameSize=(0, self.main.window_resolution[0]-5, 0,
