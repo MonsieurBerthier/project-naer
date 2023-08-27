@@ -50,6 +50,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
                        enable_shadows=True,
                        use_330=True)
 
+        self.window_resolution = (self.win.getXSize(), self.win.getYSize())
         self.light_on_camera_node = None
 
         self.ground = ground.Ground(main=self)
