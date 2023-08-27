@@ -29,7 +29,7 @@ class Base:
 class MenuButton:
 
     def __init__(self, main, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 has_submenu: bool):
+                 auto_event: bool):
 
         self.frame = direct.gui.DirectGui.DirectFrame(frameColor=Base.RED,
                                                       text=text,
@@ -44,7 +44,7 @@ class MenuButton:
                                                       state=direct.gui.DirectGui.DGG.NORMAL,
                                                       parent=main.pixel2d)
 
-        if not has_submenu:
+        if not auto_event:
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                             command=self.set_button_mouseover_style)
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
@@ -79,7 +79,7 @@ class SubMenu:
                                 position_x=Base.MARGIN + Base.BUTTON_Y_SIZE + MainMenu.MAIN_MENU_X_SIZE,
                                 position_y=-Base.get_button_y_position(index=i),
                                 size_x=self.menu_x_size, size_y=-Base.BUTTON_Y_SIZE,
-                                has_submenu=False)
+                                auto_event=False)
 
             if MainMenu.TEXT_CARS.lower() in self.folder:
                 button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
@@ -200,7 +200,7 @@ class MainMenu:
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        position_y=Base.MARGIN,
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
-                       has_submenu=True))
+                       auto_event=True))
         self.menu_buttons[MainMenu.TEXT_CARS].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                          command=self.open_cars_submenu)
 
@@ -210,7 +210,7 @@ class MainMenu:
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        position_y=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
-                       has_submenu=True))
+                       auto_event=True))
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                            command=self.open_wheels_submenu)
 
@@ -220,7 +220,7 @@ class MainMenu:
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        position_y=Base.MARGIN + (2 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
-                       has_submenu=True))
+                       auto_event=True))
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                             command=self.open_grounds_submenu)
 
@@ -230,7 +230,7 @@ class MainMenu:
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        position_y=Base.MARGIN + (3 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
-                       has_submenu=True))
+                       auto_event=True))
         self.menu_buttons[MainMenu.TEXT_SAVE_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                              command=self.set_button_mouseover_style,
                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_CAR]])
@@ -246,7 +246,7 @@ class MainMenu:
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        position_y=Base.MARGIN + (4 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
-                       has_submenu=True))
+                       auto_event=True))
         self.menu_buttons[MainMenu.TEXT_LOAD_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                              command=self.set_button_mouseover_style,
                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_LOAD_CAR]])
@@ -262,7 +262,7 @@ class MainMenu:
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        position_y=Base.MARGIN + (5 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
-                       has_submenu=True))
+                       auto_event=True))
         self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                                command=self.set_button_mouseover_style,
                                                                extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE]])
@@ -278,7 +278,7 @@ class MainMenu:
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        position_y=Base.MARGIN + (6 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
-                       has_submenu=True))
+                       auto_event=True))
         self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                                command=self.set_button_mouseover_style,
                                                                extraArgs=[self.menu_buttons[MainMenu.TEXT_AUTOROTATE]])
@@ -294,7 +294,7 @@ class MainMenu:
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
                        position_y=Base.MARGIN + (7 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
-                       has_submenu=True))
+                       auto_event=True))
         self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                          command=self.set_button_mouseover_style,
                                                          extraArgs=[self.menu_buttons[MainMenu.TEXT_EXIT]])
