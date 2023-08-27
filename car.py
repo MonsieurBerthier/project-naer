@@ -11,18 +11,24 @@ class Car:
         self.main = main
         self.name = self.main.config_json["default"]["car"]
 
-        self.path = os.path.join(self.main.PATH_CARS, self.name)
+        self.path = None
+        self.json = None
+        self.models = None
+
+        self.load(name=self.name)
+
+    def load(self, name: str) -> None:
+
+        logger.debug(f"Loading car \"{name}\"")
+
+        if self.models:
+            self.unload()
+
+        self.path = os.path.join(self.main.PATH_CARS, name)
         self.json = library.io.get_json(path=os.path.join(self.path, self.main.PATH_CARS_CONFIG))
-        self.models = {}
 
-        self.load_car()
-
-    def load_car(self) -> None:
-
-        logger.debug(f"Loading car \"{self.name}\"")
-
-        self.models["chassis"] = self.main.loader.loadModel(modelPath=os.path.join(self.path,
-                                                                                   self.main.PATH_CARS_CHASSIS))
+        self.models = {"chassis": self.main.loader.loadModel(modelPath=os.path.join(self.path,
+                                                                                    self.main.PATH_CARS_CHASSIS))}
         self.models["chassis"].reparentTo(self.main.render)
         self.models["chassis"].setPos(tuple(self.json["chassis"]["position"]))
         self.models["chassis"].setHpr(tuple(self.json["chassis"]["rotation"]))
@@ -40,6 +46,17 @@ class Car:
 
         for part in self.json["default"]:
             self.load_part(part=part)
+
+    def unload(self):
+
+        logger.debug(f"Unloading car \"{self.name}\"")
+
+        self.path = None
+        self.json = None
+
+        for item in self.models:
+            self.models[item].removeNode()
+        self.models = None
 
     def load_part(self, part: str) -> None:
 
