@@ -19,10 +19,10 @@ class Car:
 
     def load(self, name: str) -> None:
 
-        logger.debug(f"Loading car \"{name}\"")
-
         if self.models:
             self.unload()
+
+        logger.debug(f"Loading car \"{name}\"")
 
         self.path = os.path.join(self.main.PATH_CARS, name)
         self.json = library.io.get_json(path=os.path.join(self.path, self.main.PATH_CARS_CONFIG))

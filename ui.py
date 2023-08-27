@@ -71,8 +71,6 @@ class SubMenu:
 
     def open(self):
 
-        logger.debug(f"Open submenu : {self.folder}")
-
         folder_content = sorted(os.listdir(self.folder))
 
         for i in range(len(folder_content)):
@@ -107,8 +105,6 @@ class SubMenu:
         self.main.ground.load(name=name)
 
     def close(self):
-
-        logger.debug(f"Close submenu : {self.folder}")
 
         for button in self.buttons:
             button.frame.destroy()

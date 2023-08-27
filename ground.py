@@ -18,10 +18,10 @@ class Ground:
 
     def load(self, name: str) -> None:
 
-        logger.debug(f"Loading ground \"{name}\"")
-
         if self.model:
             self.unload()
+
+        logger.debug(f"Loading ground \"{name}\"")
 
         self.name = name
         self.path = os.path.join(self.main.PATH_GROUNDS, name)
