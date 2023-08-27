@@ -11,16 +11,31 @@ class Ground:
         self.main = main
         self.name = self.main.config_json["default"]["ground"]
 
-        self.path = os.path.join(self.main.PATH_GROUNDS, self.name)
+        self.path = None
         self.model = None
 
-        self.load_ground()
+        self.load(name=self.name)
 
-    def load_ground(self) -> None:
+    def load(self, name: str) -> None:
 
-        logger.debug(f"Loading ground \"{self.name}\"")
+        logger.debug(f"Loading ground \"{name}\"")
+
+        if self.model:
+            self.unload()
+
+        self.name = name
+        self.path = os.path.join(self.main.PATH_GROUNDS, name)
 
         glb = library.io.get_file_path(path=self.path, extension="glb")
         self.model = self.main.loader.loadModel(modelPath=os.path.join(self.path, glb))
         self.model.setLightOff()
         self.model.reparentTo(self.main.render)
+
+    def unload(self):
+
+        logger.debug(f"Unloading ground \"{self.name}\"")
+
+        self.name = None
+        self.path = None
+        self.model.removeNode()
+
