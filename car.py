@@ -25,7 +25,7 @@ class Car:
         logger.debug(f"Loading car \"{name}\"")
 
         self.path = os.path.join(self.main.PATH_CARS, name)
-        self.json = library.io.get_json(path=os.path.join(self.path, self.main.PATH_CARS_CONFIG))
+        self.json = library.io.get_json(path=os.path.join(self.path, self.main.PATH_ITEMS_CONFIG_JSON))
 
         self.models = {"chassis": self.main.loader.loadModel(modelPath=os.path.join(self.path,
                                                                                     self.main.PATH_CARS_CHASSIS))}

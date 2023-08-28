@@ -33,10 +33,11 @@ class Main(direct.showbase.ShowBase.ShowBase):
     PATH_FONT_MENU = os.path.join(PATH_FONTS, "gobold/Gobold Regular.otf")
 
     PATH_CARS = os.path.join(PATH_CONTENT, "cars")
-    PATH_CARS_CONFIG = "config.json"
     PATH_CARS_CHASSIS = "chassis.glb"
 
     PATH_WHEELS = os.path.join(PATH_CONTENT, "wheels")
+
+    PATH_ITEMS_CONFIG_JSON = "config.json"
 
     def __init__(self) -> None:
 
