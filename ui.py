@@ -3,6 +3,8 @@ import sys
 
 import direct.gui.DirectGui
 
+import library.io
+
 from config.logger import logger
 
 
@@ -69,31 +71,37 @@ class SubMenu:
 
         self.buttons = []
 
-    def open(self):
+    def open(self, content_path: str) -> None:
 
-        folder_content = sorted(os.listdir(self.folder))
+        items = []
+        for folder in os.listdir(self.folder):
+            path_to_json = os.path.join(content_path, folder, self.main.PATH_ITEMS_CONFIG_JSON)
+            json = library.io.get_json(path=path_to_json)
+            items.append([folder, json["name"]])
 
-        for i in range(len(folder_content)):
+        items = sorted(items, key=lambda x: x[1])
+
+        for i in range(len(items)):
             button = MenuButton(main=self.main,
-                                text=folder_content[i], font=self.main.font,
+                                text=items[i][1], font=self.main.font,
                                 position_x=Base.MARGIN + Base.BUTTON_Y_SIZE + MainMenu.MAIN_MENU_X_SIZE,
                                 position_y=-Base.get_button_y_position(index=i),
                                 size_x=self.menu_x_size, size_y=-Base.BUTTON_Y_SIZE,
                                 auto_event=False)
 
-            if MainMenu.TEXT_CARS.lower() in self.folder:
+            if MainMenu.TEXT_CARS.lower() in content_path:
                 button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                   command=self.callback_load_car,
-                                  extraArgs=[folder_content[i]])
-            elif MainMenu.TEXT_WHEELS.lower() in self.folder:
+                                  extraArgs=[items[i][0]])
+            elif MainMenu.TEXT_WHEELS.lower() in content_path:
                 pass
                 # button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                 #                   command=self.callback_load_wheel,
                 #                   extraArgs=[folder_content[i]])
-            elif MainMenu.TEXT_GROUNDS.lower() in self.folder:
+            elif MainMenu.TEXT_GROUNDS.lower() in content_path:
                 button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                   command=self.callback_load_ground,
-                                  extraArgs=[folder_content[i]])
+                                  extraArgs=[items[i][0]])
             self.buttons.append(button)
 
     def callback_load_car(self, name, _):
@@ -335,7 +343,7 @@ class MainMenu:
         self.menu_buttons[MainMenu.TEXT_CARS].frame["frameColor"] = Base.WHITE
         self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = Base.GREY
 
-        self.submenu_cars.open()
+        self.submenu_cars.open(content_path=self.main.PATH_CARS)
 
     def close_cars_submenu(self, _):
 
@@ -351,7 +359,7 @@ class MainMenu:
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = Base.WHITE
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = Base.GREY
 
-        self.submenu_wheels.open()
+        self.submenu_wheels.open(content_path=self.main.PATH_WHEELS)
 
     def close_wheels_submenu(self, _):
 
@@ -367,7 +375,7 @@ class MainMenu:
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = Base.WHITE
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = Base.GREY
 
-        self.submenu_grounds.open()
+        self.submenu_grounds.open(content_path=self.main.PATH_GROUNDS)
 
     def close_grounds_submenu(self, _):
 
@@ -406,6 +414,9 @@ class UI:
 
     # FIXME No lights on the ground after ground change
     # FIXME Implement tyre replacement
+    # TODO Check if the generation of some buttons can be factorized
+    # TODO Make a fade out/in lights when changing the car
+    # TODO Ajouter deux autres grounds
     # TODO Create the garage interface (ride height, wheels, camber, ...)
     # TODO Create the body shop interface
     # TODO Add icons to menu buttons
