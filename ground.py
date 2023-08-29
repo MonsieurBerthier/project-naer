@@ -31,7 +31,7 @@ class Ground:
         self.model.setLightOff()
         self.model.reparentTo(self.main.render)
 
-    def unload(self):
+    def unload(self) -> None:
 
         logger.debug(f"Unloading ground \"{self.name}\"")
 
@@ -39,3 +39,12 @@ class Ground:
         self.path = None
         self.model.removeNode()
 
+    def set_light(self, light) -> None:
+
+        self.model.setLight(light)
+
+    def change(self, name: str) -> None:
+
+        self.unload()
+        self.load(name=name)
+        self.set_light(self.main.light_node_top)

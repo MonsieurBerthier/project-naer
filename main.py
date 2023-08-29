@@ -53,6 +53,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.window_resolution = (self.win.getXSize(), self.win.getYSize())
         self.light_on_camera_node = None
+        self.light_node_top = None
 
         self.ground = ground.Ground(main=self)
         self.car = car.Car(main=self)
@@ -85,9 +86,9 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         light_top = direct.showbase.ShowBase.PointLight("TopLight")
         light_top.setAttenuation((0, 0, 0.02))
-        light_node_top = self.render.attachNewNode(light_top)
-        light_node_top.setPos((0, 0, 7))
-        self.render.setLight(light_node_top)
+        self.light_node_top = self.render.attachNewNode(light_top)
+        self.light_node_top.setPos((0, 0, 7))
+        self.render.setLight(self.light_node_top)
 
         light_left = direct.showbase.ShowBase.PointLight("LeftLight")
         light_left.setAttenuation((0, 0, 0.001))
@@ -113,7 +114,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         light_node_rear.setPos((0, 12, 6))
         self.render.setLight(light_node_rear)
 
-        self.ground.model.setLight(light_node_top)
+        self.ground.set_light(light=self.light_node_top)
 
     def initialize_camera(self) -> None:
 

@@ -110,7 +110,7 @@ class SubMenu:
 
     def callback_load_ground(self, name, _):
 
-        self.main.ground.load(name=name)
+        self.main.ground.change(name=name)
 
     def close(self):
 
@@ -412,9 +412,9 @@ class MainMenu:
 
 class UI:
 
-    # FIXME No lights on the ground after ground change
     # FIXME Implement tyre replacement
     # TODO Check if the generation of some buttons can be factorized
+    # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car
     # TODO Ajouter deux autres grounds
     # TODO Create the garage interface (ride height, wheels, camber, ...)
