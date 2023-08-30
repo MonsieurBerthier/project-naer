@@ -1,6 +1,6 @@
 {
   "default": {
-    "ground": "concrete",
+    "ground": "asphalt",
     "cubemap": "lightbars",
     "car": "nissan_rs13",
     "wheels": "japanracing_jr3"}
