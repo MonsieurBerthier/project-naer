@@ -415,11 +415,9 @@ class MainMenu:
 
 class UI:
 
-    # FIXME Implement tyre replacement
     # TODO Check if the generation of some buttons can be factorized
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car
-    # TODO Ajouter deux autres grounds
     # TODO Create the garage interface (ride height, wheels, camber, ...)
     # TODO Create the body shop interface
     # TODO Add icons to menu buttons
