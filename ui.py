@@ -94,10 +94,9 @@ class SubMenu:
                                   command=self.callback_load_car,
                                   extraArgs=[items[i][0]])
             elif MainMenu.TEXT_WHEELS.lower() in content_path:
-                pass
-                # button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                #                   command=self.callback_load_wheel,
-                #                   extraArgs=[folder_content[i]])
+                button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                  command=self.callback_load_wheels,
+                                  extraArgs=[items[i][0]])
             elif MainMenu.TEXT_GROUNDS.lower() in content_path:
                 button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                   command=self.callback_load_ground,
@@ -107,6 +106,10 @@ class SubMenu:
     def callback_load_car(self, name, _):
 
         self.main.car.load(name=name)
+
+    def callback_load_wheels(self, name, _):
+
+        self.main.car.load_wheels(name=name, oem=False)
 
     def callback_load_ground(self, name, _):
 
