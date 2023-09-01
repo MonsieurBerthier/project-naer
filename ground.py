@@ -9,7 +9,7 @@ class Ground:
     def __init__(self, main) -> None:
 
         self.main = main
-        self.name = self.main.config_json["default"]["ground"]
+        self.name = self.main.config_json["defaults"]["ground"]
 
         self.path = None
         self.model = None

@@ -44,7 +44,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.config_json = library.io.get_json(path=Main.PATH_CONFIG_JSON)
 
         super().__init__(self)
-        simplepbr.init(env_map=self.get_cubemap_path(cubemap=self.config_json["default"]["cubemap"]),
+        simplepbr.init(env_map=self.get_cubemap_path(cubemap=self.config_json["defaults"]["cubemap"]),
                        use_occlusion_maps=True,
                        use_emission_maps=True,
                        use_normal_maps=True,
