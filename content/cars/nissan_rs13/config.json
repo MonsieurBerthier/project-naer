@@ -1,28 +1,28 @@
 {
   "name": "Nissan 180SX (RS13)",
-  "default": [
+  "defaults": [
     "frontbumper_oemzenki",
     "bonnet_oem",
     "mirrors_oem",
-    "spoiler_oem",
     "taillight_oem",
     "rearbumper_oem",
-    "exhaust_oem"],
+    "exhaust_oem",
+	"wheel_oem"],
   "chassis": {
-    "position": [0, 0, 0.4],
+    "position": [0, 0, 0.57],
     "rotation": [0, 0.5, 0],
     "scale": [3, 3, 3]},
   "wheels": [
     {"position": [2.2, -3.6, 0.85],
-     "rotation": [0, 0, -3],
-     "scale": [1, 1, 1]},
+     "rotation": [0, 0, -2],
+     "scale": [3, 3, 3]},
     {"position": [2.2, 3.8, 0.85],
      "rotation": [0, 0, -2],
-     "scale": [1, 1, 1]},
+     "scale": [3, 3, 3]},
     {"position": [-2.2, -3.6, 0.85],
-     "rotation": [0, 0, 183],
-     "scale": [1, 1, 1]},
+     "rotation": [0, 0, 182],
+     "scale": [3, 3, 3]},
     {"position": [-2.2, 3.8, 0.85],
      "rotation": [0, 0, 182],
-     "scale": [1, 1, 1]}]
+     "scale": [3, 3, 3]}]
 }
