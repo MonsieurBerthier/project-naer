@@ -14,7 +14,7 @@
     "scale": [3, 3, 3]},
   "wheels": [
     {"position": [2.2, -3.6, 0.85],
-     "rotation": [0, 0, -2],
+     "rotation": [0, 0, -1],
      "scale": [3, 3, 3]},
     {"position": [2.2, 3.8, 0.85],
      "rotation": [0, 0, -2],
@@ -23,6 +23,6 @@
      "rotation": [0, 0, 182],
      "scale": [3, 3, 3]},
     {"position": [-2.2, 3.8, 0.85],
-     "rotation": [0, 0, 182],
+     "rotation": [0, 0, 181],
      "scale": [3, 3, 3]}]
 }
