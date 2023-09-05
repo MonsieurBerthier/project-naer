@@ -23,7 +23,7 @@ class Base:
     TEXT_JUSTIFY_CENTER = 2
 
     @staticmethod
-    def get_button_y_position(index):
+    def get_button_y_position(index: int) -> int:
 
         return -Base.MARGIN - (index * Base.BUTTON_Y_SIZE)
 
@@ -31,7 +31,7 @@ class Base:
 class MenuButton:
 
     def __init__(self, main, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 auto_event: bool, icon_mouseover: str, icon_mouseout: str):
+                 auto_event: bool, icon_mouseover: str, icon_mouseout: str) -> None:
 
         self.auto_event = auto_event
         self.icon_mouseover = icon_mouseover
@@ -59,13 +59,13 @@ class MenuButton:
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
                             command=self.set_button_mouseout_style)
 
-    def set_button_mouseover_style(self, _):
+    def set_button_mouseover_style(self, _) -> None:
 
         self.frame["frameColor"] = Base.WHITE
         self.frame["text_fg"] = Base.GREY
         self.frame["image"] = self.icon_mouseover
 
-    def set_button_mouseout_style(self, _):
+    def set_button_mouseout_style(self, _) -> None:
 
         self.frame["frameColor"] = Base.RED
         self.frame["text_fg"] = Base.WHITE
@@ -74,18 +74,13 @@ class MenuButton:
 
 class SubMenu:
 
-    ICON_CAR_MOUSEOVER = "content/images/ui/menu/icon_cars_mouseover.png"
-    ICON_CAR_MOUSEOUT = "content/images/ui/menu/icon_cars_mouseout.png"
-    ICON_WHEEL_MOUSEOVER = "content/images/ui/menu/icon_cars_mouseover.png"
-    ICON_WHEEL_MOUSEOUT = "content/images/ui/menu/icon_cars_mouseout.png"
-    ICON_GROUND_MOUSEOVER = "content/images/ui/menu/icon_cars_mouseover.png"
-    ICON_GROUND_MOUSEOUT = "content/images/ui/menu/icon_cars_mouseout.png"
-
-    def __init__(self, main, folder: str, x_size: int) -> None:
+    def __init__(self, main, folder: str, x_size: int, icon_mouseover: str, icon_mouseout: str) -> None:
 
         self.main = main
         self.folder = folder
         self.menu_x_size = x_size
+        self.icon_mouseover = icon_mouseover
+        self.icon_mouseout = icon_mouseout
 
         self.buttons = []
 
@@ -106,8 +101,8 @@ class SubMenu:
                                 position_y=-Base.get_button_y_position(index=i),
                                 size_x=self.menu_x_size, size_y=-Base.BUTTON_Y_SIZE,
                                 auto_event=True,
-                                icon_mouseover=SubMenu.ICON_CAR_MOUSEOVER,  # FIXME
-                                icon_mouseout=SubMenu.ICON_CAR_MOUSEOUT)    # FIXME
+                                icon_mouseover=self.icon_mouseover,
+                                icon_mouseout=self.icon_mouseout)
 
             if MainMenu.TEXT_CARS.lower() in content_path:
                 button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
@@ -123,19 +118,19 @@ class SubMenu:
                                   extraArgs=[items[i][0]])
             self.buttons.append(button)
 
-    def callback_load_car(self, name, _):
+    def callback_load_car(self, name, _) -> None:
 
         self.main.car.load(name=name)
 
-    def callback_load_wheels(self, name, _):
+    def callback_load_wheels(self, name, _) -> None:
 
         self.main.car.load_wheels(name=name, oem=False)
 
-    def callback_load_ground(self, name, _):
+    def callback_load_ground(self, name, _) -> None:
 
         self.main.ground.change(name=name)
 
-    def close(self):
+    def close(self) -> None:
 
         for button in self.buttons:
             button.frame.destroy()
@@ -164,10 +159,16 @@ class MainMenu:
 
     ICON_CARS_MOUSEOVER = "content/images/ui/menu/icon_cars_mouseover.png"
     ICON_CARS_MOUSEOUT = "content/images/ui/menu/icon_cars_mouseout.png"
+    ICON_CAR_MOUSEOVER = "content/images/ui/menu/icon_car_mouseover.png"
+    ICON_CAR_MOUSEOUT = "content/images/ui/menu/icon_car_mouseout.png"
     ICON_WHEELS_MOUSEOVER = "content/images/ui/menu/icon_wheels_mouseover.png"
     ICON_WHEELS_MOUSEOUT = "content/images/ui/menu/icon_wheels_mouseout.png"
+    ICON_WHEEL_MOUSEOVER = "content/images/ui/menu/icon_wheel_mouseover.png"
+    ICON_WHEEL_MOUSEOUT = "content/images/ui/menu/icon_wheel_mouseout.png"
     ICON_GROUNDS_MOUSEOVER = "content/images/ui/menu/icon_grounds_mouseover.png"
     ICON_GROUNDS_MOUSEOUT = "content/images/ui/menu/icon_grounds_mouseout.png"
+    ICON_GROUND_MOUSEOVER = "content/images/ui/menu/icon_ground_mouseover.png"
+    ICON_GROUND_MOUSEOUT = "content/images/ui/menu/icon_ground_mouseout.png"
     ICON_SAVE_CAR_MOUSEOVER = "content/images/ui/menu/icon_savecar_mouseover.png"
     ICON_SAVE_CAR_MOUSEOUT = "content/images/ui/menu/icon_savecar_mouseout.png"
     ICON_LOAD_CAR_MOUSEOVER = "content/images/ui/menu/icon_loadcar_mouseover.png"
@@ -189,13 +190,19 @@ class MainMenu:
 
         self.submenu_cars = SubMenu(main=self.main,
                                     folder=self.main.PATH_CARS,
-                                    x_size=MainMenu.CARS_MENU_X_SIZE)
+                                    x_size=MainMenu.CARS_MENU_X_SIZE,
+                                    icon_mouseover=MainMenu.ICON_CAR_MOUSEOVER,
+                                    icon_mouseout=MainMenu.ICON_CAR_MOUSEOUT)
         self.submenu_wheels = SubMenu(main=self.main,
                                       folder=self.main.PATH_WHEELS,
-                                      x_size=MainMenu.WHEELS_MENU_X_SIZE)
+                                      x_size=MainMenu.WHEELS_MENU_X_SIZE,
+                                      icon_mouseover=MainMenu.ICON_WHEEL_MOUSEOVER,
+                                      icon_mouseout=MainMenu.ICON_WHEEL_MOUSEOUT)
         self.submenu_grounds = SubMenu(main=self.main,
                                        folder=self.main.PATH_GROUNDS,
-                                       x_size=MainMenu.GROUNDS_MENU_X_SIZE)
+                                       x_size=MainMenu.GROUNDS_MENU_X_SIZE,
+                                       icon_mouseover=MainMenu.ICON_GROUND_MOUSEOVER,
+                                       icon_mouseout=MainMenu.ICON_GROUND_MOUSEOUT)
 
         self.open_button["Background"] = (
             direct.gui.DirectGui.DirectFrame(frameColor=Base.TRANSPARENT,
@@ -227,7 +234,7 @@ class MainMenu:
         self.open_button["Background"].bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                             command=self.open_main_menu)
 
-    def open_main_menu(self, _):
+    def open_main_menu(self, _) -> None:
 
         if self.menu_buttons:
             return
@@ -368,7 +375,7 @@ class MainMenu:
         self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                          command=self.exit)
 
-    def set_button_mouseover_style(self, button, _):
+    def set_button_mouseover_style(self, button, _) -> None:
 
         self.close_all_submenus()
         button.frame["frameColor"] = Base.WHITE
@@ -376,13 +383,13 @@ class MainMenu:
         button.frame["image"] = button.icon_mouseover
 
     @staticmethod
-    def set_button_mouseout_style(button, _):
+    def set_button_mouseout_style(button, _) -> None:
 
         button.frame["frameColor"] = Base.RED
         button.frame["text_fg"] = Base.WHITE
         button.frame["image"] = button.icon_mouseout
 
-    def close_main_menu(self, _):
+    def close_main_menu(self, _) -> None:
 
         self.close_button.destroy()
 
@@ -394,7 +401,7 @@ class MainMenu:
 
         self.open_button["Background"]["frameColor"] = Base.TRANSPARENT
 
-    def open_cars_submenu(self, _):
+    def open_cars_submenu(self, _) -> None:
 
         self.close_all_submenus()
 
@@ -404,7 +411,7 @@ class MainMenu:
 
         self.submenu_cars.open(content_path=self.main.PATH_CARS)
 
-    def close_cars_submenu(self, _):
+    def close_cars_submenu(self, _) -> None:
 
         self.submenu_cars.close()
 
@@ -412,7 +419,7 @@ class MainMenu:
         self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = Base.WHITE
         self.menu_buttons[MainMenu.TEXT_CARS].frame["image"] = MainMenu.ICON_CARS_MOUSEOUT
 
-    def open_wheels_submenu(self, _):
+    def open_wheels_submenu(self, _) -> None:
 
         self.close_all_submenus()
 
@@ -422,7 +429,7 @@ class MainMenu:
 
         self.submenu_wheels.open(content_path=self.main.PATH_WHEELS)
 
-    def close_wheels_submenu(self, _):
+    def close_wheels_submenu(self, _) -> None:
 
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = Base.RED
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = Base.WHITE
@@ -430,7 +437,7 @@ class MainMenu:
 
         self.submenu_wheels.close()
 
-    def open_grounds_submenu(self, _):
+    def open_grounds_submenu(self, _) -> None:
 
         self.close_all_submenus()
 
@@ -440,7 +447,7 @@ class MainMenu:
 
         self.submenu_grounds.open(content_path=self.main.PATH_GROUNDS)
 
-    def close_grounds_submenu(self, _):
+    def close_grounds_submenu(self, _) -> None:
 
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = Base.RED
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = Base.WHITE
@@ -448,27 +455,27 @@ class MainMenu:
 
         self.submenu_grounds.close()
 
-    def close_all_submenus(self):
+    def close_all_submenus(self) -> None:
 
         self.close_cars_submenu(None)
         self.close_wheels_submenu(None)
         self.close_grounds_submenu(None)
 
-    def save_car(self, _):
+    def save_car(self, _) -> None:
 
         logger.debug("Button \"Save Car\" clicked")
 
-    def load(self, _):
+    def load(self, _) -> None:
 
         logger.debug("Button \"Load Car\" clicked")
 
-    def save_image(self, _):
+    def save_image(self, _) -> None:
         logger.debug("Button \"Save Image\" clicked")
 
-    def toggle_autorotate(self, _):
+    def toggle_autorotate(self, _) -> None:
         logger.debug("Button \"Autorotate\" clicked")
 
-    def exit(self, _):
+    def exit(self, _) -> None:
 
         logger.debug("Button \"Exit\" clicked")
         sys.exit()
