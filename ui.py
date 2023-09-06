@@ -171,6 +171,10 @@ class MainMenu:
     ICON_GROUNDS_MOUSEOUT = "content/images/ui/menu/icon_grounds_mouseout.png"
     ICON_GROUND_MOUSEOVER = "content/images/ui/menu/icon_ground_mouseover.png"
     ICON_GROUND_MOUSEOUT = "content/images/ui/menu/icon_ground_mouseout.png"
+    ICON_GARAGE_MOUSEOVER = "content/images/ui/menu/icon_garage_mouseover.png"
+    ICON_GARAGE_MOUSEOUT = "content/images/ui/menu/icon_garage_mouseout.png"
+    ICON_BODY_SHOP_MOUSEOVER = "content/images/ui/menu/icon_bodyshop_mouseover.png"
+    ICON_BODY_SHOP_MOUSEOUT = "content/images/ui/menu/icon_bodyshop_mouseout.png"
     ICON_SAVE_CAR_MOUSEOVER = "content/images/ui/menu/icon_savecar_mouseover.png"
     ICON_SAVE_CAR_MOUSEOUT = "content/images/ui/menu/icon_savecar_mouseout.png"
     ICON_LOAD_CAR_MOUSEOVER = "content/images/ui/menu/icon_loadcar_mouseover.png"
@@ -294,8 +298,8 @@ class MainMenu:
                        position_y=Base.MARGIN + (3 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
                        auto_event=False,
-                       icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_SAVE_CAR_MOUSEOUT))
+                       icon_mouseover=MainMenu.ICON_GARAGE_MOUSEOVER,
+                       icon_mouseout=MainMenu.ICON_GARAGE_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                            command=self.set_button_mouseover_style,
                                                            extraArgs=[self.menu_buttons[MainMenu.TEXT_GARAGE]])
@@ -312,8 +316,8 @@ class MainMenu:
                        position_y=Base.MARGIN + (4 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
                        auto_event=False,
-                       icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_SAVE_CAR_MOUSEOUT))
+                       icon_mouseover=MainMenu.ICON_BODY_SHOP_MOUSEOVER,
+                       icon_mouseout=MainMenu.ICON_BODY_SHOP_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                               command=self.set_button_mouseover_style,
                                                               extraArgs=[self.menu_buttons[MainMenu.TEXT_BODY_SHOP]])
