@@ -151,6 +151,8 @@ class MainMenu:
     TEXT_CARS = "Cars"
     TEXT_WHEELS = "Wheels"
     TEXT_GROUNDS = "Grounds"
+    TEXT_GARAGE = "Garage"
+    TEXT_BODY_SHOP = "Body Shop"
     TEXT_SAVE_CAR = "Save Car"
     TEXT_LOAD_CAR = "Load Car"
     TEXT_SAVE_IMAGE = "Save Image"
@@ -285,11 +287,47 @@ class MainMenu:
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                             command=self.open_grounds_submenu)
 
+        self.menu_buttons[MainMenu.TEXT_GARAGE] = (
+            MenuButton(main=self.main,
+                       text=MainMenu.TEXT_GARAGE, font=self.main.font,
+                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
+                       position_y=Base.MARGIN + (3 * Base.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       auto_event=False,
+                       icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
+                       icon_mouseout=MainMenu.ICON_SAVE_CAR_MOUSEOUT))
+        self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                                                           command=self.set_button_mouseover_style,
+                                                           extraArgs=[self.menu_buttons[MainMenu.TEXT_GARAGE]])
+        self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
+                                                           command=self.set_button_mouseout_style,
+                                                           extraArgs=[self.menu_buttons[MainMenu.TEXT_GARAGE]])
+        self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                                           command=self.display_garage)
+
+        self.menu_buttons[MainMenu.TEXT_BODY_SHOP] = (
+            MenuButton(main=self.main,
+                       text=MainMenu.TEXT_BODY_SHOP, font=self.main.font,
+                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
+                       position_y=Base.MARGIN + (4 * Base.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       auto_event=False,
+                       icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
+                       icon_mouseout=MainMenu.ICON_SAVE_CAR_MOUSEOUT))
+        self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                                                              command=self.set_button_mouseover_style,
+                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_BODY_SHOP]])
+        self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
+                                                              command=self.set_button_mouseout_style,
+                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_BODY_SHOP]])
+        self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                                              command=self.display_body_shop)
+
         self.menu_buttons[MainMenu.TEXT_SAVE_CAR] = (
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_SAVE_CAR, font=self.main.font,
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (3 * Base.BUTTON_Y_SIZE),
+                       position_y=Base.MARGIN + (5 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
                        auto_event=False,
                        icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
@@ -307,7 +345,7 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_LOAD_CAR, font=self.main.font,
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (4 * Base.BUTTON_Y_SIZE),
+                       position_y=Base.MARGIN + (6 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
                        auto_event=False,
                        icon_mouseover=MainMenu.ICON_LOAD_CAR_MOUSEOVER,
@@ -325,7 +363,7 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_SAVE_IMAGE, font=self.main.font,
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (5 * Base.BUTTON_Y_SIZE),
+                       position_y=Base.MARGIN + (7 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
                        auto_event=False,
                        icon_mouseover=MainMenu.ICON_SAVE_IMAGE_MOUSEOVER,
@@ -343,7 +381,7 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_AUTOROTATE, font=self.main.font,
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (6 * Base.BUTTON_Y_SIZE),
+                       position_y=Base.MARGIN + (8 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
                        auto_event=False,
                        icon_mouseover=MainMenu.ICON_AUTOROTATE_MOUSEOVER,
@@ -361,7 +399,7 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_EXIT, font=self.main.font,
                        position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (7 * Base.BUTTON_Y_SIZE),
+                       position_y=Base.MARGIN + (9 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
                        auto_event=False,
                        icon_mouseover=MainMenu.ICON_EXIT_MOUSEOVER,
@@ -461,6 +499,14 @@ class MainMenu:
         self.close_wheels_submenu(None)
         self.close_grounds_submenu(None)
 
+    def display_garage(self, _) -> None:
+
+        logger.debug("Button \"Garage\" clicked")
+
+    def display_body_shop(self, _) -> None:
+
+        logger.debug("Button \"Body Shop\" clicked")
+
     def save_car(self, _) -> None:
 
         logger.debug("Button \"Save Car\" clicked")
@@ -483,11 +529,11 @@ class MainMenu:
 
 class UI:
 
-    # TODO Check if the generation of some buttons can be factorized
+    # FIXME Remove all hardcoded values in this module
+    # TODO Create the Garage interface (ride height, wheels, camber, quick-lists, ...)
+    # TODO Create the Body Shop interface
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
-    # TODO Make a fade out/in lights when changing the car
-    # TODO Create the garage interface (ride height, wheels, camber, ...)
-    # TODO Create the body shop interface
+    # TODO Make a fade out/in lights when changing the car (to be confirmed)
 
     def __init__(self, main) -> None:
 
