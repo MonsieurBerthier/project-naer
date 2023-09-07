@@ -181,8 +181,10 @@ class MainMenu:
     ICON_LOAD_CAR_MOUSEOUT = "content/images/ui/menu/icon_loadcar_mouseout.png"
     ICON_SAVE_IMAGE_MOUSEOVER = "content/images/ui/menu/icon_saveimage_mouseover.png"
     ICON_SAVE_IMAGE_MOUSEOUT = "content/images/ui/menu/icon_saveimage_mouseout.png"
-    ICON_AUTOROTATE_MOUSEOVER = "content/images/ui/menu/icon_autorotate_mouseover.png"
-    ICON_AUTOROTATE_MOUSEOUT = "content/images/ui/menu/icon_autorotate_mouseout.png"
+    ICON_AUTOROTATE_ON_MOUSEOVER = "content/images/ui/menu/icon_autorotateon_mouseover.png"
+    ICON_AUTOROTATE_ON_MOUSEOUT = "content/images/ui/menu/icon_autorotateon_mouseout.png"
+    ICON_AUTOROTATE_OFF_MOUSEOVER = "content/images/ui/menu/icon_autorotateoff_mouseover.png"
+    ICON_AUTOROTATE_OFF_MOUSEOUT = "content/images/ui/menu/icon_autorotateoff_mouseout.png"
     ICON_EXIT_MOUSEOVER = "content/images/ui/menu/icon_exit_mouseover.png"
     ICON_EXIT_MOUSEOUT = "content/images/ui/menu/icon_exit_mouseout.png"
 
@@ -388,8 +390,8 @@ class MainMenu:
                        position_y=Base.MARGIN + (8 * Base.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
                        auto_event=False,
-                       icon_mouseover=MainMenu.ICON_AUTOROTATE_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_AUTOROTATE_MOUSEOUT))
+                       icon_mouseover=MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER,
+                       icon_mouseout=MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                                command=self.set_button_mouseover_style,
                                                                extraArgs=[self.menu_buttons[MainMenu.TEXT_AUTOROTATE]])
@@ -520,14 +522,28 @@ class MainMenu:
         logger.debug("Button \"Load Car\" clicked")
 
     def save_image(self, _) -> None:
+
         logger.debug("Button \"Save Image\" clicked")
 
     def toggle_autorotate(self, _) -> None:
+
         logger.debug("Button \"Autorotate\" clicked")
+
+        if self.main.autorotate:
+            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
+            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseout = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOUT
+            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
+            self.main.autorotate = False
+        else:
+            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER
+            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseout = MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT
+            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER
+            self.main.autorotate = True
 
     def exit(self, _) -> None:
 
         logger.debug("Button \"Exit\" clicked")
+
         sys.exit()
 
 
