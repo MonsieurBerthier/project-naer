@@ -33,7 +33,6 @@ class MenuButton:
     def __init__(self, main, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
                  auto_event: bool, icon_mouseover: str, icon_mouseout: str) -> None:
 
-        self.auto_event = auto_event
         self.icon_mouseover = icon_mouseover
         self.icon_mouseout = icon_mouseout
 
@@ -44,16 +43,18 @@ class MenuButton:
                                                       text_scale=MainMenu.FONT_SIZE,
                                                       text_align=Base.TEXT_JUSTIFY_LEFT,
                                                       text_pos=(MainMenu.TEXT_PADDING_LEFT,
-                                                                -Base.BUTTON_Y_SIZE + 7, 0),
+                                                                -Base.BUTTON_Y_SIZE +
+                                                                (Base.BUTTON_Y_SIZE - MainMenu.FONT_SIZE) / 2 +
+                                                                MainMenu.BUTTON_TEXT_Y_OFFSET, 0),
                                                       frameSize=(0, size_x, 0, size_y),
                                                       pos=(position_x, 0, -position_y),
                                                       state=direct.gui.DirectGui.DGG.NORMAL,
                                                       parent=main.pixel2d,
                                                       image=self.icon_mouseout,
-                                                      image_scale=(16, 0, 11),  # FIXME
-                                                      image_pos=(25, 0, -16))   # FIXME
+                                                      image_scale=MainMenu.BUTTON_ICON_SIZE,
+                                                      image_pos=MainMenu.BUTTON_ICON_POS)
 
-        if self.auto_event:
+        if auto_event:
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                             command=self.set_button_mouseover_style)
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
@@ -141,6 +142,9 @@ class MainMenu:
 
     FONT_SIZE = 20
     TEXT_PADDING_LEFT = 50
+    BUTTON_TEXT_Y_OFFSET = 1
+    BUTTON_ICON_SIZE = (16, 0, 11)
+    BUTTON_ICON_POS = (25, 0, -16)
 
     MAIN_BUTTON_BAR_Y_SIZE = 4
     MAIN_MENU_X_SIZE = 200
@@ -249,9 +253,8 @@ class MainMenu:
 
         self.open_button["Background"]["frameColor"] = Base.WHITE
         self.close_button = direct.gui.DirectGui.DirectFrame(frameColor=Base.TRANSPARENT,
-                                                             frameSize=(0, self.main.window_resolution[0]-5, 0,
-                                                                        -self.main.window_resolution[0]+5),
-                                                             pos=(0, 0, 0),
+                                                             frameSize=(0, self.main.window_resolution[0], 0,
+                                                                        -self.main.window_resolution[0]),
                                                              state=direct.gui.DirectGui.DGG.NORMAL,
                                                              parent=self.main.pixel2d)
         self.close_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
@@ -563,7 +566,6 @@ class MainMenu:
 
 class UI:
 
-    # FIXME Remove all hardcoded values in this module
     # TODO Create the Garage interface (ride height, wheels, camber, quick-lists, ...)
     # TODO Create the Body Shop interface
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
