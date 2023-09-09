@@ -8,24 +8,43 @@ import library.io
 from config.logger import logger
 
 
-class Base:
+class Button:
 
-    MARGIN = 16
-    BUTTON_Y_SIZE = 32
+    def __init__(self, main, text: str, position_x: int, position_y: int, size_x: int, size_y: int, parent):
 
-    GREY = (0.2, 0.2, 0.2, 1)
-    RED = (1, 0, 0, 1)
-    WHITE = (1, 1, 1, 1)
-    TRANSPARENT = (0, 0, 0, 0)
+        self.border = direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                                       frameSize=(0, size_x + UI.BUTTON_BORDER_SIZE * 2, 0,
+                                                                  size_y + UI.BUTTON_BORDER_SIZE * 2),
+                                                       pos=(position_x - UI.BUTTON_BORDER_SIZE, 0,
+                                                            -position_y - UI.BUTTON_BORDER_SIZE),
+                                                       parent=parent)
 
-    TEXT_JUSTIFY_LEFT = 0
-    TEXT_JUSTIFY_RIGHT = 1
-    TEXT_JUSTIFY_CENTER = 2
+        self.frame = direct.gui.DirectGui.DirectFrame(text=text,
+                                                      text_fg=UI.WHITE,
+                                                      text_font=main.font,
+                                                      text_scale=UI.FONT_SIZE,
+                                                      text_align=UI.TEXT_JUSTIFY_CENTER,
+                                                      text_pos=(size_x / 2,
+                                                                (size_y - UI.FONT_SIZE) / 2 + UI.BUTTON_TEXT_Y_OFFSET,
+                                                                0),
+                                                      frameColor=UI.RED,
+                                                      frameSize=(0, size_x, 0, size_y),
+                                                      pos=(position_x, 0, -position_y),
+                                                      state=direct.gui.DirectGui.DGG.NORMAL,
+                                                      parent=parent)
 
-    @staticmethod
-    def get_button_y_position(index: int) -> int:
+        self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                        command=self.set_button_mouseover_style)
+        self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
+                        command=self.set_button_mouseout_style)
 
-        return -Base.MARGIN - (index * Base.BUTTON_Y_SIZE)
+    def set_button_mouseover_style(self, _) -> None:
+        self.frame["frameColor"] = UI.WHITE
+        self.frame["text_fg"] = UI.GREY
+
+    def set_button_mouseout_style(self, _) -> None:
+        self.frame["frameColor"] = UI.RED
+        self.frame["text_fg"] = UI.WHITE
 
 
 class MenuButton:
@@ -37,23 +56,23 @@ class MenuButton:
         self.icon_mouseover = icon_mouseover
         self.icon_mouseout = icon_mouseout
 
-        self.frame = direct.gui.DirectGui.DirectFrame(frameColor=Base.RED,
+        self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
                                                       text=text,
-                                                      text_fg=Base.WHITE,
+                                                      text_fg=UI.WHITE,
                                                       text_font=font,
-                                                      text_scale=MainMenu.FONT_SIZE,
-                                                      text_align=Base.TEXT_JUSTIFY_LEFT,
+                                                      text_scale=UI.FONT_SIZE,
+                                                      text_align=UI.TEXT_JUSTIFY_LEFT,
                                                       text_pos=(text_pad_x,
-                                                                -Base.BUTTON_Y_SIZE +
-                                                                (Base.BUTTON_Y_SIZE - MainMenu.FONT_SIZE) / 2 +
-                                                                MainMenu.BUTTON_TEXT_Y_OFFSET, 0),
+                                                                -UI.BUTTON_Y_SIZE +
+                                                                (UI.BUTTON_Y_SIZE - UI.FONT_SIZE) / 2 +
+                                                                UI.BUTTON_TEXT_Y_OFFSET, 0),
                                                       frameSize=(0, size_x, 0, size_y),
                                                       pos=(position_x, 0, -position_y),
                                                       state=direct.gui.DirectGui.DGG.NORMAL,
                                                       parent=main.pixel2d,
                                                       image=self.icon_mouseout,
                                                       image_scale=MainMenu.BUTTON_ICON_SIZE,
-                                                      image_pos=(image_pos_x, 0, -Base.BUTTON_Y_SIZE / 2))
+                                                      image_pos=(image_pos_x, 0, -UI.BUTTON_Y_SIZE / 2))
 
         if auto_event:
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
@@ -63,14 +82,14 @@ class MenuButton:
 
     def set_button_mouseover_style(self, _) -> None:
 
-        self.frame["frameColor"] = Base.WHITE
-        self.frame["text_fg"] = Base.GREY
+        self.frame["frameColor"] = UI.WHITE
+        self.frame["text_fg"] = UI.GREY
         self.frame["image"] = self.icon_mouseover
 
     def set_button_mouseout_style(self, _) -> None:
 
-        self.frame["frameColor"] = Base.RED
-        self.frame["text_fg"] = Base.WHITE
+        self.frame["frameColor"] = UI.RED
+        self.frame["text_fg"] = UI.WHITE
         self.frame["image"] = self.icon_mouseout
 
 
@@ -103,9 +122,9 @@ class SubMenu:
             button = MenuButton(main=self.main,
                                 text=items[i][1], font=self.main.font,
                                 text_pad_x=SubMenu.TEXT_PADDING_LEFT,
-                                position_x=Base.MARGIN + Base.BUTTON_Y_SIZE + MainMenu.MAIN_MENU_X_SIZE,
-                                position_y=-Base.get_button_y_position(index=i),
-                                size_x=self.menu_x_size, size_y=-Base.BUTTON_Y_SIZE,
+                                position_x=UI.MARGIN + UI.BUTTON_Y_SIZE + MainMenu.MAIN_MENU_X_SIZE,
+                                position_y=-UI.get_button_y_position(index=i),
+                                size_x=self.menu_x_size, size_y=-UI.BUTTON_Y_SIZE,
                                 auto_event=True,
                                 image_pos_x=SubMenu.BUTTON_ICON_POS,
                                 icon_mouseover=self.icon_mouseover,
@@ -146,9 +165,7 @@ class SubMenu:
 
 class MainMenu:
 
-    FONT_SIZE = 20
     TEXT_PADDING_LEFT = 60
-    BUTTON_TEXT_Y_OFFSET = 1
     BUTTON_ICON_SIZE = (16, 0, 11)
     BUTTON_ICON_POS = int(TEXT_PADDING_LEFT / 2)
 
@@ -223,29 +240,29 @@ class MainMenu:
                                        icon_mouseout=MainMenu.ICON_GROUND_MOUSEOUT)
 
         self.open_button["Background"] = (
-            direct.gui.DirectGui.DirectFrame(frameColor=Base.TRANSPARENT,
-                                             frameSize=(0, Base.BUTTON_Y_SIZE, 0, -Base.BUTTON_Y_SIZE),
-                                             pos=(Base.MARGIN, 0, -Base.MARGIN),
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.TRANSPARENT,
+                                             frameSize=(0, UI.BUTTON_Y_SIZE, 0, -UI.BUTTON_Y_SIZE),
+                                             pos=(UI.MARGIN, 0, -UI.MARGIN),
                                              state=direct.gui.DirectGui.DGG.NORMAL,
                                              parent=self.main.pixel2d))
         self.open_button["TopLine"] = (
-            direct.gui.DirectGui.DirectFrame(frameColor=Base.WHITE,
-                                             frameSize=(0, Base.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
-                                             pos=(Base.MARGIN, 0, -Base.MARGIN),
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                             frameSize=(0, UI.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
+                                             pos=(UI.MARGIN, 0, -UI.MARGIN),
                                              state=direct.gui.DirectGui.DGG.NORMAL,
                                              parent=self.main.pixel2d))
         self.open_button["MiddleLine"] = (
-            direct.gui.DirectGui.DirectFrame(frameColor=Base.WHITE,
-                                             frameSize=(0, Base.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
-                                             pos=(Base.MARGIN, 0, - (Base.BUTTON_Y_SIZE / 2) - Base.MARGIN +
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                             frameSize=(0, UI.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
+                                             pos=(UI.MARGIN, 0, - (UI.BUTTON_Y_SIZE / 2) - UI.MARGIN +
                                                   (MainMenu.MAIN_BUTTON_BAR_Y_SIZE / 2)),
                                              state=direct.gui.DirectGui.DGG.NORMAL,
                                              parent=self.main.pixel2d))
         self.open_button["BottomLine"] = (
-            direct.gui.DirectGui.DirectFrame(frameColor=Base.WHITE,
-                                             frameSize=(0, Base.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
-                                             pos=(Base.MARGIN, 0,
-                                                  -Base.BUTTON_Y_SIZE - Base.MARGIN + MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                             frameSize=(0, UI.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
+                                             pos=(UI.MARGIN, 0,
+                                                  -UI.BUTTON_Y_SIZE - UI.MARGIN + MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
                                              state=direct.gui.DirectGui.DGG.NORMAL,
                                              parent=self.main.pixel2d))
 
@@ -257,10 +274,10 @@ class MainMenu:
         if self.menu_buttons:
             return
 
-        self.open_button["Background"]["frameColor"] = Base.WHITE
-        self.close_button = direct.gui.DirectGui.DirectFrame(frameColor=Base.TRANSPARENT,
+        self.open_button["Background"]["frameColor"] = UI.WHITE
+        self.close_button = direct.gui.DirectGui.DirectFrame(frameColor=UI.TRANSPARENT,
                                                              frameSize=(0, self.main.window_resolution[0], 0,
-                                                                        -self.main.window_resolution[0]),
+                                                                        -self.main.window_resolution[1]),
                                                              state=direct.gui.DirectGui.DGG.NORMAL,
                                                              parent=self.main.pixel2d)
         self.close_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
@@ -270,9 +287,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_CARS, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN,
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN,
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_CARS_MOUSEOVER,
@@ -284,9 +301,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_WHEELS, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_WHEELS_MOUSEOVER,
@@ -298,9 +315,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_GROUNDS, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (2 * Base.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + (2 * UI.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_GROUNDS_MOUSEOVER,
@@ -312,9 +329,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_GARAGE, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (3 * Base.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + (3 * UI.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_GARAGE_MOUSEOVER,
@@ -332,9 +349,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_BODY_SHOP, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (4 * Base.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + (4 * UI.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_BODY_SHOP_MOUSEOVER,
@@ -352,9 +369,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_SAVE_CAR, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (5 * Base.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + (5 * UI.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
@@ -372,9 +389,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_LOAD_CAR, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (6 * Base.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + (6 * UI.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_LOAD_CAR_MOUSEOVER,
@@ -392,9 +409,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_SAVE_IMAGE, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (7 * Base.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + (7 * UI.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_SAVE_IMAGE_MOUSEOVER,
@@ -412,9 +429,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_AUTOROTATE, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (8 * Base.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + (8 * UI.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER,
@@ -433,9 +450,9 @@ class MainMenu:
             MenuButton(main=self.main,
                        text=MainMenu.TEXT_EXIT, font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=Base.MARGIN + Base.BUTTON_Y_SIZE,
-                       position_y=Base.MARGIN + (9 * Base.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-Base.BUTTON_Y_SIZE,
+                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                       position_y=UI.MARGIN + (9 * UI.BUTTON_Y_SIZE),
+                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_EXIT_MOUSEOVER,
@@ -452,15 +469,15 @@ class MainMenu:
     def set_button_mouseover_style(self, button, _) -> None:
 
         self.close_all_submenus()
-        button.frame["frameColor"] = Base.WHITE
-        button.frame["text_fg"] = Base.GREY
+        button.frame["frameColor"] = UI.WHITE
+        button.frame["text_fg"] = UI.GREY
         button.frame["image"] = button.icon_mouseover
 
     @staticmethod
     def set_button_mouseout_style(button, _) -> None:
 
-        button.frame["frameColor"] = Base.RED
-        button.frame["text_fg"] = Base.WHITE
+        button.frame["frameColor"] = UI.RED
+        button.frame["text_fg"] = UI.WHITE
         button.frame["image"] = button.icon_mouseout
 
     def close_main_menu(self, _) -> None:
@@ -473,14 +490,14 @@ class MainMenu:
             self.menu_buttons[button].frame.destroy()
         self.menu_buttons = {}
 
-        self.open_button["Background"]["frameColor"] = Base.TRANSPARENT
+        self.open_button["Background"]["frameColor"] = UI.TRANSPARENT
 
     def open_cars_submenu(self, _) -> None:
 
         self.close_all_submenus()
 
-        self.menu_buttons[MainMenu.TEXT_CARS].frame["frameColor"] = Base.WHITE
-        self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = Base.GREY
+        self.menu_buttons[MainMenu.TEXT_CARS].frame["frameColor"] = UI.WHITE
+        self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = UI.GREY
         self.menu_buttons[MainMenu.TEXT_CARS].frame["image"] = MainMenu.ICON_CARS_MOUSEOVER
 
         self.submenu_cars.open(content_path=self.main.PATH_CARS)
@@ -489,24 +506,24 @@ class MainMenu:
 
         self.submenu_cars.close()
 
-        self.menu_buttons[MainMenu.TEXT_CARS].frame["frameColor"] = Base.RED
-        self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = Base.WHITE
+        self.menu_buttons[MainMenu.TEXT_CARS].frame["frameColor"] = UI.RED
+        self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = UI.WHITE
         self.menu_buttons[MainMenu.TEXT_CARS].frame["image"] = MainMenu.ICON_CARS_MOUSEOUT
 
     def open_wheels_submenu(self, _) -> None:
 
         self.close_all_submenus()
 
-        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = Base.WHITE
-        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = Base.GREY
+        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = UI.WHITE
+        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = UI.GREY
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame["image"] = MainMenu.ICON_WHEELS_MOUSEOVER
 
         self.submenu_wheels.open(content_path=self.main.PATH_WHEELS)
 
     def close_wheels_submenu(self, _) -> None:
 
-        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = Base.RED
-        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = Base.WHITE
+        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = UI.RED
+        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = UI.WHITE
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame["image"] = MainMenu.ICON_WHEELS_MOUSEOUT
 
         self.submenu_wheels.close()
@@ -515,16 +532,16 @@ class MainMenu:
 
         self.close_all_submenus()
 
-        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = Base.WHITE
-        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = Base.GREY
+        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = UI.WHITE
+        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = UI.GREY
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["image"] = MainMenu.ICON_GROUNDS_MOUSEOVER
 
         self.submenu_grounds.open(content_path=self.main.PATH_GROUNDS)
 
     def close_grounds_submenu(self, _) -> None:
 
-        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = Base.RED
-        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = Base.WHITE
+        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = UI.RED
+        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = UI.WHITE
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["image"] = MainMenu.ICON_GROUNDS_MOUSEOUT
 
         self.submenu_grounds.close()
@@ -538,6 +555,9 @@ class MainMenu:
     def display_garage(self, _) -> None:
 
         logger.debug("Button \"Garage\" clicked")
+
+        self.close_main_menu(None)
+        Garage(main=self.main)
 
     def display_body_shop(self, _) -> None:
 
@@ -590,6 +610,36 @@ class MainMenu:
         sys.exit()
 
 
+class Garage:
+
+    FRAME_X_SIZE = 500
+    FRAME_Y_SIZE = 1080
+
+    def __init__(self, main) -> None:
+
+        self.main = main
+
+        self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
+                                                      frameSize=(0, Garage.FRAME_X_SIZE, 0, Garage.FRAME_Y_SIZE),
+                                                      pos=(self.main.window_resolution[0] - Garage.FRAME_X_SIZE, 0,
+                                                           -Garage.FRAME_Y_SIZE),
+                                                      parent=self.main.pixel2d)
+
+        self.button_done = Button(main=self.main,
+                                  text="OK",
+                                  position_x=int((Garage.FRAME_X_SIZE-UI.BUTTON_MEDIUM_X_SIZE) / 2),
+                                  position_y=-UI.MARGIN,
+                                  size_x=UI.BUTTON_MEDIUM_X_SIZE,
+                                  size_y=UI.BUTTON_Y_SIZE,
+                                  parent=self.frame)
+        self.button_done.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                    command=self.close)
+
+    def close(self, _) -> None:
+
+        self.frame.destroy()
+
+
 class UI:
 
     # TODO Create the Garage interface (ride height, wheels, camber, quick-lists, ...)
@@ -597,8 +647,28 @@ class UI:
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
 
+    MARGIN = 16
+    FONT_SIZE = 20
+    BUTTON_Y_SIZE = 32
+    BUTTON_BORDER_SIZE = 3
+    BUTTON_TEXT_Y_OFFSET = 1
+    BUTTON_MEDIUM_X_SIZE = 100
+
+    GREY = (0.2, 0.2, 0.2, 1)
+    RED = (1, 0, 0, 1)
+    WHITE = (1, 1, 1, 1)
+    TRANSPARENT = (0, 0, 0, 0)
+
+    TEXT_JUSTIFY_LEFT = 0
+    TEXT_JUSTIFY_RIGHT = 1
+    TEXT_JUSTIFY_CENTER = 2
+
     def __init__(self, main) -> None:
 
         self.main = main
 
         self.main_menu = MainMenu(main=self.main)
+
+    @staticmethod
+    def get_button_y_position(index: int) -> int:
+        return -UI.MARGIN - (index * UI.BUTTON_Y_SIZE)
