@@ -392,6 +392,7 @@ class MainMenu:
                        auto_event=False,
                        icon_mouseover=MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER,
                        icon_mouseout=MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT))
+        self.update_autorotate_icon(b1press=False)
         self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                                                command=self.set_button_mouseover_style,
                                                                extraArgs=[self.menu_buttons[MainMenu.TEXT_AUTOROTATE]])
@@ -530,15 +531,28 @@ class MainMenu:
         logger.debug("Button \"Autorotate\" clicked")
 
         if self.main.autorotate:
-            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
-            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseout = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOUT
-            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
             self.main.autorotate = False
         else:
-            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER
+            self.main.autorotate = True
+
+        self.update_autorotate_icon(b1press=True)
+
+    def update_autorotate_icon(self, b1press) -> None:
+
+        if self.main.autorotate:
+            if b1press:
+                self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
+            else:
+                self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOUT
+            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseout = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOUT
+            self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
+        else:
+            if b1press:
+                self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER
+            else:
+                self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseout = MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER
-            self.main.autorotate = True
 
     def exit(self, _) -> None:
 
