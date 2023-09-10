@@ -612,6 +612,8 @@ class MainMenu:
 
 class Garage:
 
+    SLIDER_PAGE_SIZE = 0.02
+    SLIDER_OFFSET = 0.5
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
 
@@ -634,6 +636,48 @@ class Garage:
                                   parent=self.frame)
         self.button_done.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                     command=self.close)
+
+        self.car_label = (
+            direct.gui.DirectGui.DirectLabel(text="Car",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_SIZE * 1.5,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - UI.MARGIN - UI.FONT_SIZE * 1.5),
+                                             parent=self.frame))
+
+        self.car_ride_height_label = (
+            direct.gui.DirectGui.DirectLabel(text="Ride Height",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 90),
+                                             parent=self.frame))
+
+        current_car_ride_height = self.main.car.nodepath.getPos()[2]
+        self.car_ride_height_slider = (
+            direct.gui.DirectGui.DirectSlider(range=(current_car_ride_height - Garage.SLIDER_OFFSET,
+                                                     current_car_ride_height + Garage.SLIDER_OFFSET),
+                                              value=current_car_ride_height,
+                                              pageSize=Garage.SLIDER_PAGE_SIZE,
+                                              pos=(int(Garage.FRAME_X_SIZE / 2), 0, Garage.FRAME_Y_SIZE - 85),
+                                              scale=100,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.update_car_ride_height,
+                                              parent=self.frame))
+
+    def update_car_ride_height(self):
+
+        current_car_position = self.main.car.nodepath.getPos()
+
+        self.main.car.nodepath.setPos((current_car_position[0],
+                                       current_car_position[1],
+                                       self.car_ride_height_slider["value"]))
 
     def close(self, _) -> None:
 
