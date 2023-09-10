@@ -627,7 +627,8 @@ class Garage:
         self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
                                                       frameSize=(0, Garage.FRAME_X_SIZE, 0, Garage.FRAME_Y_SIZE),
                                                       pos=(self.main.window_resolution[0] - Garage.FRAME_X_SIZE, 0,
-                                                           -Garage.FRAME_Y_SIZE),
+                                                           -Garage.FRAME_Y_SIZE - ((self.main.window_resolution[1] -
+                                                                                    Garage.FRAME_Y_SIZE)/2)),
                                                       parent=self.main.pixel2d)
 
         self.button_done = Button(main=self.main,
@@ -718,8 +719,6 @@ class Garage:
 class UI:
 
     # TODO Create the Garage interface (ride height, wheels, camber, quick-lists, ...)
-    # FIXME Center vertically the Garage Menu
-    # FIXME Fix nissan_rs13 ride height to zero in Blender
     # TODO Create the Body Shop interface
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
