@@ -1,4 +1,7 @@
 import os
+
+import panda3d.core
+
 import library.io
 
 from config.logger import logger
@@ -14,6 +17,7 @@ class Car:
         self.path = None
         self.json = None
         self.models = None
+        self.nodepath = None
 
         self.load(name=self.name)
 
@@ -26,11 +30,13 @@ class Car:
 
         self.path = os.path.join(self.main.PATH_CARS, name)
         self.json = library.io.get_json(path=os.path.join(self.path, self.main.PATH_ITEMS_CONFIG_JSON))
+        self.nodepath = panda3d.core.NodePath("car")
+        self.nodepath.reparentTo(self.main.render)
 
         self.models = {"chassis": self.main.loader.loadModel(modelPath=os.path.join(self.path,
                                                                                     self.main.PATH_CARS_CHASSIS)),
                        "wheels": []}
-        self.models["chassis"].reparentTo(self.main.render)
+        self.models["chassis"].reparentTo(self.nodepath)
         self.models["chassis"].setPos(tuple(self.json["chassis"]["position"]))
         self.models["chassis"].setHpr(tuple(self.json["chassis"]["rotation"]))
         self.models["chassis"].setScale(tuple(self.json["chassis"]["scale"]))
@@ -55,7 +61,7 @@ class Car:
         self.models[part_type].setPos(tuple(self.json["chassis"]["position"]))
         self.models[part_type].setHpr(tuple(self.json["chassis"]["rotation"]))
         self.models[part_type].setScale(tuple(self.json["chassis"]["scale"]))
-        self.models[part_type].reparentTo(self.main.render)
+        self.models[part_type].reparentTo(self.nodepath)
 
     def load_wheels(self, name: str, oem: bool) -> None:
 
