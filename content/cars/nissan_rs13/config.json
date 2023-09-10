@@ -9,7 +9,7 @@
     "exhaust_oem",
 	"wheel_oem"],
   "chassis": {
-    "position": [0, 0, 0.57],
+    "position": [0, 0, 0.55],
     "rotation": [0, 0.5, 0],
     "scale": [3, 3, 3]},
   "wheels": [
