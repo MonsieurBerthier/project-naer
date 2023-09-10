@@ -612,8 +612,11 @@ class MainMenu:
 
 class Garage:
 
-    SLIDER_PAGE_SIZE = 0.02
-    SLIDER_OFFSET = 0.5
+    SLIDER_SCALE = 100
+    POSITION_SLIDER_PAGE_SIZE = 0.02
+    POSITION_SLIDER_OFFSET = 0.5
+    ROTATION_SLIDER_PAGE_SIZE = 0.2
+    ROTATION_SLIDER_OFFSET = 4
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
 
@@ -642,7 +645,7 @@ class Garage:
                                              text_fg=UI.WHITE,
                                              text_bg=UI.RED,
                                              text_font=main.font,
-                                             text_scale=UI.FONT_SIZE * 1.5,
+                                             text_scale=UI.FONT_TITLE_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
                                              pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - UI.MARGIN - UI.FONT_SIZE * 1.5),
                                              parent=self.frame))
@@ -657,18 +660,38 @@ class Garage:
                                              pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 90),
                                              parent=self.frame))
 
-        current_car_ride_height = self.main.car.nodepath.getPos()[2]
         self.car_ride_height_slider = (
-            direct.gui.DirectGui.DirectSlider(range=(current_car_ride_height - Garage.SLIDER_OFFSET,
-                                                     current_car_ride_height + Garage.SLIDER_OFFSET),
-                                              value=current_car_ride_height,
-                                              pageSize=Garage.SLIDER_PAGE_SIZE,
-                                              pos=(int(Garage.FRAME_X_SIZE / 2), 0, Garage.FRAME_Y_SIZE - 85),
-                                              scale=100,
+            direct.gui.DirectGui.DirectSlider(range=(-Garage.POSITION_SLIDER_OFFSET, Garage.POSITION_SLIDER_OFFSET),
+                                              value=self.main.car.nodepath.getPos()[2],
+                                              pageSize=Garage.POSITION_SLIDER_PAGE_SIZE,
+                                              pos=(int(Garage.FRAME_X_SIZE / 2), 0, Garage.FRAME_Y_SIZE - 82),
+                                              scale=Garage.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
                                               command=self.update_car_ride_height,
+                                              parent=self.frame))
+
+        self.car_pitch_label = (
+            direct.gui.DirectGui.DirectLabel(text="Pitch",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 130),
+                                             parent=self.frame))
+
+        self.car_pitch_slider = (
+            direct.gui.DirectGui.DirectSlider(range=(-Garage.ROTATION_SLIDER_OFFSET, Garage.ROTATION_SLIDER_OFFSET),
+                                              value=self.main.car.nodepath.getHpr()[1],
+                                              pageSize=Garage.ROTATION_SLIDER_PAGE_SIZE,
+                                              pos=(int(Garage.FRAME_X_SIZE / 2), 0, Garage.FRAME_Y_SIZE - 122),
+                                              scale=Garage.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.update_car_pitch,
                                               parent=self.frame))
 
     def update_car_ride_height(self):
@@ -679,6 +702,14 @@ class Garage:
                                        current_car_position[1],
                                        self.car_ride_height_slider["value"]))
 
+    def update_car_pitch(self):
+
+        current_car_rotation = self.main.car.nodepath.getHpr()
+
+        self.main.car.nodepath.setHpr((current_car_rotation[0],
+                                       self.car_pitch_slider["value"],
+                                       current_car_rotation[2]))
+
     def close(self, _) -> None:
 
         self.frame.destroy()
@@ -687,12 +718,15 @@ class Garage:
 class UI:
 
     # TODO Create the Garage interface (ride height, wheels, camber, quick-lists, ...)
+    # FIXME Center vertically the Garage Menu
+    # FIXME Fix nissan_rs13 ride height to zero in Blender
     # TODO Create the Body Shop interface
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
 
     MARGIN = 16
     FONT_SIZE = 20
+    FONT_TITLE_SIZE = 24
     BUTTON_Y_SIZE = 32
     BUTTON_BORDER_SIZE = 3
     BUTTON_TEXT_Y_OFFSET = 1
