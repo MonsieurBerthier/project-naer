@@ -690,6 +690,11 @@ class Garage:
                                               parent=self.frame))
 
         index = 0
+        self.wheel_diameter_slider = {}
+        self.wheel_width_slider = {}
+        self.wheel_offset_slider = {}
+        self.wheel_camber_slider = {}
+        self.wheel_toe_slider = {}
 
         for axle in self.main.car.json["wheels"]:
 
@@ -726,7 +731,7 @@ class Garage:
                                              pos=(UI.MARGIN, 0, -250 * index + 855),
                                              parent=self.frame)
 
-            self.wheel_diameter_slider = (
+            self.wheel_diameter_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.5 * json_wheel_diameter, 1.50 * json_wheel_diameter),
                                                   value=current_wheel_diameter,
                                                   pageSize=0.05,
@@ -748,7 +753,7 @@ class Garage:
                                              pos=(UI.MARGIN, 0, -250 * index + 815),
                                              parent=self.frame)
 
-            self.wheel_width_slider = (
+            self.wheel_width_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.4 * json_wheel_width, 1.6 * json_wheel_width),
                                                   value=current_wheel_width,
                                                   pageSize=0.1,
@@ -770,7 +775,7 @@ class Garage:
                                              pos=(UI.MARGIN, 0, -250 * index + 775),
                                              parent=self.frame)
 
-            self.wheel_offset_slider = (
+            self.wheel_offset_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.66 * json_wheel_offset, 1.34 * json_wheel_offset),
                                                   value=current_wheel_offset,
                                                   pageSize=0.02,
@@ -792,7 +797,7 @@ class Garage:
                                              pos=(UI.MARGIN, 0, -250 * index + 735),
                                              parent=self.frame)
 
-            self.wheel_camber_slider = (
+            self.wheel_camber_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(json_wheel_camber - 45, json_wheel_camber + 45),
                                                   value=current_wheel_camber,
                                                   pageSize=0.5,
@@ -814,7 +819,7 @@ class Garage:
                                              pos=(UI.MARGIN, 0, -250 * index + 695),
                                              parent=self.frame)
 
-            self.wheel_toe_slider = (
+            self.wheel_toe_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(json_wheel_toe - 10, json_wheel_toe + 10),
                                                   value=current_wheel_toe,
                                                   pageSize=0.3,
@@ -855,8 +860,8 @@ class Garage:
             current_wheel_scale = self.main.car.models["wheels"][axle][i].getScale()
 
             self.main.car.models["wheels"][axle][i].setScale((current_wheel_scale[0],
-                                                              self.wheel_diameter_slider["value"],
-                                                              self.wheel_diameter_slider["value"]))
+                                                              self.wheel_diameter_slider[axle]["value"],
+                                                              self.wheel_diameter_slider[axle]["value"]))
 
     def update_wheel_width(self, axle):
 
@@ -864,7 +869,7 @@ class Garage:
 
             current_wheel_scale = self.main.car.models["wheels"][axle][i].getScale()
 
-            self.main.car.models["wheels"][axle][i].setScale((self.wheel_width_slider["value"],
+            self.main.car.models["wheels"][axle][i].setScale((self.wheel_width_slider[axle]["value"],
                                                               current_wheel_scale[1],
                                                               current_wheel_scale[2]))
 
@@ -874,7 +879,7 @@ class Garage:
 
             current_wheel_position = self.main.car.models["wheels"][axle][i].getPos()
 
-            self.main.car.models["wheels"][axle][i].setPos((math.copysign(self.wheel_offset_slider["value"],
+            self.main.car.models["wheels"][axle][i].setPos((math.copysign(self.wheel_offset_slider[axle]["value"],
                                                                           current_wheel_position[0]),
                                                             current_wheel_position[1],
                                                             current_wheel_position[2]))
@@ -886,9 +891,9 @@ class Garage:
             current_wheel_rotation = self.main.car.models["wheels"][axle][i].getHpr()
 
             if current_wheel_rotation[2] > 90:
-                new_wheel_camber = 180 - self.wheel_camber_slider["value"]
+                new_wheel_camber = 180 - self.wheel_camber_slider[axle]["value"]
             else:
-                new_wheel_camber = self.wheel_camber_slider["value"]
+                new_wheel_camber = self.wheel_camber_slider[axle]["value"]
 
             self.main.car.models["wheels"][axle][i].setHpr((current_wheel_rotation[0],
                                                             current_wheel_rotation[1],
@@ -901,9 +906,9 @@ class Garage:
             current_wheel_rotation = self.main.car.models["wheels"][axle][i].getHpr()
 
             if current_wheel_rotation[2] > 90:
-                new_wheel_toe = self.wheel_toe_slider["value"]
+                new_wheel_toe = self.wheel_toe_slider[axle]["value"]
             else:
-                new_wheel_toe = - self.wheel_toe_slider["value"]
+                new_wheel_toe = - self.wheel_toe_slider[axle]["value"]
 
             self.main.car.models["wheels"][axle][i].setHpr((new_wheel_toe,
                                                             current_wheel_rotation[1],
