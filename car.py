@@ -35,7 +35,7 @@ class Car:
 
         self.models = {"chassis": self.main.loader.loadModel(modelPath=os.path.join(self.path,
                                                                                     self.main.PATH_CARS_CHASSIS)),
-                       "wheels": []}
+                       "wheels": {}}
         self.models["chassis"].reparentTo(self.nodepath)
         self.models["chassis"].setPos(tuple(self.json["chassis"]["position"]))
         self.models["chassis"].setHpr(tuple(self.json["chassis"]["rotation"]))
@@ -75,13 +75,15 @@ class Car:
         else:
             wheel_path = os.path.join(self.main.PATH_WHEELS, name, name + ".glb")
 
-        for wheel in self.json["wheels"]:
-            wheel_model = self.main.loader.loadModel(modelPath=wheel_path)
-            wheel_model.setPos(tuple(wheel["position"]))
-            wheel_model.setHpr(tuple(wheel["rotation"]))
-            wheel_model.setScale(tuple(wheel["scale"]))
-            wheel_model.reparentTo(self.main.render)
-            self.models["wheels"].append(wheel_model)
+        for axle in self.json["wheels"]:
+            self.models["wheels"][axle] = []
+            for wheel in self.json["wheels"][axle]:
+                wheel_model = self.main.loader.loadModel(modelPath=wheel_path)
+                wheel_model.setPos(tuple(wheel["position"]))
+                wheel_model.setHpr(tuple(wheel["rotation"]))
+                wheel_model.setScale(tuple(wheel["scale"]))
+                wheel_model.reparentTo(self.main.render)
+                self.models["wheels"][axle].append(wheel_model)
 
     def unload(self):
 
@@ -91,7 +93,7 @@ class Car:
         self.json = None
 
         for item in self.models:
-            if isinstance(self.models[item], list):
+            if isinstance(self.models[item], dict):
                 self.unload_wheels()
             else:
                 self.unload_part(part=item)
@@ -110,7 +112,8 @@ class Car:
 
         logger.debug(f"Unloading car wheels")
 
-        for wheel in self.models["wheels"]:
-            wheel.removeNode()
+        for axle in self.models["wheels"]:
+            for wheel in self.models["wheels"][axle]:
+                    wheel.removeNode()
 
-        self.models["wheels"] = []
+        self.models["wheels"] = {}
