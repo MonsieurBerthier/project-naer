@@ -12,17 +12,19 @@
     "position": [0, 0, 0.55],
     "rotation": [0, 0.5, 0],
     "scale": [3, 3, 3]},
-  "wheels": [
-    {"position": [2.2, -3.6, 0.85],
-     "rotation": [0, 0, -1],
-     "scale": [3, 3, 3]},
-    {"position": [2.2, 3.8, 0.85],
-     "rotation": [0, 0, -2],
-     "scale": [3, 3, 3]},
-    {"position": [-2.2, -3.6, 0.85],
-     "rotation": [0, 0, 182],
-     "scale": [3, 3, 3]},
-    {"position": [-2.2, 3.8, 0.85],
-     "rotation": [0, 0, 181],
-     "scale": [3, 3, 3]}]
+  "wheels": {
+    "front": [
+       {"position": [2.2, -3.6, 0.85],
+        "rotation": [0, 0, -2],
+        "scale": [3, 3, 3]},
+       {"position": [-2.2, -3.6, 0.85],
+        "rotation": [0, 0, 182],
+        "scale": [3, 3, 3]}],
+    "rear": [
+       {"position": [2.2, 3.8, 0.85],
+        "rotation": [0, 0, -1],
+        "scale": [3, 3, 3]},
+       {"position": [-2.2, 3.8, 0.85],
+        "rotation": [0, 0, 181],
+        "scale": [3, 3, 3]}]}
 }
