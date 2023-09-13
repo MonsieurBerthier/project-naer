@@ -660,7 +660,7 @@ class Garage:
             direct.gui.DirectGui.DirectSlider(range=(-0.6, 0.6),
                                               value=self.main.car.nodepath.getPos()[2],
                                               pageSize=0.02,
-                                              pos=(int(Garage.FRAME_X_SIZE / 2), 0, Garage.FRAME_Y_SIZE - 82),
+                                              pos=(Garage.FRAME_X_SIZE / 2, 0, Garage.FRAME_Y_SIZE - 82),
                                               scale=Garage.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -681,7 +681,7 @@ class Garage:
             direct.gui.DirectGui.DirectSlider(range=(-4, 4),
                                               value=self.main.car.nodepath.getHpr()[1],
                                               pageSize=0.2,
-                                              pos=(int(Garage.FRAME_X_SIZE / 2), 0, Garage.FRAME_Y_SIZE - 122),
+                                              pos=(Garage.FRAME_X_SIZE / 2, 0, Garage.FRAME_Y_SIZE - 122),
                                               scale=Garage.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -727,10 +727,10 @@ class Garage:
                                              parent=self.frame)
 
             self.wheel_diameter_slider = (
-                direct.gui.DirectGui.DirectSlider(range=(int(0.99 * json_wheel_diameter), int(1.5 * json_wheel_diameter)),  # FIXME Virer les int
+                direct.gui.DirectGui.DirectSlider(range=(0.5 * json_wheel_diameter, 1.50 * json_wheel_diameter),
                                                   value=current_wheel_diameter,
                                                   pageSize=0.05,
-                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 855),
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 855),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -749,10 +749,10 @@ class Garage:
                                              parent=self.frame)
 
             self.wheel_width_slider = (
-                direct.gui.DirectGui.DirectSlider(range=(int(0.4 * json_wheel_width), int(1.8 * json_wheel_width)),  # FIXME Virer les int
+                direct.gui.DirectGui.DirectSlider(range=(0.4 * json_wheel_width, 1.6 * json_wheel_width),
                                                   value=current_wheel_width,
-                                                  pageSize=0.2,
-                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 815),
+                                                  pageSize=0.1,
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 815),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -773,8 +773,8 @@ class Garage:
             self.wheel_offset_slider = (
                 direct.gui.DirectGui.DirectSlider(range=(0.66 * json_wheel_offset, 1.34 * json_wheel_offset),
                                                   value=current_wheel_offset,
-                                                  pageSize=0.03,
-                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 775),
+                                                  pageSize=0.02,
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 775),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -796,7 +796,7 @@ class Garage:
                 direct.gui.DirectGui.DirectSlider(range=(json_wheel_camber - 45, json_wheel_camber + 45),
                                                   value=current_wheel_camber,
                                                   pageSize=0.5,
-                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 735),
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 735),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -817,8 +817,8 @@ class Garage:
             self.wheel_toe_slider = (
                 direct.gui.DirectGui.DirectSlider(range=(json_wheel_toe - 10, json_wheel_toe + 10),
                                                   value=current_wheel_toe,
-                                                  pageSize=0.5,
-                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 695),
+                                                  pageSize=0.3,
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 695),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
