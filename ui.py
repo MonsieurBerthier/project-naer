@@ -1,5 +1,6 @@
 import os
 import sys
+import math
 
 import direct.gui.DirectGui
 
@@ -613,10 +614,6 @@ class MainMenu:
 class Garage:
 
     SLIDER_SCALE = 100
-    POSITION_SLIDER_PAGE_SIZE = 0.02
-    POSITION_SLIDER_OFFSET = 0.6
-    ROTATION_SLIDER_PAGE_SIZE = 0.2
-    ROTATION_SLIDER_OFFSET = 4
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
 
@@ -641,30 +638,28 @@ class Garage:
         self.button_done.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                     command=self.close)
 
-        self.car_label = (
-            direct.gui.DirectGui.DirectLabel(text="Car",
-                                             text_fg=UI.WHITE,
-                                             text_bg=UI.RED,
-                                             text_font=main.font,
-                                             text_scale=UI.FONT_TITLE_SIZE,
-                                             text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - UI.MARGIN - UI.FONT_SIZE * 1.5),
-                                             parent=self.frame))
+        direct.gui.DirectGui.DirectLabel(text="Car",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=main.font,
+                                         text_scale=UI.FONT_TITLE_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - UI.MARGIN - UI.FONT_SIZE * 1.5),
+                                         parent=self.frame)
 
-        self.car_ride_height_label = (
-            direct.gui.DirectGui.DirectLabel(text="Ride Height",
-                                             text_fg=UI.WHITE,
-                                             text_bg=UI.RED,
-                                             text_font=main.font,
-                                             text_scale=UI.FONT_SIZE,
-                                             text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 90),
-                                             parent=self.frame))
+        direct.gui.DirectGui.DirectLabel(text="Ride Height",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 90),
+                                         parent=self.frame)
 
         self.car_ride_height_slider = (
-            direct.gui.DirectGui.DirectSlider(range=(-Garage.POSITION_SLIDER_OFFSET, Garage.POSITION_SLIDER_OFFSET),
+            direct.gui.DirectGui.DirectSlider(range=(-0.6, 0.6),
                                               value=self.main.car.nodepath.getPos()[2],
-                                              pageSize=Garage.POSITION_SLIDER_PAGE_SIZE,
+                                              pageSize=0.02,
                                               pos=(int(Garage.FRAME_X_SIZE / 2), 0, Garage.FRAME_Y_SIZE - 82),
                                               scale=Garage.SLIDER_SCALE,
                                               color=UI.WHITE,
@@ -673,20 +668,19 @@ class Garage:
                                               command=self.update_car_ride_height,
                                               parent=self.frame))
 
-        self.car_pitch_label = (
-            direct.gui.DirectGui.DirectLabel(text="Pitch",
-                                             text_fg=UI.WHITE,
-                                             text_bg=UI.RED,
-                                             text_font=main.font,
-                                             text_scale=UI.FONT_SIZE,
-                                             text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 130),
-                                             parent=self.frame))
+        direct.gui.DirectGui.DirectLabel(text="Pitch",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 130),
+                                         parent=self.frame)
 
         self.car_pitch_slider = (
-            direct.gui.DirectGui.DirectSlider(range=(-Garage.ROTATION_SLIDER_OFFSET, Garage.ROTATION_SLIDER_OFFSET),
+            direct.gui.DirectGui.DirectSlider(range=(-4, 4),
                                               value=self.main.car.nodepath.getHpr()[1],
-                                              pageSize=Garage.ROTATION_SLIDER_PAGE_SIZE,
+                                              pageSize=0.2,
                                               pos=(int(Garage.FRAME_X_SIZE / 2), 0, Garage.FRAME_Y_SIZE - 122),
                                               scale=Garage.SLIDER_SCALE,
                                               color=UI.WHITE,
@@ -694,6 +688,149 @@ class Garage:
                                               thumb_color=UI.WHITE,
                                               command=self.update_car_pitch,
                                               parent=self.frame))
+
+        index = 0
+
+        for axle in self.main.car.json["wheels"]:
+
+            json_wheel_diameter = self.main.car.json["wheels"][axle][0]["scale"][1]
+            current_wheel_diameter = self.main.car.models["wheels"][axle][0].getScale()[1]
+
+            json_wheel_width = self.main.car.json["wheels"][axle][0]["scale"][0]
+            current_wheel_width = self.main.car.models["wheels"][axle][0].getScale()[0]
+
+            json_wheel_offset = self.main.car.json["wheels"][axle][0]["position"][0]
+            current_wheel_offset = self.main.car.models["wheels"][axle][0].getPos()[0]
+
+            json_wheel_camber = self.main.car.json["wheels"][axle][0]["rotation"][2]
+            current_wheel_camber = self.main.car.models["wheels"][axle][0].getHpr()[2]
+
+            json_wheel_toe = self.main.car.json["wheels"][axle][0]["rotation"][0]
+            current_wheel_toe = self.main.car.models["wheels"][axle][0].getHpr()[0]
+
+            direct.gui.DirectGui.DirectLabel(text=f"{axle.title()} Wheels",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_TITLE_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, -255 * index + 900),
+                                             parent=self.frame)
+
+            direct.gui.DirectGui.DirectLabel(text="Diameter",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, -250 * index + 855),
+                                             parent=self.frame)
+
+            self.wheel_diameter_slider = (
+                direct.gui.DirectGui.DirectSlider(range=(int(0.99 * json_wheel_diameter), int(1.5 * json_wheel_diameter)),  # FIXME Virer les int
+                                                  value=current_wheel_diameter,
+                                                  pageSize=0.05,
+                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 855),
+                                                  scale=Garage.SLIDER_SCALE,
+                                                  color=UI.WHITE,
+                                                  thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                                  thumb_color=UI.WHITE,
+                                                  command=self.update_wheel_diameter,
+                                                  extraArgs=[axle],
+                                                  parent=self.frame))
+
+            direct.gui.DirectGui.DirectLabel(text="Width",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, -250 * index + 815),
+                                             parent=self.frame)
+
+            self.wheel_width_slider = (
+                direct.gui.DirectGui.DirectSlider(range=(int(0.4 * json_wheel_width), int(1.8 * json_wheel_width)),  # FIXME Virer les int
+                                                  value=current_wheel_width,
+                                                  pageSize=0.2,
+                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 815),
+                                                  scale=Garage.SLIDER_SCALE,
+                                                  color=UI.WHITE,
+                                                  thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                                  thumb_color=UI.WHITE,
+                                                  command=self.update_wheel_width,
+                                                  extraArgs=[axle],
+                                                  parent=self.frame))
+
+            direct.gui.DirectGui.DirectLabel(text="Offset",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, -250 * index + 775),
+                                             parent=self.frame)
+
+            self.wheel_offset_slider = (
+                direct.gui.DirectGui.DirectSlider(range=(0.66 * json_wheel_offset, 1.34 * json_wheel_offset),
+                                                  value=current_wheel_offset,
+                                                  pageSize=0.03,
+                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 775),
+                                                  scale=Garage.SLIDER_SCALE,
+                                                  color=UI.WHITE,
+                                                  thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                                  thumb_color=UI.WHITE,
+                                                  command=self.update_wheel_offset,
+                                                  extraArgs=[axle],
+                                                  parent=self.frame))
+
+            direct.gui.DirectGui.DirectLabel(text="Camber",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, -250 * index + 735),
+                                             parent=self.frame)
+
+            self.wheel_camber_slider = (
+                direct.gui.DirectGui.DirectSlider(range=(json_wheel_camber - 45, json_wheel_camber + 45),
+                                                  value=current_wheel_camber,
+                                                  pageSize=0.5,
+                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 735),
+                                                  scale=Garage.SLIDER_SCALE,
+                                                  color=UI.WHITE,
+                                                  thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                                  thumb_color=UI.WHITE,
+                                                  command=self.update_wheel_camber,
+                                                  extraArgs=[axle],
+                                                  parent=self.frame))
+
+            direct.gui.DirectGui.DirectLabel(text="Toe",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=main.font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             pos=(UI.MARGIN, 0, -250 * index + 695),
+                                             parent=self.frame)
+
+            self.wheel_toe_slider = (
+                direct.gui.DirectGui.DirectSlider(range=(json_wheel_toe - 10, json_wheel_toe + 10),
+                                                  value=current_wheel_toe,
+                                                  pageSize=0.5,
+                                                  pos=(int(Garage.FRAME_X_SIZE / 2), 0, -250 * index + 695),
+                                                  scale=Garage.SLIDER_SCALE,
+                                                  color=UI.WHITE,
+                                                  thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                                  thumb_color=UI.WHITE,
+                                                  command=self.update_wheel_toe,
+                                                  extraArgs=[axle],
+                                                  parent=self.frame))
+
+            # TODO self.wheel_diameter_slider = {"front": wheel_diameter_slider,
+            #                                    "rear" : wheel_diameter_slider}
+
+            index += 1
 
     def update_car_ride_height(self):
 
@@ -710,6 +847,67 @@ class Garage:
         self.main.car.nodepath.setHpr((current_car_rotation[0],
                                        self.car_pitch_slider["value"],
                                        current_car_rotation[2]))
+
+    def update_wheel_diameter(self, axle):
+
+        for i in range(len(self.main.car.json["wheels"][axle])):
+
+            current_wheel_scale = self.main.car.models["wheels"][axle][i].getScale()
+
+            self.main.car.models["wheels"][axle][i].setScale((current_wheel_scale[0],
+                                                              self.wheel_diameter_slider["value"],
+                                                              self.wheel_diameter_slider["value"]))
+
+    def update_wheel_width(self, axle):
+
+        for i in range(len(self.main.car.models["wheels"][axle])):
+
+            current_wheel_scale = self.main.car.models["wheels"][axle][i].getScale()
+
+            self.main.car.models["wheels"][axle][i].setScale((self.wheel_width_slider["value"],
+                                                              current_wheel_scale[1],
+                                                              current_wheel_scale[2]))
+
+    def update_wheel_offset(self, axle):
+
+        for i in range(len(self.main.car.models["wheels"][axle])):
+
+            current_wheel_position = self.main.car.models["wheels"][axle][i].getPos()
+
+            self.main.car.models["wheels"][axle][i].setPos((math.copysign(self.wheel_offset_slider["value"],
+                                                                          current_wheel_position[0]),
+                                                            current_wheel_position[1],
+                                                            current_wheel_position[2]))
+
+    def update_wheel_camber(self, axle):
+
+        for i in range(len(self.main.car.models["wheels"][axle])):
+
+            current_wheel_rotation = self.main.car.models["wheels"][axle][i].getHpr()
+
+            if current_wheel_rotation[2] > 90:
+                new_wheel_camber = 180 - self.wheel_camber_slider["value"]
+            else:
+                new_wheel_camber = self.wheel_camber_slider["value"]
+
+            self.main.car.models["wheels"][axle][i].setHpr((current_wheel_rotation[0],
+                                                            current_wheel_rotation[1],
+                                                            new_wheel_camber))
+
+    def update_wheel_toe(self, axle):
+
+        for i in range(len(self.main.car.models["wheels"][axle])):
+
+            current_wheel_rotation = self.main.car.models["wheels"][axle][i].getHpr()
+
+            if current_wheel_rotation[2] > 90:
+                new_wheel_toe = self.wheel_toe_slider["value"]
+            else:
+                new_wheel_toe = - self.wheel_toe_slider["value"]
+
+            self.main.car.models["wheels"][axle][i].setHpr((new_wheel_toe,
+                                                            current_wheel_rotation[1],
+                                                            current_wheel_rotation[2]))
 
     def close(self, _) -> None:
 
