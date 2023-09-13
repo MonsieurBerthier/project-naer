@@ -906,9 +906,9 @@ class Garage:
             current_wheel_rotation = self.main.car.models["wheels"][axle][i].getHpr()
 
             if current_wheel_rotation[2] > 90:
-                new_wheel_toe = self.wheel_toe_slider[axle]["value"]
-            else:
                 new_wheel_toe = - self.wheel_toe_slider[axle]["value"]
+            else:
+                new_wheel_toe = self.wheel_toe_slider[axle]["value"]
 
             self.main.car.models["wheels"][axle][i].setHpr((new_wheel_toe,
                                                             current_wheel_rotation[1],
@@ -921,8 +921,8 @@ class Garage:
 
 class UI:
 
-    # TODO Create the Garage interface (ride height, wheels, camber, quick-lists, ...)
-    # TODO Create the Body Shop interface
+    # TODO Update Garage menu: size, text regular, ...
+    # TODO Create the Body Shop interface (install parts, paint parts, choose body kit, ...)
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
 
