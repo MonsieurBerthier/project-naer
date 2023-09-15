@@ -103,7 +103,7 @@ class Car:
         self.path = None
         self.json = None
 
-        for item in self.models:
+        for item in list(self.models):
             if isinstance(self.models[item], dict):
                 self.unload_wheels()
             else:
