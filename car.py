@@ -42,7 +42,6 @@ class Car:
         self.models["chassis"].setScale(tuple(self.json["chassis"]["scale"]))
 
         for part in self.json["defaults"]:
-
             if "wheel" in part:
                 self.load_wheels(name=part, oem=True)
             else:
@@ -67,12 +66,12 @@ class Car:
 
         logger.debug(f"Loading bodykit \"{bodykit}\"")
 
+        for part in set(self.models.keys()) - {"chassis", "wheels"}:
+            self.unload_part(part=part)
+
         bodykit_partlist = [kit["parts"] for kit in self.json["bodykits"] if kit["name"] == bodykit][0]
 
-        # FIXME Remove all other previous parts : self.models = {..., "parts": [], ...}
-
         for part in bodykit_partlist:
-
             self.load_part(part=part)
 
     def load_wheels(self, name: str, oem: bool) -> None:
@@ -117,8 +116,7 @@ class Car:
         logger.debug(f"Unloading car part \"{part}\"")
 
         self.models[part].removeNode()
-
-        self.models.pop("part", None)
+        self.models.pop(part)
 
     def unload_wheels(self) -> None:
 
@@ -126,6 +124,6 @@ class Car:
 
         for axle in self.models["wheels"]:
             for wheel in self.models["wheels"][axle]:
-                    wheel.removeNode()
+                wheel.removeNode()
 
         self.models["wheels"] = {}
