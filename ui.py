@@ -121,7 +121,8 @@ class SubMenu:
 
         for i in range(len(items)):
             button = MenuButton(main=self.main,
-                                text=items[i][1], font=self.main.font,
+                                text=items[i][1],
+                                font=self.main.font,
                                 text_pad_x=SubMenu.TEXT_PADDING_LEFT,
                                 position_x=UI.MARGIN + UI.BUTTON_Y_SIZE + MainMenu.MAIN_MENU_X_SIZE,
                                 position_y=-UI.get_button_y_position(index=i),
@@ -286,7 +287,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_CARS] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_CARS, font=self.main.font,
+                       text=MainMenu.TEXT_CARS,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN,
@@ -300,7 +302,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_WHEELS] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_WHEELS, font=self.main.font,
+                       text=MainMenu.TEXT_WHEELS,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + UI.BUTTON_Y_SIZE,
@@ -314,7 +317,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_GROUNDS] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_GROUNDS, font=self.main.font,
+                       text=MainMenu.TEXT_GROUNDS,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (2 * UI.BUTTON_Y_SIZE),
@@ -328,7 +332,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_GARAGE] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_GARAGE, font=self.main.font,
+                       text=MainMenu.TEXT_GARAGE,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (3 * UI.BUTTON_Y_SIZE),
@@ -348,7 +353,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_BODY_SHOP] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_BODY_SHOP, font=self.main.font,
+                       text=MainMenu.TEXT_BODY_SHOP,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (4 * UI.BUTTON_Y_SIZE),
@@ -368,7 +374,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_SAVE_CAR] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_SAVE_CAR, font=self.main.font,
+                       text=MainMenu.TEXT_SAVE_CAR,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (5 * UI.BUTTON_Y_SIZE),
@@ -388,7 +395,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_LOAD_CAR] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_LOAD_CAR, font=self.main.font,
+                       text=MainMenu.TEXT_LOAD_CAR,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (6 * UI.BUTTON_Y_SIZE),
@@ -408,7 +416,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_SAVE_IMAGE, font=self.main.font,
+                       text=MainMenu.TEXT_SAVE_IMAGE,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (7 * UI.BUTTON_Y_SIZE),
@@ -428,7 +437,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_AUTOROTATE] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_AUTOROTATE, font=self.main.font,
+                       text=MainMenu.TEXT_AUTOROTATE,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (8 * UI.BUTTON_Y_SIZE),
@@ -449,7 +459,8 @@ class MainMenu:
 
         self.menu_buttons[MainMenu.TEXT_EXIT] = (
             MenuButton(main=self.main,
-                       text=MainMenu.TEXT_EXIT, font=self.main.font,
+                       text=MainMenu.TEXT_EXIT,
+                       font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (9 * UI.BUTTON_Y_SIZE),
@@ -613,7 +624,7 @@ class MainMenu:
 
 class Garage:
 
-    SLIDER_SCALE = 100
+    SLIDER_SCALE = 80
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
 
@@ -677,7 +688,7 @@ class Garage:
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 90),
+                                         pos=(UI.MARGIN * 2, 0, Garage.FRAME_Y_SIZE - 90),
                                          parent=self.frame)
 
         self.car_ride_height_slider = (
@@ -698,7 +709,7 @@ class Garage:
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 130),
+                                         pos=(UI.MARGIN * 2, 0, Garage.FRAME_Y_SIZE - 130),
                                          parent=self.frame)
 
         self.car_pitch_slider = (
@@ -749,14 +760,14 @@ class Garage:
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, -250 * index + 855),
+                                             pos=(UI.MARGIN * 2, 0, -250 * index + 855),
                                              parent=self.frame)
 
             self.wheel_diameter_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.5 * json_wheel_diameter, 1.50 * json_wheel_diameter),
                                                   value=current_wheel_diameter,
                                                   pageSize=0.05,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 855),
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 863),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -771,14 +782,14 @@ class Garage:
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, -250 * index + 815),
+                                             pos=(UI.MARGIN * 2, 0, -250 * index + 815),
                                              parent=self.frame)
 
             self.wheel_width_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.4 * json_wheel_width, 1.6 * json_wheel_width),
                                                   value=current_wheel_width,
                                                   pageSize=0.1,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 815),
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 823),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -793,14 +804,14 @@ class Garage:
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, -250 * index + 775),
+                                             pos=(UI.MARGIN * 2, 0, -250 * index + 775),
                                              parent=self.frame)
 
             self.wheel_offset_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.66 * json_wheel_offset, 1.34 * json_wheel_offset),
                                                   value=current_wheel_offset,
                                                   pageSize=0.02,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 775),
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 783),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -815,14 +826,14 @@ class Garage:
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, -250 * index + 735),
+                                             pos=(UI.MARGIN * 2, 0, -250 * index + 735),
                                              parent=self.frame)
 
             self.wheel_camber_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(json_wheel_camber - 45, json_wheel_camber + 45),
                                                   value=current_wheel_camber,
                                                   pageSize=0.5,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 735),
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 743),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -837,14 +848,14 @@ class Garage:
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, -250 * index + 695),
+                                             pos=(UI.MARGIN * 2, 0, -250 * index + 695),
                                              parent=self.frame)
 
             self.wheel_toe_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(json_wheel_toe - 10, json_wheel_toe + 10),
                                                   value=current_wheel_toe,
                                                   pageSize=0.3,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 695),
+                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 703),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -893,7 +904,7 @@ class Garage:
                                                  frameColor=UI.RED,
                                                  frameSize=(0, Garage.FRAME_X_SIZE - 2 * UI.MARGIN,
                                                             0, UI.BUTTON_Y_SIZE),
-                                                 pos=(0, 0,
+                                                 pos=(UI.MARGIN, 0,
                                                       (UI.BUTTON_Y_SIZE * (nb_bodykits - 1)) - (UI.BUTTON_Y_SIZE * i)),
                                                  state=direct.gui.DirectGui.DGG.NORMAL,
                                                  parent=self.bodykits_frame.getCanvas()))
@@ -1010,7 +1021,6 @@ class Garage:
 
 class UI:
 
-    # TODO Update Garage menu: menu size, text regular, ...
     # TODO Update Garage menu: keep wheels adjustements when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
     # TODO Update Garage menu: increasing wheel diameter should changes car pitch
