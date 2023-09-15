@@ -63,6 +63,18 @@ class Car:
         self.models[part_type].setScale(tuple(self.json["chassis"]["scale"]))
         self.models[part_type].reparentTo(self.nodepath)
 
+    def load_bodykit(self, bodykit: str) -> None:
+
+        logger.debug(f"Loading bodykit \"{bodykit}\"")
+
+        bodykit_partlist = [kit["parts"] for kit in self.json["bodykits"] if kit["name"] == bodykit][0]
+
+        # FIXME Remove all other previous parts : self.models = {..., "parts": [], ...}
+
+        for part in bodykit_partlist:
+
+            self.load_part(part=part)
+
     def load_wheels(self, name: str, oem: bool) -> None:
 
         if self.models["wheels"]:

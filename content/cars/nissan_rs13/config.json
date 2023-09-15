@@ -26,5 +26,33 @@
         "scale": [3, 3, 3]},
        {"position": [-2.2, 3.8, 0.85],
         "rotation": [0, 0, 181],
-        "scale": [3, 3, 3]}]}
+        "scale": [3, 3, 3]}]},
+  "bodykits": [
+    {"name": "Nissan OEM Zenki",
+     "parts": [
+       "frontbumper_oemzenki",
+       "bonnet_oem",
+       "mirrors_oem",
+       "taillight_oem",
+       "rearbumper_oem",
+       "exhaust_oem"]},
+    {"name": "Nissan OEM Chuki",
+     "parts": [
+       "frontbumper_oemchuki",
+       "bonnet_oem",
+       "mirrors_oem",
+       "spoiler_oem",
+       "taillight_oem",
+       "rearbumper_oem",
+       "exhaust_oem"]},
+    {"name": "Nissan OEM Kouki",
+     "parts": [
+       "frontbumper_oemkouki",
+       "bonnet_oem",
+       "mirrors_oemkouki",
+       "sideskirts_oemkouki",
+       "spoiler_oemkouki",
+       "taillight_oemkouki",
+       "rearbumper_oemkouki",
+       "exhaust_oem"]}]
 }
