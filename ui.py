@@ -1044,7 +1044,7 @@ class BodyShop(SideWindow):
 
         car_parts = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)
         car_parts.remove(self.main.PATH_CARS_CHASSIS)
-        car_parts = [part.split(".")[0] for part in car_parts]
+        car_parts = sorted([part.split(".")[0] for part in car_parts])
 
         nb_car_parts = len(car_parts)
 
@@ -1074,7 +1074,7 @@ class BodyShop(SideWindow):
         for i in range(nb_car_parts):
 
             car_part_button = (
-                direct.gui.DirectGui.DirectFrame(text=car_parts[i],
+                direct.gui.DirectGui.DirectFrame(text=self.main.car.json["names"][car_parts[i]],
                                                  text_fg=UI.WHITE,
                                                  text_font=self.main.font,
                                                  text_scale=UI.FONT_SIZE,
@@ -1094,9 +1094,9 @@ class BodyShop(SideWindow):
             car_part_button.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
                                  command=self.set_button_mouseout_style,
                                  extraArgs=[car_part_button])
-            # bodykit_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-            #                     command=self.callback_load_car_part,
-            #                     extraArgs=[self.main.car.json["bodykits"][i]["name"]])
+            car_part_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                 command=self.callback_load_car_part,
+                                 extraArgs=[car_parts[i]])
 
             self.car_parts_buttons.append(car_part_button)
 
