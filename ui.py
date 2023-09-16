@@ -99,6 +99,84 @@ class MenuButton:
         self.frame["image"] = self.icon_mouseout
 
 
+class CarPartButton:
+
+    PART_STATUS_INSTALLED = "INSTALLED"
+
+    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int, parent) -> None:
+
+        self.part_is_installed = False
+
+        self.frame = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
+                                             text=text,
+                                             text_fg=UI.WHITE,
+                                             text_font=font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             text_pos=(UI.FONT_SIZE + UI.MARGIN, size_y - UI.FONT_SIZE - 5, 0),
+                                             frameSize=(0, size_x, 0, size_y),
+                                             pos=(position_x, 0, position_y),
+                                             state=direct.gui.DirectGui.DGG.NORMAL,
+                                             parent=parent))
+
+        self.part_color = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
+                                             frameSize=(0, UI.FONT_SIZE, 0, UI.FONT_SIZE),
+                                             pos=(6, 0, (size_y - UI.FONT_SIZE) / 2),
+                                             parent=self.frame))
+
+        self.status = direct.gui.DirectGui.DirectLabel(text="",
+                                                       text_fg=UI.WHITE,
+                                                       text_bg=UI.RED,
+                                                       text_font=font,
+                                                       text_scale=UI.FONT_SIZE - 8,
+                                                       text_align=UI.TEXT_JUSTIFY_RIGHT,
+                                                       pos=(size_x - 50, 0, (size_y - UI.FONT_SIZE) / 2 + 4),
+                                                       parent=self.frame)
+
+        self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                        command=self.set_button_mouseover_style)
+
+        self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
+                        command=self.set_button_mouseout_style)
+
+    def set_button_mouseover_style(self, _) -> None:
+
+        self.frame["frameColor"] = UI.WHITE
+        self.frame["text_fg"] = UI.GREY
+
+        self.status["text_bg"] = UI.WHITE
+        self.status["text_fg"] = UI.GREY
+
+        if not self.part_is_installed:
+            self.part_color["frameColor"] = UI.WHITE
+
+    def set_button_mouseout_style(self, _) -> None:
+
+        self.frame["frameColor"] = UI.RED
+        self.frame["text_fg"] = UI.WHITE
+
+        self.status["text_bg"] = UI.RED
+        self.status["text_fg"] = UI.WHITE
+
+        if not self.part_is_installed:
+            self.part_color["frameColor"] = UI.RED
+
+    def update_part_color(self, color: tuple) -> None:
+
+        self.part_color["frameColor"] = color
+
+    def update_part_status(self, installed: bool) -> None:
+
+        self.part_is_installed = installed
+
+        if self.part_is_installed:
+            self.status["text"] = CarPartButton.PART_STATUS_INSTALLED
+        else:
+            self.status["text"] = ""
+
+
 class CheckButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int, parent) -> None:
@@ -1158,30 +1236,17 @@ class BodyShop(SideWindow):
 
         for i in range(nb_car_parts):
 
-            car_part_button = (
-                direct.gui.DirectGui.DirectFrame(text=self.main.car.json["names"][car_parts[i]],
-                                                 text_fg=UI.WHITE,
-                                                 text_font=self.main.font,
-                                                 text_scale=UI.FONT_SIZE,
-                                                 text_align=UI.TEXT_JUSTIFY_LEFT,
-                                                 text_pos=(0, (UI.FONT_SIZE / 2) - 3, 0),
-                                                 frameColor=UI.RED,
-                                                 frameSize=(0, BodyShop.FRAME_X_SIZE - 2 * UI.MARGIN,
-                                                            0, UI.BUTTON_Y_SIZE),
-                                                 pos=(UI.MARGIN, 0,
-                                                      (UI.BUTTON_Y_SIZE * (nb_car_parts - 1)) - (UI.BUTTON_Y_SIZE * i)),
-                                                 state=direct.gui.DirectGui.DGG.NORMAL,
-                                                 parent=self.car_parts_frame.getCanvas()))
+            car_part_button = CarPartButton(text=self.main.car.json["names"][car_parts[i]],
+                                            font=self.main.font,
+                                            position_x=UI.MARGIN,
+                                            position_y=(UI.BUTTON_Y_SIZE * (nb_car_parts - 1)) - (UI.BUTTON_Y_SIZE * i),
+                                            size_x=BodyShop.FRAME_X_SIZE - 2 * UI.MARGIN,
+                                            size_y=UI.BUTTON_Y_SIZE,
+                                            parent=self.car_parts_frame.getCanvas())
 
-            car_part_button.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                 command=self.set_button_mouseover_style,
-                                 extraArgs=[car_part_button])
-            car_part_button.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                 command=self.set_button_mouseout_style,
-                                 extraArgs=[car_part_button])
-            car_part_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                 command=self.callback_load_car_part,
-                                 extraArgs=[car_parts[i]])
+            car_part_button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                       command=self.callback_load_car_part,
+                                       extraArgs=[car_part_button, car_parts[i]])
 
             self.car_parts_buttons.append(car_part_button)
 
@@ -1332,8 +1397,9 @@ class BodyShop(SideWindow):
         button["frameColor"] = UI.RED
         button["text_fg"] = UI.WHITE
 
-    def callback_load_car_part(self, name, _):
+    def callback_load_car_part(self, button, name, _):
 
+        button.update_part_status(installed=True)
         self.main.car.load_part(part=name)
 
     def callback_update_paint_metallic(self):
