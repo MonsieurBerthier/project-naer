@@ -1,6 +1,7 @@
 import os
 import sys
 import math
+import tkinter.filedialog
 
 import direct.gui.DirectGui
 
@@ -582,13 +583,39 @@ class MainMenu:
 
         logger.debug("Button \"Save Car\" clicked")
 
+        root = tkinter.Tk()
+        root.iconify()
+
+        path_to_car = tkinter.filedialog.asksaveasfile(mode="w",
+                                                       title="Save car",
+                                                       defaultextension=".pnc")
+
+        self.close_main_menu(None)
+
     def load(self, _) -> None:
 
         logger.debug("Button \"Load Car\" clicked")
 
+        root = tkinter.Tk()
+        root.iconify()
+
+        path_to_car = tkinter.filedialog.askopenfilename(title="Load a car (*.pnc)",
+                                                         defaultextension=".pnc")
+
+        self.close_main_menu(None)
+
     def save_image(self, _) -> None:
 
         logger.debug("Button \"Save Image\" clicked")
+
+        root = tkinter.Tk()
+        root.iconify()
+
+        path_to_image = tkinter.filedialog.asksaveasfile(mode="w",
+                                                         title="Save image",
+                                                         defaultextension=".png")
+
+        self.close_main_menu(None)
 
     def toggle_autorotate(self, _) -> None:
 
