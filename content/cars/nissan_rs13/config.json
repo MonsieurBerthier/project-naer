@@ -54,5 +54,24 @@
        "spoiler_oemkouki",
        "taillight_oemkouki",
        "rearbumper_oemkouki",
-       "exhaust_oem"]}]
+       "exhaust_oem"]}],
+  "names": {
+    "bonnet_oem": "Nissan OEM Bonnet",
+    "exhaust_large": "HKS Exhaust",
+    "exhaust_oem": "Nissan OEM Exhaust",
+    "frontbumper_oemzenki": "Nissan OEM Front Bumper (Zenki)",
+    "frontbumper_oemchuki": "Nissan OEM Front Bumper (Chuki)",
+    "frontbumper_oemkouki": "Nissan OEM Front Bumper (Kouki)",
+    "mirrors_oem": "Nissan OEM Mirrors (Zenki)",
+    "mirrors_oemkouki": "Nissan OEM Mirrors (Kouki)",
+    "rearbumper_bashbar": "Drift Armor Rear Bashbar",
+    "rearbumper_none": "No Rear Bumper",
+    "rearbumper_oem": "Nissan OEM Rear Bumper (Zenki)",
+    "rearbumper_oemkouki": "Nissan OEM Rear Bumper (Kouki)",
+    "sideskirts_oemkouki": "Nissan OEM Side Skirts (Kouki)",
+    "spoiler_oem": "Nissan OEM Spoiler (Chuki)",
+    "spoiler_oemkouki": "Nissan OEM Spoiler (Kouki)",
+    "taillight_oem": "Nissan OEM Tail Lights (Zenki)",
+    "taillight_oemkouki": "Nissan OEM Tail Lights (Kouki)",
+    "wheel_oem": "Nissan OEM Wheels"}
 }
