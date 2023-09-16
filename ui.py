@@ -575,6 +575,9 @@ class MainMenu:
 
         logger.debug("Button \"Body Shop\" clicked")
 
+        self.close_main_menu(None)
+        BodyShop(main=self.main)
+
     def save_car(self, _) -> None:
 
         logger.debug("Button \"Save Car\" clicked")
@@ -622,7 +625,34 @@ class MainMenu:
         sys.exit()
 
 
-class Garage:
+class SideWindow:
+
+    def __init__(self, main, size_x: int, size_y: int) -> None:
+
+        self.main = main
+
+        self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
+                                                      frameSize=(0, size_x, 0, size_y),
+                                                      pos=(self.main.window_resolution[0] - size_x, 0,
+                                                           -size_y - ((self.main.window_resolution[1] - size_y) / 2)),
+                                                      parent=self.main.pixel2d)
+
+        self.button_done = Button(main=self.main,
+                                  text="OK",
+                                  position_x=int((size_x - UI.BUTTON_MEDIUM_X_SIZE) / 2),
+                                  position_y=-UI.MARGIN,
+                                  size_x=UI.BUTTON_MEDIUM_X_SIZE,
+                                  size_y=UI.BUTTON_Y_SIZE,
+                                  parent=self.frame)
+        self.button_done.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                    command=self.close)
+
+    def close(self, _) -> None:
+
+        self.frame.destroy()
+
+
+class Garage(SideWindow):
 
     SLIDER_SCALE = 80
     FRAME_X_SIZE = 500
@@ -630,10 +660,7 @@ class Garage:
 
     def __init__(self, main) -> None:
 
-        self.main = main
-
-        self.frame = None
-        self.button_done = None
+        super().__init__(main=main, size_x=self.FRAME_X_SIZE, size_y=self.FRAME_Y_SIZE)
 
         self.car_ride_height_slider = None
         self.car_pitch_slider = None
@@ -647,29 +674,9 @@ class Garage:
         self.bodykits_frame = None
         self.bodykits_buttons = []
 
-        self.display_main_frame()
         self.display_car_parameters()
         self.display_wheels_parameters()
         self.display_bodykits()
-
-    def display_main_frame(self):
-
-        self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
-                                                      frameSize=(0, Garage.FRAME_X_SIZE, 0, Garage.FRAME_Y_SIZE),
-                                                      pos=(self.main.window_resolution[0] - Garage.FRAME_X_SIZE, 0,
-                                                           -Garage.FRAME_Y_SIZE - ((self.main.window_resolution[1] -
-                                                                                    Garage.FRAME_Y_SIZE)/2)),
-                                                      parent=self.main.pixel2d)
-
-        self.button_done = Button(main=self.main,
-                                  text="OK",
-                                  position_x=int((Garage.FRAME_X_SIZE-UI.BUTTON_MEDIUM_X_SIZE) / 2),
-                                  position_y=-UI.MARGIN,
-                                  size_x=UI.BUTTON_MEDIUM_X_SIZE,
-                                  size_y=UI.BUTTON_Y_SIZE,
-                                  parent=self.frame)
-        self.button_done.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                    command=self.close)
 
     def display_car_parameters(self):
 
@@ -1014,17 +1021,22 @@ class Garage:
 
         self.main.car.load_bodykit(bodykit=name)
 
-    def close(self, _) -> None:
 
-        self.frame.destroy()
+class BodyShop(SideWindow):
+
+    FRAME_X_SIZE = 500
+    FRAME_Y_SIZE = 1080
+
+    def __init__(self, main) -> None:
+
+        super().__init__(main=main, size_x=self.FRAME_X_SIZE, size_y=self.FRAME_Y_SIZE)
 
 
 class UI:
 
-    # TODO Update Garage menu: keep wheels adjustements when changing wheels
+    # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
-    # TODO Update Garage menu: increasing wheel diameter should changes car pitch
-    # TODO Update Garage menu: update car pitch when changing wheel diameter
+    # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
     # TODO Create the Body Shop interface (install parts, paint parts, ...)
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
