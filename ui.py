@@ -12,7 +12,7 @@ from config.logger import logger
 
 class Button:
 
-    def __init__(self, main, text: str, position_x: int, position_y: int, size_x: int, size_y: int, parent):
+    def __init__(self, main, text: str, position_x: int, position_y: int, size_x: int, size_y: int, parent) -> None:
 
         self.border = direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
                                                        frameSize=(0, size_x + UI.BUTTON_BORDER_SIZE * 2, 0,
@@ -41,10 +41,12 @@ class Button:
                         command=self.set_button_mouseout_style)
 
     def set_button_mouseover_style(self, _) -> None:
+
         self.frame["frameColor"] = UI.WHITE
         self.frame["text_fg"] = UI.GREY
 
     def set_button_mouseout_style(self, _) -> None:
+
         self.frame["frameColor"] = UI.RED
         self.frame["text_fg"] = UI.WHITE
 
@@ -77,8 +79,10 @@ class MenuButton:
                                                       image_pos=(image_pos_x, 0, -UI.BUTTON_Y_SIZE / 2))
 
         if auto_event:
+
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                             command=self.set_button_mouseover_style)
+
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
                             command=self.set_button_mouseout_style)
 
@@ -93,6 +97,50 @@ class MenuButton:
         self.frame["frameColor"] = UI.RED
         self.frame["text_fg"] = UI.WHITE
         self.frame["image"] = self.icon_mouseout
+
+
+class CheckButton:
+
+    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int, parent) -> None:
+
+        self.active = False
+
+        self.frame = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
+                                             text=text,
+                                             text_fg=UI.WHITE,
+                                             text_font=font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_LEFT,
+                                             text_pos=(UI.FONT_SIZE + UI.MARGIN, size_y - UI.FONT_SIZE - 5, 0),
+                                             frameSize=(0, size_x, 0, size_y),
+                                             pos=(position_x, 0, position_y),
+                                             state=direct.gui.DirectGui.DGG.NORMAL,
+                                             parent=parent))
+
+        self.check_button_border = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                             frameSize=(0, UI.FONT_SIZE, 0, UI.FONT_SIZE),
+                                             pos=(0, 0, (size_y - UI.FONT_SIZE) / 2),
+                                             parent=self.frame))
+
+        self.check_button = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
+                                             frameSize=(0, UI.FONT_SIZE - 6, 0, UI.FONT_SIZE - 6),
+                                             pos=(3, 0, (size_y - UI.FONT_SIZE) / 2 + 3),
+                                             parent=self.frame))
+
+        self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                        command=self.toggle_check_button)
+
+    def toggle_check_button(self, _):
+
+        if self.active:
+            self.check_button["frameColor"] = UI.RED
+            self.active = False
+        else:
+            self.check_button["frameColor"] = UI.WHITE
+            self.active = True
 
 
 class SubMenu:
@@ -1072,6 +1120,7 @@ class BodyShop(SideWindow):
         self.paint_green = None
         self.paint_blue = None
         self.paint_preview = None
+        self.paint_all_parts = None
 
         self.display_car_parts()
         self.display_paint_selector()
@@ -1263,6 +1312,14 @@ class BodyShop(SideWindow):
                                              pos=(370 + 3, 0, BodyShop.FRAME_Y_SIZE - 699),
                                              parent=self.frame))
 
+        self.paint_all_parts = CheckButton(text="Paint all car parts",
+                                           font=self.main.font,
+                                           position_x=UI.MARGIN * 2,
+                                           position_y=BodyShop.FRAME_Y_SIZE - 748,
+                                           size_x=BodyShop.FRAME_X_SIZE - 3 * UI.MARGIN,
+                                           size_y=UI.BUTTON_Y_SIZE,
+                                           parent=self.frame)
+
     @staticmethod
     def set_button_mouseover_style(button, _) -> None:
 
@@ -1301,6 +1358,7 @@ class UI:
 
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
+    # TODO Encapsulate all DirectGUI elements in frames
     # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
     # TODO Create the Body Shop interface (install parts, paint parts, ...)
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
