@@ -657,6 +657,7 @@ class Garage(SideWindow):
     SLIDER_SCALE = 80
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
+    NB_ITEMS_SCROLLED_FRAME = 5
 
     def __init__(self, main) -> None:
 
@@ -890,8 +891,9 @@ class Garage(SideWindow):
             direct.gui.DirectGui.DirectScrolledFrame(canvasSize=(0, Garage.FRAME_X_SIZE - (4 * UI.MARGIN),
                                                                  0, UI.BUTTON_Y_SIZE * nb_bodykits),
                                                      frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
-                                                                0, UI.BUTTON_Y_SIZE * 5),
-                                                     pos=(UI.MARGIN, 0, 210),
+                                                                0, UI.BUTTON_Y_SIZE * Garage.NB_ITEMS_SCROLLED_FRAME),
+                                                     pos=(UI.MARGIN, 0, BodyShop.FRAME_Y_SIZE -
+                                                          Garage.NB_ITEMS_SCROLLED_FRAME * UI.BUTTON_Y_SIZE - 704),
                                                      frameColor=UI.RED,
                                                      scrollBarWidth=UI.MARGIN * 1.5,
                                                      verticalScroll_color=UI.WHITE,
@@ -1026,10 +1028,93 @@ class BodyShop(SideWindow):
 
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
+    NB_ITEMS_SCROLLED_FRAME = 12
 
     def __init__(self, main) -> None:
 
         super().__init__(main=main, size_x=self.FRAME_X_SIZE, size_y=self.FRAME_Y_SIZE)
+
+        self.car_parts_frame = None
+
+        self.car_parts_buttons = []
+
+        self.display_car_parts()
+
+    def display_car_parts(self):
+
+        car_parts = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)
+        car_parts.remove(self.main.PATH_CARS_CHASSIS)
+        car_parts = [part.split(".")[0] for part in car_parts]
+
+        nb_car_parts = len(car_parts)
+
+        direct.gui.DirectGui.DirectLabel(text="Car Parts",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_TITLE_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN, 0, BodyShop.FRAME_Y_SIZE - UI.MARGIN - UI.FONT_SIZE * 1.5),
+                                         parent=self.frame)
+
+        self.car_parts_frame = (
+            direct.gui.DirectGui.DirectScrolledFrame(canvasSize=(0, BodyShop.FRAME_X_SIZE - (4 * UI.MARGIN),
+                                                                 0, UI.BUTTON_Y_SIZE * nb_car_parts),
+                                                     frameSize=(0, BodyShop.FRAME_X_SIZE - (2 * UI.MARGIN), 0,
+                                                                UI.BUTTON_Y_SIZE * BodyShop.NB_ITEMS_SCROLLED_FRAME),
+                                                     pos=(UI.MARGIN, 0, BodyShop.FRAME_Y_SIZE -
+                                                          BodyShop.NB_ITEMS_SCROLLED_FRAME * UI.BUTTON_Y_SIZE - 63),
+                                                     frameColor=UI.RED,
+                                                     scrollBarWidth=UI.MARGIN * 1.5,
+                                                     verticalScroll_color=UI.WHITE,
+                                                     verticalScroll_incButton_relief=False,
+                                                     verticalScroll_decButton_relief=False,
+                                                     parent=self.frame))
+
+        for i in range(nb_car_parts):
+
+            car_part_button = (
+                direct.gui.DirectGui.DirectFrame(text=car_parts[i],
+                                                 text_fg=UI.WHITE,
+                                                 text_font=self.main.font,
+                                                 text_scale=UI.FONT_SIZE,
+                                                 text_align=UI.TEXT_JUSTIFY_LEFT,
+                                                 text_pos=(0, (UI.FONT_SIZE / 2) - 3, 0),
+                                                 frameColor=UI.RED,
+                                                 frameSize=(0, BodyShop.FRAME_X_SIZE - 2 * UI.MARGIN,
+                                                            0, UI.BUTTON_Y_SIZE),
+                                                 pos=(UI.MARGIN, 0,
+                                                      (UI.BUTTON_Y_SIZE * (nb_car_parts - 1)) - (UI.BUTTON_Y_SIZE * i)),
+                                                 state=direct.gui.DirectGui.DGG.NORMAL,
+                                                 parent=self.car_parts_frame.getCanvas()))
+
+            car_part_button.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                                 command=self.set_button_mouseover_style,
+                                 extraArgs=[car_part_button])
+            car_part_button.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
+                                 command=self.set_button_mouseout_style,
+                                 extraArgs=[car_part_button])
+            # bodykit_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+            #                     command=self.callback_load_car_part,
+            #                     extraArgs=[self.main.car.json["bodykits"][i]["name"]])
+
+            self.car_parts_buttons.append(car_part_button)
+
+    @staticmethod
+    def set_button_mouseover_style(button, _) -> None:
+
+        button["frameColor"] = UI.WHITE
+        button["text_fg"] = UI.GREY
+
+    @staticmethod
+    def set_button_mouseout_style(button, _) -> None:
+
+        button["frameColor"] = UI.RED
+        button["text_fg"] = UI.WHITE
+
+    def callback_load_car_part(self, name, _):
+
+        self.main.car.load_part(part=name)
 
 
 class UI:
