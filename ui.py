@@ -1053,6 +1053,7 @@ class Garage(SideWindow):
 
 class BodyShop(SideWindow):
 
+    SLIDER_SCALE = 80
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
     NB_ITEMS_SCROLLED_FRAME = 12
@@ -1065,7 +1066,15 @@ class BodyShop(SideWindow):
 
         self.car_parts_buttons = []
 
+        self.paint_metallic = None
+        self.paint_brilliance = None
+        self.paint_red = None
+        self.paint_green = None
+        self.paint_blue = None
+        self.paint_preview = None
+
         self.display_car_parts()
+        self.display_paint_selector()
 
     def display_car_parts(self):
 
@@ -1127,6 +1136,133 @@ class BodyShop(SideWindow):
 
             self.car_parts_buttons.append(car_part_button)
 
+    def display_paint_selector(self):
+
+        direct.gui.DirectGui.DirectLabel(text="Paint",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_TITLE_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN, 0, BodyShop.FRAME_Y_SIZE - 491),
+                                         parent=self.frame)
+
+        direct.gui.DirectGui.DirectLabel(text="Metallic",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 541),
+                                         parent=self.frame)
+
+        self.paint_metallic = (
+            direct.gui.DirectGui.DirectSlider(range=(0, 1),
+                                              value=0,
+                                              pageSize=0.1,
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 533),
+                                              scale=BodyShop.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.callback_update_paint_metallic,
+                                              parent=self.frame))
+
+        direct.gui.DirectGui.DirectLabel(text="Brilliance",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 581),
+                                         parent=self.frame)
+
+        self.paint_brilliance = (
+            direct.gui.DirectGui.DirectSlider(range=(0, 1),
+                                              value=0,
+                                              pageSize=0.1,
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 573),
+                                              scale=BodyShop.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.callback_update_paint_brilliance,
+                                              parent=self.frame))
+
+        direct.gui.DirectGui.DirectLabel(text="Red",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 621),
+                                         parent=self.frame)
+
+        self.paint_red = (
+            direct.gui.DirectGui.DirectSlider(range=(0, 1),
+                                              value=0.5,
+                                              pageSize=0.1,
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 613),
+                                              scale=BodyShop.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.callback_update_paint_color,
+                                              parent=self.frame))
+
+        direct.gui.DirectGui.DirectLabel(text="Green",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 661),
+                                         parent=self.frame)
+
+        self.paint_green = (
+            direct.gui.DirectGui.DirectSlider(range=(0, 1),
+                                              value=0.5,
+                                              pageSize=0.1,
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 653),
+                                              scale=BodyShop.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.callback_update_paint_color,
+                                              parent=self.frame))
+
+        direct.gui.DirectGui.DirectLabel(text="Blue",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 701),
+                                         parent=self.frame)
+
+        self.paint_blue = (
+            direct.gui.DirectGui.DirectSlider(range=(0, 1),
+                                              value=0.5,
+                                              pageSize=0.1,
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 693),
+                                              scale=BodyShop.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.callback_update_paint_color,
+                                              parent=self.frame))
+
+        direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                         frameSize=(0, 100, 0, 100),
+                                         pos=(370, 0, BodyShop.FRAME_Y_SIZE - 702),
+                                         parent=self.frame)
+
+        self.paint_preview = (
+            direct.gui.DirectGui.DirectFrame(frameColor=(0, 1, 0, 1),
+                                             frameSize=(0, 94, 0, 94),
+                                             pos=(370 + 3, 0, BodyShop.FRAME_Y_SIZE - 699),
+                                             parent=self.frame))
+
     @staticmethod
     def set_button_mouseover_style(button, _) -> None:
 
@@ -1142,6 +1278,23 @@ class BodyShop(SideWindow):
     def callback_load_car_part(self, name, _):
 
         self.main.car.load_part(part=name)
+
+    def callback_update_paint_metallic(self):
+
+        self.main.car.models["chassis"].findMaterial("paint").setMetallic(self.paint_metallic["value"])
+
+    def callback_update_paint_brilliance(self):
+
+        self.main.car.models["chassis"].findMaterial("paint").setRoughness(1 - self.paint_brilliance["value"])
+
+    def callback_update_paint_color(self):
+
+        new_color = (self.paint_red["value"],
+                     self.paint_green["value"],
+                     self.paint_blue["value"], 1)
+
+        self.paint_preview.setColor(new_color)
+        self.main.car.models["chassis"].findMaterial("paint").setBaseColor(new_color)
 
 
 class UI:
