@@ -9,22 +9,22 @@ class Ground:
     def __init__(self, main) -> None:
 
         self.main = main
-        self.name = self.main.config_json["defaults"]["ground"]
+        self.tag = self.main.config_json["defaults"]["ground"]
 
         self.path = None
         self.model = None
 
-        self.load(name=self.name)
+        self.load(tag=self.tag)
 
-    def load(self, name: str) -> None:
+    def load(self, tag: str) -> None:
 
         if self.model:
             self.unload()
 
-        logger.debug(f"Loading ground \"{name}\"")
+        logger.debug(f"Loading ground \"{tag}\"")
 
-        self.name = name
-        self.path = os.path.join(self.main.PATH_GROUNDS, name)
+        self.tag = tag
+        self.path = os.path.join(self.main.PATH_GROUNDS, tag)
 
         glb = library.io.get_file_path(path=self.path, extension="glb")
         self.model = self.main.loader.loadModel(modelPath=os.path.join(self.path, glb))
@@ -33,9 +33,9 @@ class Ground:
 
     def unload(self) -> None:
 
-        logger.debug(f"Unloading ground \"{self.name}\"")
+        logger.debug(f"Unloading ground \"{self.tag}\"")
 
-        self.name = None
+        self.tag = None
         self.path = None
         self.model.removeNode()
 
@@ -43,8 +43,8 @@ class Ground:
 
         self.model.setLight(light)
 
-    def change(self, name: str) -> None:
+    def change(self, tag: str) -> None:
 
         self.unload()
-        self.load(name=name)
+        self.load(tag=tag)
         self.set_light(self.main.light_node_top)

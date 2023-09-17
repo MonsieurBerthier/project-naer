@@ -273,17 +273,17 @@ class SubMenu:
                                   extraArgs=[items[i][0]])
             self.buttons.append(button)
 
-    def callback_load_car(self, name, _) -> None:
+    def callback_load_car(self, tag, _) -> None:
 
-        self.main.car.load(name=name)
+        self.main.car.load(tag=tag)
 
-    def callback_load_wheels(self, name, _) -> None:
+    def callback_load_wheels(self, tag, _) -> None:
 
-        self.main.car.load_wheels(name=name, oem=False)
+        self.main.car.load_wheels(tag=tag, oem=False)
 
-    def callback_load_ground(self, name, _) -> None:
+    def callback_load_ground(self, tag, _) -> None:
 
-        self.main.ground.change(name=name)
+        self.main.ground.change(tag=tag)
 
     def close(self) -> None:
 
@@ -892,19 +892,19 @@ class Garage(SideWindow):
         for axle in self.main.car.json["wheels"]:
 
             json_wheel_diameter = self.main.car.json["wheels"][axle][0]["scale"][1]
-            current_wheel_diameter = self.main.car.models["wheels"][axle][0].getScale()[1]
+            current_wheel_diameter = self.main.car.items["wheels"][axle][0].model.getScale()[1]
 
             json_wheel_width = self.main.car.json["wheels"][axle][0]["scale"][0]
-            current_wheel_width = self.main.car.models["wheels"][axle][0].getScale()[0]
+            current_wheel_width = self.main.car.items["wheels"][axle][0].model.getScale()[0]
 
             json_wheel_offset = self.main.car.json["wheels"][axle][0]["position"][0]
-            current_wheel_offset = self.main.car.models["wheels"][axle][0].getPos()[0]
+            current_wheel_offset = self.main.car.items["wheels"][axle][0].model.getPos()[0]
 
             json_wheel_camber = self.main.car.json["wheels"][axle][0]["rotation"][2]
-            current_wheel_camber = self.main.car.models["wheels"][axle][0].getHpr()[2]
+            current_wheel_camber = self.main.car.items["wheels"][axle][0].model.getHpr()[2]
 
             json_wheel_toe = self.main.car.json["wheels"][axle][0]["rotation"][0]
-            current_wheel_toe = self.main.car.models["wheels"][axle][0].getHpr()[0]
+            current_wheel_toe = self.main.car.items["wheels"][axle][0].model.getHpr()[0]
 
             direct.gui.DirectGui.DirectLabel(text=f"{axle.title()} Wheels",
                                              text_fg=UI.WHITE,
@@ -1103,62 +1103,62 @@ class Garage(SideWindow):
 
         for i in range(len(self.main.car.json["wheels"][axle])):
 
-            current_wheel_scale = self.main.car.models["wheels"][axle][i].getScale()
+            current_wheel_scale = self.main.car.items["wheels"][axle][i].model.getScale()
 
-            self.main.car.models["wheels"][axle][i].setScale((current_wheel_scale[0],
-                                                              self.wheel_diameter_slider[axle]["value"],
-                                                              self.wheel_diameter_slider[axle]["value"]))
+            self.main.car.items["wheels"][axle][i].model.setScale((current_wheel_scale[0],
+                                                                   self.wheel_diameter_slider[axle]["value"],
+                                                                   self.wheel_diameter_slider[axle]["value"]))
 
     def update_wheel_width(self, axle):
 
-        for i in range(len(self.main.car.models["wheels"][axle])):
+        for i in range(len(self.main.car.items["wheels"][axle])):
 
-            current_wheel_scale = self.main.car.models["wheels"][axle][i].getScale()
+            current_wheel_scale = self.main.car.items["wheels"][axle][i].model.getScale()
 
-            self.main.car.models["wheels"][axle][i].setScale((self.wheel_width_slider[axle]["value"],
-                                                              current_wheel_scale[1],
-                                                              current_wheel_scale[2]))
+            self.main.car.items["wheels"][axle][i].model.setScale((self.wheel_width_slider[axle]["value"],
+                                                                   current_wheel_scale[1],
+                                                                   current_wheel_scale[2]))
 
     def update_wheel_offset(self, axle):
 
-        for i in range(len(self.main.car.models["wheels"][axle])):
+        for i in range(len(self.main.car.items["wheels"][axle])):
 
-            current_wheel_position = self.main.car.models["wheels"][axle][i].getPos()
+            current_wheel_position = self.main.car.items["wheels"][axle][i].model.getPos()
 
-            self.main.car.models["wheels"][axle][i].setPos((math.copysign(self.wheel_offset_slider[axle]["value"],
-                                                                          current_wheel_position[0]),
-                                                            current_wheel_position[1],
-                                                            current_wheel_position[2]))
+            self.main.car.items["wheels"][axle][i].model.setPos((math.copysign(self.wheel_offset_slider[axle]["value"],
+                                                                               current_wheel_position[0]),
+                                                                 current_wheel_position[1],
+                                                                 current_wheel_position[2]))
 
     def update_wheel_camber(self, axle):
 
-        for i in range(len(self.main.car.models["wheels"][axle])):
+        for i in range(len(self.main.car.items["wheels"][axle])):
 
-            current_wheel_rotation = self.main.car.models["wheels"][axle][i].getHpr()
+            current_wheel_rotation = self.main.car.items["wheels"][axle][i].model.getHpr()
 
             if current_wheel_rotation[2] > 90:
                 new_wheel_camber = 180 - self.wheel_camber_slider[axle]["value"]
             else:
                 new_wheel_camber = self.wheel_camber_slider[axle]["value"]
 
-            self.main.car.models["wheels"][axle][i].setHpr((current_wheel_rotation[0],
-                                                            current_wheel_rotation[1],
-                                                            new_wheel_camber))
+            self.main.car.items["wheels"][axle][i].model.setHpr((current_wheel_rotation[0],
+                                                                 current_wheel_rotation[1],
+                                                                 new_wheel_camber))
 
     def update_wheel_toe(self, axle):
 
-        for i in range(len(self.main.car.models["wheels"][axle])):
+        for i in range(len(self.main.car.items["wheels"][axle])):
 
-            current_wheel_rotation = self.main.car.models["wheels"][axle][i].getHpr()
+            current_wheel_rotation = self.main.car.items["wheels"][axle][i].model.getHpr()
 
             if current_wheel_rotation[2] > 90:
                 new_wheel_toe = - self.wheel_toe_slider[axle]["value"]
             else:
                 new_wheel_toe = self.wheel_toe_slider[axle]["value"]
 
-            self.main.car.models["wheels"][axle][i].setHpr((new_wheel_toe,
-                                                            current_wheel_rotation[1],
-                                                            current_wheel_rotation[2]))
+            self.main.car.items["wheels"][axle][i].model.setHpr((new_wheel_toe,
+                                                                 current_wheel_rotation[1],
+                                                                 current_wheel_rotation[2]))
 
     @staticmethod
     def set_button_mouseover_style(button, _) -> None:
@@ -1207,7 +1207,7 @@ class BodyShop(SideWindow):
 
     def display_car_parts(self):
 
-        car_parts = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)
+        car_parts = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)  # FIXME Car method to get required data
         car_parts.remove(self.main.PATH_CARS_CHASSIS)
         car_parts = sorted([part.split(".")[0] for part in car_parts])
 
@@ -1431,15 +1431,15 @@ class BodyShop(SideWindow):
     def callback_load_car_part(self, button, name, _):
 
         button.update_part_status(installed=True)
-        self.main.car.load_part(part=name)
+        self.main.car.load_part(tag=name)
 
     def callback_update_paint_metallic(self):
 
-        self.main.car.models["chassis"].findMaterial("paint").setMetallic(self.paint_metallic["value"])
+        self.main.car.items["chassis"].model.findMaterial("paint").setMetallic(self.paint_metallic["value"])
 
     def callback_update_paint_brilliance(self):
 
-        self.main.car.models["chassis"].findMaterial("paint").setRoughness(1 - self.paint_brilliance["value"])
+        self.main.car.items["chassis"].model.findMaterial("paint").setRoughness(1 - self.paint_brilliance["value"])
 
     def callback_update_paint_color(self):
 
@@ -1448,7 +1448,7 @@ class BodyShop(SideWindow):
                      self.paint_blue["value"], 1)
 
         self.paint_preview.setColor(new_color)
-        self.main.car.models["chassis"].findMaterial("paint").setBaseColor(new_color)
+        self.main.car.items["chassis"].model.findMaterial("paint").setBaseColor(new_color)
 
 
 class UI:
