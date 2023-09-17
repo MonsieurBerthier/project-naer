@@ -163,3 +163,41 @@ class Car:
                 wheel.unload_model()
 
         self.items["wheels"] = {}
+
+    def get_items_status(self):
+
+        items = []
+
+        car_parts = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)
+        car_parts.remove(self.main.PATH_CARS_CHASSIS)
+        car_parts = [part.split(".")[0] for part in car_parts]
+
+        for part in car_parts:
+
+            tag = part.split(".")[0]
+            part_type = self.get_part_type(tag=tag)
+
+            part_not_installed = {"tag": tag,
+                                  "name": self.json["names"][tag],
+                                  "installed": False,
+                                  "color": (0, 0, 0, 0)}
+
+            if part_type in self.items:
+
+                if self.items[part_type].tag == tag:
+
+                    if self.items[part_type].model.findMaterial("paint"):
+                        paint_color = self.items[part_type].model.findMaterial("paint").getBaseColor()
+                    else:
+                        paint_color = (0, 0, 0, 0)
+
+                    items.append({"tag": tag,
+                                  "name": self.items[part_type].name,
+                                  "installed": True,
+                                  "color": paint_color})
+                else:
+                    items.append(part_not_installed)
+            else:
+                items.append(part_not_installed)
+
+        return items
