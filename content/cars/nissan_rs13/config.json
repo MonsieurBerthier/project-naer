@@ -8,6 +8,9 @@
     "rearbumper_oem",
     "exhaust_oem",
 	"wheel_oem"],
+  "optional": [
+    "sideskirts",
+    "spoiler"],
   "chassis": {
     "position": [0, 0, 0.55],
     "rotation": [0, 0.5, 0],
