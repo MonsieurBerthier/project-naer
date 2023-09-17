@@ -163,18 +163,16 @@ class CarPartButton:
         if not self.part_is_installed:
             self.part_color["frameColor"] = UI.RED
 
-    def update_part_color(self, color: tuple) -> None:
+    def update_part_status(self, status: dict) -> None:
 
-        self.part_color["frameColor"] = color
-
-    def update_part_status(self, installed: bool) -> None:
-
-        self.part_is_installed = installed
-
-        if self.part_is_installed:
+        if status["installed"]:
+            self.part_is_installed = True
             self.status["text"] = CarPartButton.PART_STATUS_INSTALLED
+            self.part_color["frameColor"] = status["color"]
         else:
+            self.part_is_installed = False
             self.status["text"] = ""
+            self.part_color["frameColor"] = UI.RED
 
 
 class CheckButton:
@@ -1207,11 +1205,8 @@ class BodyShop(SideWindow):
 
     def display_car_parts(self):
 
-        car_parts = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)  # FIXME Car method to get required data
-        car_parts.remove(self.main.PATH_CARS_CHASSIS)
-        car_parts = sorted([part.split(".")[0] for part in car_parts])
-
-        nb_car_parts = len(car_parts)
+        car_items_status = self.main.car.get_items_status()
+        nb_car_items = len(car_items_status)
 
         direct.gui.DirectGui.DirectLabel(text="Car Parts",
                                          text_fg=UI.WHITE,
@@ -1224,7 +1219,7 @@ class BodyShop(SideWindow):
 
         self.car_parts_frame = (
             direct.gui.DirectGui.DirectScrolledFrame(canvasSize=(0, BodyShop.FRAME_X_SIZE - (4 * UI.MARGIN),
-                                                                 0, UI.BUTTON_Y_SIZE * nb_car_parts),
+                                                                 0, UI.BUTTON_Y_SIZE * nb_car_items),
                                                      frameSize=(0, BodyShop.FRAME_X_SIZE - (2 * UI.MARGIN), 0,
                                                                 UI.BUTTON_Y_SIZE * BodyShop.NB_ITEMS_SCROLLED_FRAME),
                                                      pos=(UI.MARGIN, 0, BodyShop.FRAME_Y_SIZE -
@@ -1236,21 +1231,30 @@ class BodyShop(SideWindow):
                                                      verticalScroll_decButton_relief=False,
                                                      parent=self.frame))
 
-        for i in range(nb_car_parts):
+        for i in range(nb_car_items):
 
-            car_part_button = CarPartButton(text=self.main.car.json["names"][car_parts[i]],
+            car_part_button = CarPartButton(text=car_items_status[i]["name"],
                                             font=self.main.font,
                                             position_x=UI.MARGIN,
-                                            position_y=(UI.BUTTON_Y_SIZE * (nb_car_parts - 1)) - (UI.BUTTON_Y_SIZE * i),
+                                            position_y=(UI.BUTTON_Y_SIZE * (nb_car_items - 1)) - (UI.BUTTON_Y_SIZE * i),
                                             size_x=BodyShop.FRAME_X_SIZE - 2 * UI.MARGIN,
                                             size_y=UI.BUTTON_Y_SIZE,
                                             parent=self.car_parts_frame.getCanvas())
 
             car_part_button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                        command=self.callback_load_car_part,
-                                       extraArgs=[car_part_button, car_parts[i]])
+                                       extraArgs=[car_items_status[i]["tag"]])
+
+            car_part_button.update_part_status(status=car_items_status[i])
 
             self.car_parts_buttons.append(car_part_button)
+
+    def refresh_car_items(self):
+
+        car_items_status = self.main.car.get_items_status()
+
+        for i in range(len(car_items_status)):
+            self.car_parts_buttons[i].update_part_status(status=car_items_status[i])
 
     def display_paint_selector(self):
 
@@ -1428,10 +1432,10 @@ class BodyShop(SideWindow):
         button["frameColor"] = UI.RED
         button["text_fg"] = UI.WHITE
 
-    def callback_load_car_part(self, button, name, _):
+    def callback_load_car_part(self, name, _):
 
-        button.update_part_status(installed=True)
         self.main.car.load_part(tag=name)
+        self.refresh_car_items()
 
     def callback_update_paint_metallic(self):
 
@@ -1453,7 +1457,9 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # TODO Update BodyShop menu: code refresh part list menu
+    # TODO Add chassis and wheels in the return list get_items_status()
+    # FIXME Reloading the same car keeps the same paint color
+    # FIXME BodyShop menu: make some part_types not removable
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
     # TODO Encapsulate all DirectGUI elements in frames
