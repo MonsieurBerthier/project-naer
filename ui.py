@@ -1192,12 +1192,14 @@ class BodyShop(SideWindow):
 
         self.car_parts_buttons = []
 
+        self.selected_part = None
         self.paint_metallic = None
         self.paint_brilliance = None
         self.paint_red = None
         self.paint_green = None
         self.paint_blue = None
         self.paint_preview = None
+        self.paint_code = None
         self.paint_all_parts = None
 
         self.display_car_parts()
@@ -1261,7 +1263,7 @@ class BodyShop(SideWindow):
                                          pos=(UI.MARGIN, 0, BodyShop.FRAME_Y_SIZE - 491),
                                          parent=self.frame)
 
-        direct.gui.DirectGui.DirectLabel(text="Metallic",
+        direct.gui.DirectGui.DirectLabel(text="Selected part :",
                                          text_fg=UI.WHITE,
                                          text_bg=UI.RED,
                                          text_font=self.main.font,
@@ -1270,11 +1272,29 @@ class BodyShop(SideWindow):
                                          pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 541),
                                          parent=self.frame)
 
+        self.selected_part = direct.gui.DirectGui.DirectLabel(text="ALL",
+                                                              text_fg=UI.WHITE,
+                                                              text_bg=UI.RED,
+                                                              text_font=self.main.font,
+                                                              text_scale=UI.FONT_SIZE,
+                                                              text_align=UI.TEXT_JUSTIFY_LEFT,
+                                                              pos=(180, 0, BodyShop.FRAME_Y_SIZE - 541),
+                                                              parent=self.frame)
+
+        direct.gui.DirectGui.DirectLabel(text="Metallic",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 581),
+                                         parent=self.frame)
+
         self.paint_metallic = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=0,
                                               pageSize=0.1,
-                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 533),
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 573),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1288,14 +1308,14 @@ class BodyShop(SideWindow):
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 581),
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 621),
                                          parent=self.frame)
 
         self.paint_brilliance = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=0,
                                               pageSize=0.1,
-                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 573),
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 613),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1309,14 +1329,14 @@ class BodyShop(SideWindow):
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 621),
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 661),
                                          parent=self.frame)
 
         self.paint_red = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=0.5,
                                               pageSize=0.1,
-                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 613),
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 653),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1330,14 +1350,14 @@ class BodyShop(SideWindow):
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 661),
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 701),
                                          parent=self.frame)
 
         self.paint_green = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=0.5,
                                               pageSize=0.1,
-                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 653),
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 693),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1351,14 +1371,14 @@ class BodyShop(SideWindow):
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 701),
+                                         pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 741),
                                          parent=self.frame)
 
         self.paint_blue = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=0.5,
                                               pageSize=0.1,
-                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 693),
+                                              pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 733),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1367,20 +1387,31 @@ class BodyShop(SideWindow):
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
-                                         frameSize=(0, 100, 0, 100),
-                                         pos=(370, 0, BodyShop.FRAME_Y_SIZE - 702),
+                                         frameSize=(0, 100, 0, 120),
+                                         pos=(370, 0, BodyShop.FRAME_Y_SIZE - 713),
                                          parent=self.frame)
 
         self.paint_preview = (
             direct.gui.DirectGui.DirectFrame(frameColor=(0, 1, 0, 1),
                                              frameSize=(0, 94, 0, 94),
-                                             pos=(370 + 3, 0, BodyShop.FRAME_Y_SIZE - 699),
+                                             pos=(370 + 3, 0, BodyShop.FRAME_Y_SIZE - 710),
+                                             parent=self.frame))
+
+        self.paint_code = (
+            direct.gui.DirectGui.DirectEntry(initialText="FF00FF00FF",
+                                             text_fg=UI.GREY,
+                                             entryFont=self.main.font,
+                                             frameColor=UI.WHITE,
+                                             numLines=1,
+                                             scale=18,
+                                             width=5,
+                                             pos=(375, 0, BodyShop.FRAME_Y_SIZE - 619),
                                              parent=self.frame))
 
         self.paint_all_parts = CheckButton(text="Paint all car parts",
                                            font=self.main.font,
                                            position_x=UI.MARGIN * 2,
-                                           position_y=BodyShop.FRAME_Y_SIZE - 748,
+                                           position_y=BodyShop.FRAME_Y_SIZE - 790,
                                            size_x=BodyShop.FRAME_X_SIZE - 3 * UI.MARGIN,
                                            size_y=UI.BUTTON_Y_SIZE,
                                            parent=self.frame)
@@ -1422,11 +1453,11 @@ class BodyShop(SideWindow):
 
 class UI:
 
+    # TODO Update BodyShop menu: code refresh part list menu
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
     # TODO Encapsulate all DirectGUI elements in frames
     # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
-    # TODO Create the Body Shop interface (install parts, paint parts, ...)
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
 
