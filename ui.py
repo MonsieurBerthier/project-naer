@@ -150,7 +150,7 @@ class CarPartButton:
         self.status["text_fg"] = UI.GREY
 
         if not self.part_is_installed:
-            self.part_color["frameColor"] = UI.WHITE
+            self.part_color["frameColor"] = UI.TRANSPARENT
 
     def set_button_mouseout_style(self, _) -> None:
 
@@ -161,7 +161,7 @@ class CarPartButton:
         self.status["text_fg"] = UI.WHITE
 
         if not self.part_is_installed:
-            self.part_color["frameColor"] = UI.RED
+            self.part_color["frameColor"] = UI.TRANSPARENT
 
     def update_part_status(self, status: dict) -> None:
 
@@ -172,7 +172,7 @@ class CarPartButton:
         else:
             self.part_is_installed = False
             self.status["text"] = ""
-            self.part_color["frameColor"] = UI.RED
+            self.part_color["frameColor"] = UI.TRANSPARENT
 
 
 class CheckButton:

@@ -76,7 +76,11 @@ class Car:
         part_type = self.get_part_type(tag=tag)
 
         if part_type in self.items:
-            self.items[part_type].unload_model()
+            if self.items[part_type].tag == tag and part_type in self.json["optional"]:
+                self.unload_part(tag=tag)
+                return
+            else:
+                self.unload_part(tag=tag)
 
         self.items[part_type] = Item(tag=tag,
                                      name=self.json["names"][tag],
