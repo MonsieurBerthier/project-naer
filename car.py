@@ -75,6 +75,9 @@ class Car:
 
         part_type = self.get_part_type(tag=tag)
 
+        if part_type == "wheel":
+            return
+
         if part_type in self.items:
             if self.items[part_type].tag == tag and part_type in self.json["optional"]:
                 self.unload_part(tag=tag)
@@ -172,11 +175,15 @@ class Car:
 
         items = []
 
-        car_parts = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)
-        car_parts.remove(self.main.PATH_CARS_CHASSIS)
-        car_parts = [part.split(".")[0] for part in car_parts]
+        car_parts_files = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)
+        car_parts_files = [part.split(".")[0] for part in car_parts_files]
+        car_parts_json = self.json["names"]
 
-        for part in car_parts:
+        assert sorted(car_parts_files) == sorted(car_parts_json), \
+            (f"mismatch between content in car folder \"{self.items['chassis'].tag}\""
+             f" and \"{self.main.PATH_ITEMS_CONFIG_JSON}\" file")
+
+        for part in car_parts_json:
 
             tag = part.split(".")[0]
             part_type = self.get_part_type(tag=tag)
@@ -184,24 +191,42 @@ class Car:
             part_not_installed = {"tag": tag,
                                   "name": self.json["names"][tag],
                                   "installed": False,
+                                  "model": None,
                                   "color": (0, 0, 0, 0)}
 
-            if part_type in self.items:
+            if part_type == "chassis":
+                items.append({"tag": part_type,
+                              "name": self.json["names"]["chassis"],
+                              "installed": True,
+                              "model": self.items["chassis"],
+                              "color": self.items["chassis"].model.findMaterial("paint").getBaseColor()})
+            elif part_type == "wheel":
+                items.append({"tag": part_type,
+                              "name": self.items["wheels"][list(self.items["wheels"])[0]][0].name,
+                              "installed": True,
+                              "model": None,                 # FIXME Return something here : [w, w, w ,w] maybe
+                              "color": self.items["wheels"][list(self.items["wheels"])[0]][0].model.findMaterial("paint").getBaseColor()})
+            else:
 
-                if self.items[part_type].tag == tag:
+                if part_type in self.items:
 
-                    if self.items[part_type].model.findMaterial("paint"):
-                        paint_color = self.items[part_type].model.findMaterial("paint").getBaseColor()
+                    if self.items[part_type].tag == tag:
+
+                        if self.items[part_type].model.findMaterial("paint"):
+                            paint_color = self.items[part_type].model.findMaterial("paint").getBaseColor()
+                        else:
+                            paint_color = (0, 0, 0, 0)
+
+                        items.append({"tag": tag,
+                                      "name": self.items[part_type].name,
+                                      "installed": True,
+                                      "model": self.items[part_type].model,
+                                      "color": paint_color})  # TODO Maybe remove "color" from this dict (TBC)
                     else:
-                        paint_color = (0, 0, 0, 0)
-
-                    items.append({"tag": tag,
-                                  "name": self.items[part_type].name,
-                                  "installed": True,
-                                  "color": paint_color})
+                        items.append(part_not_installed)
                 else:
                     items.append(part_not_installed)
-            else:
-                items.append(part_not_installed)
+        logger.debug(self.items)
+        logger.debug(items)
 
         return items

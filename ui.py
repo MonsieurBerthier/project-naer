@@ -1457,9 +1457,9 @@ class BodyShop(SideWindow):
 
 class UI:
 
+    # TODO Utiliser la liste names dans le JSON de la voiture pour créer l'ordre dans le BodyShop
     # TODO Add chassis and wheels in the return list get_items_status()
     # FIXME Reloading the same car keeps the same paint color
-    # FIXME BodyShop menu: make some part_types not removable
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
     # TODO Encapsulate all DirectGUI elements in frames
