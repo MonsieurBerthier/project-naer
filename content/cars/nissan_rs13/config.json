@@ -1,6 +1,7 @@
 {
   "name": "Nissan 180SX (RS13)",
   "defaults": [
+    "chassis",
     "frontbumper_oemzenki",
     "bonnet_oem",
     "mirrors_oem",
@@ -59,7 +60,7 @@
        "rearbumper_oemkouki",
        "exhaust_oem"]}],
   "names": {
-    "chassis": "Nissan - 180SX Main Body",
+    "chassis": "Nissan 180SX Main Body",
     "wheel_oem": "Nissan - Wheels",
     "bonnet_oem": "Nissan - Bonnet",
     "exhaust_oem": "Nissan - Exhaust",
