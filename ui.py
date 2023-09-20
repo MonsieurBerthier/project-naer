@@ -163,12 +163,16 @@ class CarPartButton:
         if not self.part_is_installed:
             self.part_color["frameColor"] = UI.TRANSPARENT
 
-    def update_part_status(self, status: dict) -> None:
+    def update_part_status(self, item) -> None:
 
-        if status["installed"]:
+        if item.model:
             self.part_is_installed = True
             self.status["text"] = CarPartButton.PART_STATUS_INSTALLED
-            self.part_color["frameColor"] = status["color"]
+            item_paint = item.model.findMaterial("paint")
+            if item_paint:
+                self.part_color["frameColor"] = item_paint.getBaseColor()
+            else:
+                self.part_color["frameColor"] = UI.TRANSPARENT
         else:
             self.part_is_installed = False
             self.status["text"] = ""
@@ -209,7 +213,7 @@ class CheckButton:
         self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                         command=self.toggle_check_button)
 
-    def toggle_check_button(self, _):
+    def toggle_check_button(self, _) -> None:
 
         if self.active:
             self.check_button["frameColor"] = UI.RED
@@ -271,15 +275,15 @@ class SubMenu:
                                   extraArgs=[items[i][0]])
             self.buttons.append(button)
 
-    def callback_load_car(self, tag, _) -> None:
+    def callback_load_car(self, tag: str, _) -> None:
 
         self.main.car.load(tag=tag)
 
-    def callback_load_wheels(self, tag, _) -> None:
+    def callback_load_wheels(self, tag: str, _) -> None:
 
         self.main.car.load_wheels(tag=tag, oem=False)
 
-    def callback_load_ground(self, tag, _) -> None:
+    def callback_load_ground(self, tag: str, _) -> None:
 
         self.main.ground.change(tag=tag)
 
@@ -603,7 +607,7 @@ class MainMenu:
         self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                          command=self.exit)
 
-    def set_button_mouseover_style(self, button, _) -> None:
+    def set_button_mouseover_style(self, button: MenuButton, _) -> None:
 
         self.close_all_submenus()
         button.frame["frameColor"] = UI.WHITE
@@ -611,7 +615,7 @@ class MainMenu:
         button.frame["image"] = button.icon_mouseover
 
     @staticmethod
-    def set_button_mouseout_style(button, _) -> None:
+    def set_button_mouseout_style(button: MenuButton, _) -> None:
 
         button.frame["frameColor"] = UI.RED
         button.frame["text_fg"] = UI.WHITE
@@ -752,7 +756,7 @@ class MainMenu:
 
         self.update_autorotate_icon(b1press=True)
 
-    def update_autorotate_icon(self, b1press) -> None:
+    def update_autorotate_icon(self, b1press: bool) -> None:
 
         if self.main.autorotate:
             if b1press:
@@ -769,7 +773,8 @@ class MainMenu:
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseout = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOUT
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
 
-    def exit(self, _) -> None:
+    @staticmethod
+    def exit(_) -> None:
 
         logger.debug("Button \"Exit\" clicked")
 
@@ -830,7 +835,7 @@ class Garage(SideWindow):
         self.display_wheels_parameters()
         self.display_bodykits()
 
-    def display_car_parameters(self):
+    def display_car_parameters(self) -> None:
 
         direct.gui.DirectGui.DirectLabel(text="Car",
                                          text_fg=UI.WHITE,
@@ -883,7 +888,7 @@ class Garage(SideWindow):
                                               command=self.update_car_pitch,
                                               parent=self.frame))
 
-    def display_wheels_parameters(self):
+    def display_wheels_parameters(self) -> None:
 
         index = 0
 
@@ -1025,7 +1030,7 @@ class Garage(SideWindow):
 
             index += 1
 
-    def display_bodykits(self):
+    def display_bodykits(self) -> None:
 
         nb_bodykits = len(self.main.car.json["bodykits"])
 
@@ -1081,7 +1086,7 @@ class Garage(SideWindow):
 
             self.bodykits_buttons.append(bodykit_button)
 
-    def update_car_ride_height(self):
+    def update_car_ride_height(self) -> None:
 
         current_car_position = self.main.car.nodepath.getPos()
 
@@ -1089,7 +1094,7 @@ class Garage(SideWindow):
                                        current_car_position[1],
                                        self.car_ride_height_slider["value"]))
 
-    def update_car_pitch(self):
+    def update_car_pitch(self) -> None:
 
         current_car_rotation = self.main.car.nodepath.getHpr()
 
@@ -1097,7 +1102,7 @@ class Garage(SideWindow):
                                        self.car_pitch_slider["value"],
                                        current_car_rotation[2]))
 
-    def update_wheel_diameter(self, axle):
+    def update_wheel_diameter(self, axle: str) -> None:
 
         for i in range(len(self.main.car.json["wheels"][axle])):
 
@@ -1107,7 +1112,7 @@ class Garage(SideWindow):
                                                                    self.wheel_diameter_slider[axle]["value"],
                                                                    self.wheel_diameter_slider[axle]["value"]))
 
-    def update_wheel_width(self, axle):
+    def update_wheel_width(self, axle: str) -> None:
 
         for i in range(len(self.main.car.items["wheels"][axle])):
 
@@ -1117,7 +1122,7 @@ class Garage(SideWindow):
                                                                    current_wheel_scale[1],
                                                                    current_wheel_scale[2]))
 
-    def update_wheel_offset(self, axle):
+    def update_wheel_offset(self, axle: str) -> None:
 
         for i in range(len(self.main.car.items["wheels"][axle])):
 
@@ -1128,7 +1133,7 @@ class Garage(SideWindow):
                                                                  current_wheel_position[1],
                                                                  current_wheel_position[2]))
 
-    def update_wheel_camber(self, axle):
+    def update_wheel_camber(self, axle: str) -> None:
 
         for i in range(len(self.main.car.items["wheels"][axle])):
 
@@ -1143,7 +1148,7 @@ class Garage(SideWindow):
                                                                  current_wheel_rotation[1],
                                                                  new_wheel_camber))
 
-    def update_wheel_toe(self, axle):
+    def update_wheel_toe(self, axle: str) -> None:
 
         for i in range(len(self.main.car.items["wheels"][axle])):
 
@@ -1170,7 +1175,7 @@ class Garage(SideWindow):
         button["frameColor"] = UI.RED
         button["text_fg"] = UI.WHITE
 
-    def callback_load_bodykit(self, name, _):
+    def callback_load_bodykit(self, name: str, _) -> None:
 
         self.main.car.load_bodykit(bodykit=name)
 
@@ -1203,10 +1208,10 @@ class BodyShop(SideWindow):
         self.display_car_parts()
         self.display_paint_selector()
 
-    def display_car_parts(self):
+    def display_car_parts(self) -> None:
 
-        car_items_status = self.main.car.get_items_status()
-        nb_car_items = len(car_items_status)
+        car_items = self.main.car.get_items()
+        nb_car_items = len(car_items)
 
         direct.gui.DirectGui.DirectLabel(text="Car Parts",
                                          text_fg=UI.WHITE,
@@ -1233,7 +1238,7 @@ class BodyShop(SideWindow):
 
         for i in range(nb_car_items):
 
-            car_part_button = CarPartButton(text=car_items_status[i]["name"],
+            car_part_button = CarPartButton(text=car_items[i][0].name,
                                             font=self.main.font,
                                             position_x=UI.MARGIN,
                                             position_y=(UI.BUTTON_Y_SIZE * (nb_car_items - 1)) - (UI.BUTTON_Y_SIZE * i),
@@ -1243,20 +1248,20 @@ class BodyShop(SideWindow):
 
             car_part_button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                        command=self.callback_load_car_part,
-                                       extraArgs=[car_items_status[i]["tag"]])
+                                       extraArgs=[car_items[i][0].tag])
 
-            car_part_button.update_part_status(status=car_items_status[i])
+            car_part_button.update_part_status(item=car_items[i][0])
 
             self.car_parts_buttons.append(car_part_button)
 
-    def refresh_car_items(self):
+    def refresh_car_items(self) -> None:
 
-        car_items_status = self.main.car.get_items_status()
+        car_items = self.main.car.get_items()
 
-        for i in range(len(car_items_status)):
-            self.car_parts_buttons[i].update_part_status(status=car_items_status[i])
+        for i in range(len(car_items)):
+            self.car_parts_buttons[i].update_part_status(item=car_items[i][0])
 
-    def display_paint_selector(self):
+    def display_paint_selector(self) -> None:
 
         direct.gui.DirectGui.DirectLabel(text="Paint",
                                          text_fg=UI.WHITE,
@@ -1432,20 +1437,20 @@ class BodyShop(SideWindow):
         button["frameColor"] = UI.RED
         button["text_fg"] = UI.WHITE
 
-    def callback_load_car_part(self, name, _):
+    def callback_load_car_part(self, name: str, _) -> None:
 
         self.main.car.load_part(tag=name)
         self.refresh_car_items()
 
-    def callback_update_paint_metallic(self):
+    def callback_update_paint_metallic(self) -> None:
 
         self.main.car.items["chassis"].model.findMaterial("paint").setMetallic(self.paint_metallic["value"])
 
-    def callback_update_paint_brilliance(self):
+    def callback_update_paint_brilliance(self) -> None:
 
         self.main.car.items["chassis"].model.findMaterial("paint").setRoughness(1 - self.paint_brilliance["value"])
 
-    def callback_update_paint_color(self):
+    def callback_update_paint_color(self) -> None:
 
         new_color = (self.paint_red["value"],
                      self.paint_green["value"],
@@ -1457,9 +1462,8 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # TODO Utiliser la liste names dans le JSON de la voiture pour créer l'ordre dans le BodyShop
-    # TODO Add chassis and wheels in the return list get_items_status()
     # FIXME Reloading the same car keeps the same paint color
+    # FIXME Fix crash : load jr3, open BodyShop, click on jr3 -> KeyError
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
     # TODO Encapsulate all DirectGUI elements in frames

@@ -15,9 +15,11 @@ class Item:
         self.name = name
         self.model = model
 
-    def unload_model(self):
+    def unload_model(self) -> None:
 
-        self.model.removeNode()
+        if self.model:
+            self.model.removeNode()
+            self.model = None
 
 
 class Car:
@@ -26,7 +28,6 @@ class Car:
 
         self.main = main
 
-        self.name = None
         self.path = None
         self.json = None
         self.items = None
@@ -34,10 +35,40 @@ class Car:
 
         self.load(tag=self.main.config_json["defaults"]["car"])
 
+    def is_default(self, tag: str) -> bool:
+
+        return tag in self.json["defaults"]
+
+    def is_optional(self, tag: str) -> bool:
+
+        return self.get_part_type(tag=tag) in self.json["optional"]
+
     @staticmethod
     def get_part_type(tag: str) -> str:
 
         return tag.split("_")[0]
+
+    def get_items_of_same_part_type(self, tag: str) -> list:
+
+        found_items = []
+        part_type = self.get_part_type(tag=tag)
+
+        for i in self.items:
+            if "wheels" not in i:
+                if self.items[i].tag.startswith(part_type) and self.items[i].model:
+                    found_items.append(self.items[i].tag)
+
+        return found_items
+
+    def check_car_config_sanity(self, tag: str) -> None:
+
+        car_parts_files = library.io.get_file_path(path=self.path, extension="glb", number=0)
+        car_parts_files = [part.split(".")[0] for part in car_parts_files]
+
+        car_parts_json = list(self.json["names"])
+
+        assert sorted(car_parts_files) == sorted(car_parts_json), \
+            f"mismatch between content in car folder \"{tag}\" and \"{self.main.PATH_ITEMS_CONFIG_JSON}\" file"
 
     def load(self, tag: str) -> None:
 
@@ -48,59 +79,53 @@ class Car:
 
         self.path = os.path.join(self.main.PATH_CARS, tag)
         self.json = library.io.get_json(path=os.path.join(self.path, self.main.PATH_ITEMS_CONFIG_JSON))
-        self.name = self.json["name"]
         self.nodepath = panda3d.core.NodePath("car")
         self.nodepath.reparentTo(self.main.render)
+        self.items = {}
 
-        self.items = {"chassis": Item(tag=tag,
-                                      name="Main Body",
-                                      model=self.main.loader.loadModel(
-                                          modelPath=os.path.join(self.path, self.main.PATH_CARS_CHASSIS))),
-                      "wheels": {}}
+        self.check_car_config_sanity(tag=tag)
 
-        self.items["chassis"].model.reparentTo(self.nodepath)
-        self.items["chassis"].model.setPos(tuple(self.json["chassis"]["position"]))
-        self.items["chassis"].model.setHpr(tuple(self.json["chassis"]["rotation"]))
-        self.items["chassis"].model.setScale(tuple(self.json["chassis"]["scale"]))
+        for item_tag in self.json["names"]:
 
-        for part in self.json["defaults"]:
-            if "wheel" in part:
-                self.load_wheels(tag=part, oem=True)
+            if self.is_default(tag=item_tag):
+
+                if "wheel" in item_tag:
+                    self.load_wheels(tag=item_tag, oem=True)
+                else:
+                    self.load_part(tag=item_tag)
+
             else:
-                self.load_part(tag=part)
+                self.items[item_tag] = Item(tag=item_tag, name=self.json["names"][item_tag], model=None)
 
     def load_part(self, tag: str) -> None:
-
-        logger.debug(f"Loading car part \"{tag}\"")
 
         part_type = self.get_part_type(tag=tag)
 
         if part_type == "wheel":
             return
+        elif self.get_items_of_same_part_type(tag=tag) == [tag] and self.is_optional(tag=tag):
+            self.unload_part(tag=tag)
+            return
 
-        if part_type in self.items:
-            if self.items[part_type].tag == tag and part_type in self.json["optional"]:
-                self.unload_part(tag=tag)
-                return
-            else:
-                self.unload_part(tag=tag)
+        logger.debug(f"Loading car part \"{tag}\"")
 
-        self.items[part_type] = Item(tag=tag,
-                                     name=self.json["names"][tag],
-                                     model=self.main.loader.loadModel(
-                                         modelPath=os.path.join(self.path, tag + ".glb")))
+        for part in self.get_items_of_same_part_type(tag=tag):
+            self.items[part].unload_model()
 
-        self.items[part_type].model.setPos(tuple(self.json["chassis"]["position"]))
-        self.items[part_type].model.setHpr(tuple(self.json["chassis"]["rotation"]))
-        self.items[part_type].model.setScale(tuple(self.json["chassis"]["scale"]))
-        self.items[part_type].model.reparentTo(self.nodepath)
+        self.items[tag] = Item(tag=tag,
+                               name=self.json["names"][tag],
+                               model=self.main.loader.loadModel(modelPath=os.path.join(self.path, tag + ".glb")))
+        self.items[tag].model.setPos(tuple(self.json["chassis"]["position"]))
+        self.items[tag].model.setHpr(tuple(self.json["chassis"]["rotation"]))
+        self.items[tag].model.setScale(tuple(self.json["chassis"]["scale"]))
+        self.items[tag].model.reparentTo(self.nodepath)
 
     def load_wheels(self, tag: str, oem: bool) -> None:
 
-        if self.items["wheels"]:
+        if "wheels" in self.items:
             self.unload_wheels()
 
-        logger.debug(f"Loading car wheel \"{tag}\"")
+        logger.debug(f"Loading car wheels \"{tag}\"")
 
         if oem:
             wheel_path = os.path.join(self.path, tag + ".glb")
@@ -110,12 +135,18 @@ class Car:
             wheel_name = library.io.get_json(path=os.path.join(self.main.PATH_WHEELS,
                                                                tag, self.main.PATH_ITEMS_CONFIG_JSON))["name"]
 
+        self.items["wheels"] = {}
+
         for axle in self.json["wheels"]:
+
             self.items["wheels"][axle] = []
+
             for wheel in self.json["wheels"][axle]:
+
                 wheel_item = Item(tag=tag,
                                   name=wheel_name,
                                   model=self.main.loader.loadModel(modelPath=wheel_path))
+
                 wheel_item.model.setPos(tuple(wheel["position"]))
                 wheel_item.model.setHpr(tuple(wheel["rotation"]))
                 wheel_item.model.setScale(tuple(wheel["scale"]))
@@ -126,8 +157,10 @@ class Car:
 
         logger.debug(f"Loading bodykit \"{bodykit}\"")
 
-        for part in set(self.items.keys()) - {"chassis", "wheels"}:
-            self.unload_part(tag=part)
+        for item in list(self.items):
+
+            if item not in ["chassis", "wheels"]:
+                self.unload_part(tag=item)
 
         bodykit_partlist = [kit["parts"] for kit in self.json["bodykits"] if kit["name"] == bodykit][0]
 
@@ -136,30 +169,24 @@ class Car:
 
     def unload(self) -> None:
 
-        logger.debug(f"Unloading car \"{self.items['chassis'].tag}\"")
-
-        self.path = None
-        self.json = None
+        logger.debug(f"Unloading car")
 
         for item in list(self.items):
-            if item == "chassis":
-                self.items["chassis"].unload_model()
-            elif isinstance(self.items[item], dict):
+
+            if isinstance(self.items[item], dict):
                 self.unload_wheels()
             else:
                 self.unload_part(tag=item)
 
+        self.path = None
+        self.json = None
         self.items = None
 
     def unload_part(self, tag: str) -> None:
 
         logger.debug(f"Unloading car part \"{tag}\"")
 
-        part_type = self.get_part_type(tag=tag)
-
-        if part_type in list(self.items):
-            self.items[part_type].unload_model()
-            self.items.pop(part_type)
+        self.items[tag].unload_model()
 
     def unload_wheels(self) -> None:
 
@@ -171,62 +198,8 @@ class Car:
 
         self.items["wheels"] = {}
 
-    def get_items_status(self):
+    def get_items(self) -> list:
 
-        items = []
-
-        car_parts_files = library.io.get_file_path(path=self.main.car.path, extension="glb", number=0)
-        car_parts_files = [part.split(".")[0] for part in car_parts_files]
-        car_parts_json = self.json["names"]
-
-        assert sorted(car_parts_files) == sorted(car_parts_json), \
-            (f"mismatch between content in car folder \"{self.items['chassis'].tag}\""
-             f" and \"{self.main.PATH_ITEMS_CONFIG_JSON}\" file")
-
-        for part in car_parts_json:
-
-            tag = part.split(".")[0]
-            part_type = self.get_part_type(tag=tag)
-
-            part_not_installed = {"tag": tag,
-                                  "name": self.json["names"][tag],
-                                  "installed": False,
-                                  "model": None,
-                                  "color": (0, 0, 0, 0)}
-
-            if part_type == "chassis":
-                items.append({"tag": part_type,
-                              "name": self.json["names"]["chassis"],
-                              "installed": True,
-                              "model": self.items["chassis"],
-                              "color": self.items["chassis"].model.findMaterial("paint").getBaseColor()})
-            elif part_type == "wheel":
-                items.append({"tag": part_type,
-                              "name": self.items["wheels"][list(self.items["wheels"])[0]][0].name,
-                              "installed": True,
-                              "model": None,                 # FIXME Return something here : [w, w, w ,w] maybe
-                              "color": self.items["wheels"][list(self.items["wheels"])[0]][0].model.findMaterial("paint").getBaseColor()})
-            else:
-
-                if part_type in self.items:
-
-                    if self.items[part_type].tag == tag:
-
-                        if self.items[part_type].model.findMaterial("paint"):
-                            paint_color = self.items[part_type].model.findMaterial("paint").getBaseColor()
-                        else:
-                            paint_color = (0, 0, 0, 0)
-
-                        items.append({"tag": tag,
-                                      "name": self.items[part_type].name,
-                                      "installed": True,
-                                      "model": self.items[part_type].model,
-                                      "color": paint_color})  # TODO Maybe remove "color" from this dict (TBC)
-                    else:
-                        items.append(part_not_installed)
-                else:
-                    items.append(part_not_installed)
-        logger.debug(self.items)
-        logger.debug(items)
-
-        return items
+        items = dict(self.items)
+        items["wheels"] = [wheel for axle in items["wheels"] for wheel in items["wheels"][axle]]
+        return [items[i] if isinstance(items[i], list) else [items[i]] for i in items]
