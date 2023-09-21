@@ -103,6 +103,8 @@ class Car:
 
         if part_type == "wheel":
             return
+        elif tag not in self.json["names"]:
+            return
         elif self.get_items_of_same_part_type(tag=tag) == [tag] and self.is_optional(tag=tag):
             self.unload_part(tag=tag)
             return
