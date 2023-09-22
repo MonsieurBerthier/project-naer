@@ -16,7 +16,6 @@ from config.logger import logger
 
 panda3d.core.loadPrcFile("config/debug.prc")
 
-# TODO Find a way to change an object color material from Python
 # TODO Fix the shadow under the car: could be forced in image
 
 
