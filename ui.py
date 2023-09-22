@@ -1213,8 +1213,7 @@ class BodyShop(SideWindow):
 
     def display_car_parts(self) -> None:
 
-        car_items = self.main.car.get_items()
-        nb_car_items = len(car_items)
+        nb_car_items = len(self.main.car.items)
 
         direct.gui.DirectGui.DirectLabel(text="Car Parts",
                                          text_fg=UI.WHITE,
@@ -1239,9 +1238,14 @@ class BodyShop(SideWindow):
                                                      verticalScroll_decButton_relief=False,
                                                      parent=self.frame))
 
-        for i in range(nb_car_items):
+        for i, tag in enumerate(self.main.car.items):
 
-            car_part_button = CarPartButton(text=car_items[i][0].name,
+            if tag == "wheels":
+                item = self.main.car.items["wheels"][list(self.main.car.items["wheels"])[0]][0]
+            else:
+                item = self.main.car.items[tag]
+
+            car_part_button = CarPartButton(text=item.name,
                                             font=self.main.font,
                                             position_x=UI.MARGIN,
                                             position_y=(UI.BUTTON_Y_SIZE * (nb_car_items - 1)) - (UI.BUTTON_Y_SIZE * i),
@@ -1251,16 +1255,15 @@ class BodyShop(SideWindow):
 
             car_part_button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                        command=self.callback_load_car_part,
-                                       extraArgs=[car_items[i][0].tag])
+                                       extraArgs=[item.tag])
 
-            car_part_button.update_part_status(item=car_items[i][0])
+            car_part_button.update_part_status(item=item)
 
             self.car_parts_buttons.append(car_part_button)
 
     def display_paint_selector(self) -> None:
 
-        chassis_index = list(self.main.car.json["names"]).index("chassis")
-        chassis_paint = self.main.car.get_items()[chassis_index][0].model.findMaterial("paint")
+        chassis_paint = self.main.car.items["chassis"].model.findMaterial("paint")
         chassis_paint_metallic = chassis_paint.getMetallic()
         chassis_paint_brilliance = 1 - chassis_paint.getRoughness()
         chassis_paint_color = chassis_paint.getBaseColor()
@@ -1430,10 +1433,14 @@ class BodyShop(SideWindow):
 
     def refresh_ui(self) -> None:
 
-        car_items = self.main.car.get_items()
+        for i, tag in enumerate(self.main.car.items):
 
-        for i in range(len(car_items)):
-            self.car_parts_buttons[i].update_part_status(item=car_items[i][0])
+            if tag == "wheels":
+                item = self.main.car.items["wheels"][list(self.main.car.items["wheels"])[0]][0]
+            else:
+                item = self.main.car.items[tag]
+
+            self.car_parts_buttons[i].update_part_status(item=item)
 
     @staticmethod
     def set_button_mouseover_style(button, _) -> None:
@@ -1463,10 +1470,10 @@ class BodyShop(SideWindow):
         self.paint_preview_frame["frameColor"] = new_color
 
         if self.paint_all_parts_checkbutton.active:
-            for item in self.main.car.get_items():
-                if len(item) == 1:
-                    if item[0].model:
-                        paint = item[0].model.findMaterial("paint")
+            for tag in self.main.car.items:
+                if tag != "wheels":
+                    if self.main.car.items[tag].model:
+                        paint = self.main.car.items[tag].model.findMaterial("paint")
                         if paint:
                             paint.setBaseColor(new_color)
                             paint.setMetallic(self.paint_metallic_slider["value"])

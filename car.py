@@ -199,9 +199,3 @@ class Car:
                 wheel.unload_model()
 
         self.items["wheels"] = {}
-
-    def get_items(self) -> list:
-
-        items = dict(self.items)
-        items["wheels"] = [wheel for axle in items["wheels"] for wheel in items["wheels"][axle]]
-        return [items[i] if isinstance(items[i], list) else [items[i]] for i in items]
