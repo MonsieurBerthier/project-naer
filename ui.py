@@ -210,20 +210,6 @@ class CheckButton:
                                              pos=(3, 0, (size_y - UI.FONT_SIZE) / 2 + 3),
                                              parent=self.frame))
 
-        self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                        command=self.toggle_check_button)
-
-    def toggle_check_button(self, _) -> None:
-
-        logger.debug(f"Toggling \"{self.frame['text']}\" button")
-
-        if self.active:
-            self.check_button["frameColor"] = UI.RED
-            self.active = False
-        else:
-            self.check_button["frameColor"] = UI.WHITE
-            self.active = True
-
 
 class SubMenu:
 
@@ -1188,6 +1174,8 @@ class BodyShop(SideWindow):
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
     NB_ITEMS_SCROLLED_FRAME = 12
+    PAINT_ALL = "ALL"
+    PAINT_NONE = "NONE"
 
     def __init__(self, main) -> None:
 
@@ -1196,9 +1184,10 @@ class BodyShop(SideWindow):
         self.car_parts_frame = None
 
         self.car_parts_buttons = []
-        self.selected_part_tag = None
 
+        self.selected_tag_to_paint = None
         self.selected_part_label = None
+
         self.paint_metallic_slider = None
         self.paint_brilliance_slider = None
         self.paint_red_slider = None
@@ -1286,7 +1275,7 @@ class BodyShop(SideWindow):
                                          pos=(UI.MARGIN * 2, 0, BodyShop.FRAME_Y_SIZE - 541),
                                          parent=self.frame)
 
-        self.selected_part_label = direct.gui.DirectGui.DirectLabel(text="ALL",
+        self.selected_part_label = direct.gui.DirectGui.DirectLabel(text=BodyShop.PAINT_ALL,
                                                                     text_fg=UI.WHITE,
                                                                     text_bg=UI.RED,
                                                                     text_font=self.main.font,
@@ -1431,6 +1420,9 @@ class BodyShop(SideWindow):
                         size_y=UI.BUTTON_Y_SIZE,
                         parent=self.frame))
 
+        self.paint_all_parts_checkbutton.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                                    command=self.callback_toggle_paint_all)
+
     def refresh_ui(self) -> None:
 
         for i, tag in enumerate(self.main.car.items):
@@ -1454,9 +1446,29 @@ class BodyShop(SideWindow):
         button["frameColor"] = UI.RED
         button["text_fg"] = UI.WHITE
 
+    def callback_toggle_paint_all(self, _) -> None:
+
+        logger.debug(f"Toggling \"{self.frame['text']}\" button")
+
+        if self.paint_all_parts_checkbutton.active:
+            self.paint_all_parts_checkbutton.check_button["frameColor"] = UI.RED
+            self.paint_all_parts_checkbutton.active = False
+            self.selected_part_label["text"] = BodyShop.PAINT_NONE
+        else:
+            self.paint_all_parts_checkbutton.check_button["frameColor"] = UI.WHITE
+            self.paint_all_parts_checkbutton.active = True
+            self.selected_part_label["text"] = BodyShop.PAINT_ALL
+            self.selected_tag_to_paint = None
+
     def callback_load_car_part(self, tag: str, _) -> None:
 
-        self.selected_part_tag = tag
+        if self.paint_all_parts_checkbutton.active:
+            self.selected_part_label["text"] = BodyShop.PAINT_ALL
+            self.selected_tag_to_paint = None
+        else:
+            self.selected_part_label["text"] = self.main.car.items[tag].name  # TODO Manage wheels
+            self.selected_tag_to_paint = tag
+            # self.paint_preview_frame["frameColor"] = # TODO Get selected item color
 
         self.main.car.load_part(tag=tag)
         self.refresh_ui()
@@ -1472,21 +1484,29 @@ class BodyShop(SideWindow):
         if self.paint_all_parts_checkbutton.active:
             for tag in self.main.car.items:
                 if tag != "wheels":
-                    if self.main.car.items[tag].model:
-                        paint = self.main.car.items[tag].model.findMaterial("paint")
-                        if paint:
-                            paint.setBaseColor(new_color)
-                            paint.setMetallic(self.paint_metallic_slider["value"])
-                            paint.setRoughness(1 - self.paint_brilliance_slider["value"])
+                    self.paint_item(item=self.main.car.items[tag], color=new_color)
+                else:
+                    pass  # TODO Manage wheels
         else:
-            self.paint_preview_frame.setColor(new_color)
-            self.main.car.items["chassis"].model.findMaterial("paint").setBaseColor(new_color)
+            if self.selected_tag_to_paint:
+                self.paint_item(item=self.main.car.items[self.selected_tag_to_paint], color=new_color)
 
         self.refresh_ui()
+
+    def paint_item(self, item, color: tuple) -> None:
+
+        if item:
+            if item.model:
+                paint = item.model.findMaterial("paint")
+                if paint:
+                    paint.setBaseColor(color)
+                    paint.setMetallic(self.paint_metallic_slider["value"])
+                    paint.setRoughness(1 - self.paint_brilliance_slider["value"])
 
 
 class UI:
 
+    # FIXME Keep car items color when opening BodyShop
     # FIXME Reloading the same car keeps the same paint color
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
