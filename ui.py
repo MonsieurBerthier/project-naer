@@ -2,6 +2,7 @@ import os
 import sys
 import math
 import tkinter.filedialog
+from typing import Union
 
 import direct.gui.DirectGui
 
@@ -236,7 +237,7 @@ class CheckButton:
 
 class Material:
 
-    def __init__(self, color: tuple, metallic: float, brilliance: float) -> None:
+    def __init__(self, color: Union[tuple, None], metallic: Union[float, None], brilliance: Union[float, None]) -> None:
 
         self.color = color
         self.metallic = metallic
@@ -287,13 +288,7 @@ class MaterialPreview:
 
     def update_material(self, material: Material) -> None:
 
-        if material.color[3] == 0:
-
-            self.no_paint_label["text"] = MaterialPreview.HASNT_PAINT
-            self.material_preview["frameColor"] = UI.RED
-            self.material_code_entry.set("")
-
-        else:
+        if material.color:
 
             self.no_paint_label["text"] = MaterialPreview.HAS_PAINT
             self.material_preview["frameColor"] = material.color
@@ -305,6 +300,12 @@ class MaterialPreview:
             hex_color += self.float_to_hex(material.brilliance)
 
             self.material_code_entry.set(hex_color)
+
+        else:
+
+            self.no_paint_label["text"] = MaterialPreview.HASNT_PAINT
+            self.material_preview["frameColor"] = UI.RED
+            self.material_code_entry.set("")
 
     @staticmethod
     def float_to_hex(a):
@@ -1525,10 +1526,14 @@ class BodyShop(SideWindow):
             self.selected_tag_to_paint = tag
             if self.is_wheel(tag=tag):
                 self.selected_part_label["text"] = self.get_first_wheel().name
-                self.material_preview.update_material(material=self.get_material(item=self.get_first_wheel()))
+                current_material = self.get_material(item=self.get_first_wheel())
+                self.update_material_sliders(material=current_material)
+                self.material_preview.update_material(material=current_material)
             else:
                 self.selected_part_label["text"] = self.main.car.items[tag].name
-                self.material_preview.update_material(material=self.get_material(item=self.main.car.items[tag]))
+                current_material = self.get_material(item=self.main.car.items[tag])
+                self.update_material_sliders(material=current_material)
+                self.material_preview.update_material(material=current_material)
 
         self.refresh_ui_car_items_buttons()
 
@@ -1568,6 +1573,19 @@ class BodyShop(SideWindow):
 
             self.car_parts_buttons[i].update_part_status(item=item)
 
+    def update_material_sliders(self, material: Material) -> None:
+
+        if material.color:
+            self.paint_red_slider["value"] = material.color[0]
+            self.paint_green_slider["value"] = material.color[1]
+            self.paint_blue_slider["value"] = material.color[2]
+
+        if material.metallic:
+            self.paint_metallic_slider["value"] = material.metallic
+
+        if material.brilliance:
+            self.paint_brilliance_slider["value"] = material.brilliance
+
     @staticmethod
     def paint_item(item: car.Item, material: Material) -> None:
 
@@ -1582,7 +1600,7 @@ class BodyShop(SideWindow):
     @staticmethod
     def get_material(item: car.Item) -> Material:
 
-        result = Material(color=UI.TRANSPARENT, metallic=0, brilliance=0)
+        result = Material(color=None, metallic=None, brilliance=None)
 
         if item:
             if item.model:
