@@ -5,6 +5,7 @@ import tkinter.filedialog
 
 import direct.gui.DirectGui
 
+import car
 import library.io
 
 from config.logger import logger
@@ -105,7 +106,7 @@ class CarItemButton:
     PART_STATUS_INSTALLED = "INSTALLED"
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 parent, callback, callback_arg) -> None:
+                 callback, callback_arg, parent) -> None:
 
         self.part_is_installed = False
 
@@ -169,7 +170,7 @@ class CarItemButton:
         if not self.part_is_installed:
             self.part_color["frameColor"] = UI.TRANSPARENT
 
-    def update_part_status(self, item) -> None:
+    def update_part_status(self, item: car.Item) -> None:
 
         if item.model:
             self.part_is_installed = True
@@ -188,7 +189,7 @@ class CarItemButton:
 class CheckButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 parent, callback) -> None:
+                 callback, parent) -> None:
 
         self.callback = callback
         self.active = True
@@ -221,7 +222,7 @@ class CheckButton:
         self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                         command=self.toggle)
 
-    def toggle(self, _):
+    def toggle(self, _) -> None:
 
         if self.active:
             self.check_button["frameColor"] = UI.RED
@@ -1441,19 +1442,7 @@ class BodyShop(SideWindow):
                         callback=self.callback_toggle_paint_all,
                         parent=self.frame))
 
-    @staticmethod
-    def set_button_mouseover_style(button, _) -> None:
-
-        button["frameColor"] = UI.WHITE
-        button["text_fg"] = UI.GREY
-
-    @staticmethod
-    def set_button_mouseout_style(button, _) -> None:
-
-        button["frameColor"] = UI.RED
-        button["text_fg"] = UI.WHITE
-
-    def callback_toggle_paint_all(self, active) -> None:
+    def callback_toggle_paint_all(self, active: bool) -> None:
 
         if active:
             self.selected_part_label["text"] = BodyShop.PAINT_ALL
@@ -1516,7 +1505,7 @@ class BodyShop(SideWindow):
 
             self.car_parts_buttons[i].update_part_status(item=item)
 
-    def paint_item(self, item, color: tuple) -> None:
+    def paint_item(self, item: car.Item, color: tuple) -> None:
 
         if item:
             if item.model:
@@ -1527,7 +1516,7 @@ class BodyShop(SideWindow):
                     paint.setRoughness(1 - self.paint_brilliance_slider["value"])
 
     @staticmethod
-    def get_paint_color(item) -> tuple:
+    def get_paint_color(item: car.Item) -> tuple:
 
         paint = UI.TRANSPARENT
 
