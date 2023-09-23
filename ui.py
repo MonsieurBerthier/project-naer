@@ -234,11 +234,23 @@ class CheckButton:
             self.callback(True)
 
 
+class Material:
+
+    def __init__(self, color: tuple, metallic: float, brilliance: float) -> None:
+
+        self.color = color
+        self.metallic = metallic
+        self.brilliance = brilliance
+
+
 class MaterialPreview:
+
+    HAS_PAINT = ""
+    HASNT_PAINT = "NO PAINT"
 
     def __init__(self, font, position_x: int, position_y: int, size_x: int, size_y: int, parent):
 
-        self.frame = (
+        self.border_frame = (
             direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
                                              frameSize=(0, size_x, 0, size_y),
                                              pos=(position_x, 0, position_y),
@@ -257,21 +269,40 @@ class MaterialPreview:
                                              frameColor=UI.TRANSPARENT,
                                              numLines=1,
                                              scale=18,
-                                             width=5,
-                                             pos=(position_x + (size_x / 2) - 45, 0, position_y + 6),
+                                             width=6,
+                                             pos=(position_x + (size_x / 2) - 48, 0, position_y + 6),
                                              parent=parent))
 
-    def update_material(self, color: tuple, metallic: float, brilliance: float) -> None:
+        self.no_paint_label = (
+            direct.gui.DirectGui.DirectLabel(text="",
+                                             text_fg=UI.WHITE,
+                                             text_bg=UI.RED,
+                                             text_font=font,
+                                             text_scale=UI.FONT_SIZE,
+                                             text_align=UI.TEXT_JUSTIFY_CENTER,
+                                             pos=(position_x + (size_x / 2), 0, position_y + (size_y / 2)),
+                                             parent=parent))
 
-        self.material_preview["frameColor"] = color
+    def update_material(self, material: Material) -> None:
 
-        hex_color = ""
-        for x in color:
-            hex_color += self.float_to_hex(a=x)
-        hex_color += self.float_to_hex(a=metallic)
-        hex_color += self.float_to_hex(a=brilliance)
+        if material.color[3] == 0:
 
-        self.material_code_entry.set(hex_color)
+            self.no_paint_label["text"] = MaterialPreview.HASNT_PAINT
+            self.material_preview["frameColor"] = UI.RED
+            self.material_code_entry.set("")
+
+        else:
+
+            self.no_paint_label["text"] = MaterialPreview.HAS_PAINT
+            self.material_preview["frameColor"] = material.color
+
+            hex_color = ""
+            for x in material.color[:3]:
+                hex_color += self.float_to_hex(x)
+            hex_color += self.float_to_hex(material.metallic)
+            hex_color += self.float_to_hex(material.brilliance)
+
+            self.material_code_entry.set(hex_color)
 
     @staticmethod
     def float_to_hex(a):
@@ -1492,37 +1523,35 @@ class BodyShop(SideWindow):
             self.selected_tag_to_paint = tag
             if self.is_wheel(tag=tag):
                 self.selected_part_label["text"] = self.get_first_wheel().name
-                self.material_preview.update_material(color=self.get_paint_color(item=self.get_first_wheel()),
-                                                      metallic=1, brilliance=1)
+                self.material_preview.update_material(material=self.get_material(item=self.get_first_wheel()))
             else:
                 self.selected_part_label["text"] = self.main.car.items[tag].name
-                item_color = self.get_paint_color(item=self.main.car.items[tag])
-                if item_color:
-                    self.material_preview.update_material(color=item_color, metallic=1, brilliance=1)
-                else:
-                    self.material_preview.update_material(color=UI.TRANSPARENT, metallic=1, brilliance=1)
+                self.material_preview.update_material(material=self.get_material(item=self.main.car.items[tag]))
 
         self.refresh_ui_car_items_buttons()
 
     def callback_update_paint(self) -> None:
 
-        new_color = (self.paint_red_slider["value"],
-                     self.paint_green_slider["value"],
-                     self.paint_blue_slider["value"], 1)
-        self.material_preview.update_material(color=new_color, metallic=1, brilliance=1)
+        new_material = Material(color=(self.paint_red_slider["value"],
+                                       self.paint_green_slider["value"],
+                                       self.paint_blue_slider["value"], 1),
+                                metallic=self.paint_metallic_slider["value"],
+                                brilliance=self.paint_brilliance_slider["value"])
+
+        self.material_preview.update_material(material=new_material)
 
         if self.paint_all_parts_checkbutton.active:
             for tag in self.main.car.items:
                 if not self.is_wheel(tag=tag):
-                    self.paint_item(item=self.main.car.items[tag], color=new_color)
+                    self.paint_item(item=self.main.car.items[tag], material=new_material)
         else:
             if self.selected_tag_to_paint:
                 if self.is_wheel(tag=self.selected_tag_to_paint):
                     for axle in self.main.car.items["wheels"]:
                         for wheel in self.main.car.items["wheels"][axle]:
-                            self.paint_item(item=wheel, color=new_color)
+                            self.paint_item(item=wheel, material=new_material)
                 else:
-                    self.paint_item(item=self.main.car.items[self.selected_tag_to_paint], color=new_color)
+                    self.paint_item(item=self.main.car.items[self.selected_tag_to_paint], material=new_material)
 
         self.refresh_ui_car_items_buttons()
 
@@ -1537,30 +1566,33 @@ class BodyShop(SideWindow):
 
             self.car_parts_buttons[i].update_part_status(item=item)
 
-    def paint_item(self, item: car.Item, color: tuple) -> None:
+    @staticmethod
+    def paint_item(item: car.Item, material: Material) -> None:
 
         if item:
             if item.model:
                 paint = item.model.findMaterial("paint")
                 if paint:
-                    paint.setBaseColor(color)
-                    paint.setMetallic(self.paint_metallic_slider["value"])
-                    paint.setRoughness(1 - self.paint_brilliance_slider["value"])
+                    paint.setBaseColor(material.color)
+                    paint.setMetallic(material.metallic)
+                    paint.setRoughness(1 - material.brilliance)
 
     @staticmethod
-    def get_paint_color(item: car.Item) -> tuple:
+    def get_material(item: car.Item) -> Material:
 
-        paint = UI.TRANSPARENT
+        result = Material(color=UI.TRANSPARENT, metallic=0, brilliance=0)
 
         if item:
             if item.model:
                 paint = item.model.findMaterial("paint")
                 if paint:
-                    return paint.getBaseColor()
+                    return Material(color=tuple(paint.getBaseColor()),
+                                    metallic=paint.getMetallic(),
+                                    brilliance=1 - paint.getRoughness())
 
-        return paint
+        return result
 
-    def get_first_wheel(self):
+    def get_first_wheel(self) -> car.Item:
 
         return self.main.car.items["wheels"][list(self.main.car.items["wheels"])[0]][0]
 
