@@ -37,6 +37,7 @@ class Button:
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                         command=self.set_button_mouseover_style)
+
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
                         command=self.set_button_mouseout_style)
 
@@ -99,11 +100,12 @@ class MenuButton:
         self.frame["image"] = self.icon_mouseout
 
 
-class CarPartButton:
+class CarItemButton:
 
     PART_STATUS_INSTALLED = "INSTALLED"
 
-    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int, parent) -> None:
+    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
+                 parent, callback, callback_arg) -> None:
 
         self.part_is_installed = False
 
@@ -141,6 +143,10 @@ class CarPartButton:
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
                         command=self.set_button_mouseout_style)
 
+        self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                        command=callback,
+                        extraArgs=[callback_arg])
+
     def set_button_mouseover_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.WHITE
@@ -167,7 +173,7 @@ class CarPartButton:
 
         if item.model:
             self.part_is_installed = True
-            self.status["text"] = CarPartButton.PART_STATUS_INSTALLED
+            self.status["text"] = CarItemButton.PART_STATUS_INSTALLED
             item_paint = item.model.findMaterial("paint")
             if item_paint:
                 self.part_color["frameColor"] = item_paint.getBaseColor()
@@ -1250,17 +1256,15 @@ class BodyShop(SideWindow):
             else:
                 item = self.main.car.items[tag]
 
-            car_part_button = CarPartButton(text=item.name,
+            car_part_button = CarItemButton(text=item.name,
                                             font=self.main.font,
                                             position_x=UI.MARGIN,
                                             position_y=(UI.BUTTON_Y_SIZE * (nb_car_items - 1)) - (UI.BUTTON_Y_SIZE * i),
                                             size_x=BodyShop.FRAME_X_SIZE - 2 * UI.MARGIN,
                                             size_y=UI.BUTTON_Y_SIZE,
+                                            callback=self.callback_load_car_part,
+                                            callback_arg=tag,
                                             parent=self.car_parts_frame.getCanvas())
-
-            car_part_button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                       command=self.callback_load_car_part,
-                                       extraArgs=[item.tag])
 
             car_part_button.update_part_status(item=item)
 
@@ -1318,7 +1322,7 @@ class BodyShop(SideWindow):
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_paint_color,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectLabel(text="Brilliance",
@@ -1339,7 +1343,7 @@ class BodyShop(SideWindow):
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_paint_color,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectLabel(text="Red",
@@ -1360,7 +1364,7 @@ class BodyShop(SideWindow):
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_paint_color,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectLabel(text="Green",
@@ -1381,7 +1385,7 @@ class BodyShop(SideWindow):
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_paint_color,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectLabel(text="Blue",
@@ -1402,7 +1406,7 @@ class BodyShop(SideWindow):
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_paint_color,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
@@ -1479,7 +1483,7 @@ class BodyShop(SideWindow):
 
         self.refresh_ui_car_items_buttons()
 
-    def callback_update_paint_color(self) -> None:
+    def callback_update_paint(self) -> None:
 
         new_color = (self.paint_red_slider["value"],
                      self.paint_green_slider["value"],
