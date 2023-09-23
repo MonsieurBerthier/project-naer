@@ -234,6 +234,51 @@ class CheckButton:
             self.callback(True)
 
 
+class MaterialPreview:
+
+    def __init__(self, font, position_x: int, position_y: int, size_x: int, size_y: int, parent):
+
+        self.frame = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                             frameSize=(0, size_x, 0, size_y),
+                                             pos=(position_x, 0, position_y),
+                                             parent=parent))
+
+        self.material_preview = (
+            direct.gui.DirectGui.DirectFrame(frameColor=(0, 1, 0, 1),
+                                             frameSize=(0, size_x - 6, 0, size_y - 31),
+                                             pos=(position_x + 3, 0, position_y + 28),
+                                             parent=parent))
+
+        self.material_code_entry = (
+            direct.gui.DirectGui.DirectEntry(initialText="0" * 10,
+                                             text_fg=UI.GREY,
+                                             entryFont=font,
+                                             frameColor=UI.TRANSPARENT,
+                                             numLines=1,
+                                             scale=18,
+                                             width=5,
+                                             pos=(position_x + (size_x / 2) - 45, 0, position_y + 6),
+                                             parent=parent))
+
+    def update_material(self, color: tuple, metallic: float, brilliance: float) -> None:
+
+        self.material_preview["frameColor"] = color
+
+        hex_color = ""
+        for x in color:
+            hex_color += self.float_to_hex(a=x)
+        hex_color += self.float_to_hex(a=metallic)
+        hex_color += self.float_to_hex(a=brilliance)
+
+        self.material_code_entry.set(hex_color)
+
+    @staticmethod
+    def float_to_hex(a):
+
+        return hex(int(round(a*255, 0)))[2:].upper().rjust(2, "0")
+
+
 class SubMenu:
 
     TEXT_PADDING_LEFT = 50
@@ -1196,6 +1241,7 @@ class BodyShop(SideWindow):
     SLIDER_SCALE = 80
     FRAME_X_SIZE = 500
     FRAME_Y_SIZE = 1080
+    SLIDER_PAGE_SIZE = (1 / 256) * 6
     NB_ITEMS_SCROLLED_FRAME = 12
     PAINT_ALL = "ALL"
     PAINT_NONE = "NONE"
@@ -1216,7 +1262,7 @@ class BodyShop(SideWindow):
         self.paint_red_slider = None
         self.paint_green_slider = None
         self.paint_blue_slider = None
-        self.paint_preview_frame = None
+        self.material_preview = None
         self.paint_code_entry = None
         self.paint_all_parts_checkbutton = None
 
@@ -1317,7 +1363,7 @@ class BodyShop(SideWindow):
         self.paint_metallic_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=chassis_paint_metallic,
-                                              pageSize=0.1,
+                                              pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 573),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
@@ -1338,7 +1384,7 @@ class BodyShop(SideWindow):
         self.paint_brilliance_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=chassis_paint_brilliance,
-                                              pageSize=0.1,
+                                              pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 613),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
@@ -1359,7 +1405,7 @@ class BodyShop(SideWindow):
         self.paint_red_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=chassis_paint_color[0],
-                                              pageSize=0.1,
+                                              pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 653),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
@@ -1380,7 +1426,7 @@ class BodyShop(SideWindow):
         self.paint_green_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=chassis_paint_color[1],
-                                              pageSize=0.1,
+                                              pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 693),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
@@ -1401,7 +1447,7 @@ class BodyShop(SideWindow):
         self.paint_blue_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
                                               value=chassis_paint_color[2],
-                                              pageSize=0.1,
+                                              pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 733),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
@@ -1410,27 +1456,12 @@ class BodyShop(SideWindow):
                                               command=self.callback_update_paint,
                                               parent=self.frame))
 
-        direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
-                                         frameSize=(0, 100, 0, 120),
-                                         pos=(370, 0, BodyShop.FRAME_Y_SIZE - 713),
-                                         parent=self.frame)
-
-        self.paint_preview_frame = (
-            direct.gui.DirectGui.DirectFrame(frameColor=(0, 1, 0, 1),
-                                             frameSize=(0, 94, 0, 94),
-                                             pos=(370 + 3, 0, BodyShop.FRAME_Y_SIZE - 710),
-                                             parent=self.frame))
-
-        self.paint_code_entry = (
-            direct.gui.DirectGui.DirectEntry(initialText="FF00FF00FF",
-                                             text_fg=UI.GREY,
-                                             entryFont=self.main.font,
-                                             frameColor=UI.WHITE,
-                                             numLines=1,
-                                             scale=18,
-                                             width=5,
-                                             pos=(375, 0, BodyShop.FRAME_Y_SIZE - 619),
-                                             parent=self.frame))
+        self.material_preview = MaterialPreview(font=self.main.font,
+                                                position_x=370,
+                                                position_y=BodyShop.FRAME_Y_SIZE - 715,
+                                                size_x=100,
+                                                size_y=125,
+                                                parent=self.frame)
 
         self.paint_all_parts_checkbutton = (
             CheckButton(text="Paint all car parts (except wheels)",
@@ -1461,14 +1492,15 @@ class BodyShop(SideWindow):
             self.selected_tag_to_paint = tag
             if self.is_wheel(tag=tag):
                 self.selected_part_label["text"] = self.get_first_wheel().name
-                self.paint_preview_frame["frameColor"] = self.get_paint_color(item=self.get_first_wheel())
+                self.material_preview.update_material(color=self.get_paint_color(item=self.get_first_wheel()),
+                                                      metallic=1, brilliance=1)
             else:
                 self.selected_part_label["text"] = self.main.car.items[tag].name
                 item_color = self.get_paint_color(item=self.main.car.items[tag])
                 if item_color:
-                    self.paint_preview_frame["frameColor"] = item_color
+                    self.material_preview.update_material(color=item_color, metallic=1, brilliance=1)
                 else:
-                    self.paint_preview_frame["frameColor"] = UI.TRANSPARENT
+                    self.material_preview.update_material(color=UI.TRANSPARENT, metallic=1, brilliance=1)
 
         self.refresh_ui_car_items_buttons()
 
@@ -1477,7 +1509,7 @@ class BodyShop(SideWindow):
         new_color = (self.paint_red_slider["value"],
                      self.paint_green_slider["value"],
                      self.paint_blue_slider["value"], 1)
-        self.paint_preview_frame["frameColor"] = new_color
+        self.material_preview.update_material(color=new_color, metallic=1, brilliance=1)
 
         if self.paint_all_parts_checkbutton.active:
             for tag in self.main.car.items:
