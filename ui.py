@@ -181,8 +181,10 @@ class CarPartButton:
 
 class CheckButton:
 
-    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int, parent) -> None:
+    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
+                 parent, callback) -> None:
 
+        self.callback = callback
         self.active = True
 
         self.frame = (
@@ -209,6 +211,20 @@ class CheckButton:
                                              frameSize=(0, UI.FONT_SIZE - 6, 0, UI.FONT_SIZE - 6),
                                              pos=(3, 0, (size_y - UI.FONT_SIZE) / 2 + 3),
                                              parent=self.frame))
+
+        self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                        command=self.toggle)
+
+    def toggle(self, _):
+
+        if self.active:
+            self.check_button["frameColor"] = UI.RED
+            self.active = False
+            self.callback(False)
+        else:
+            self.check_button["frameColor"] = UI.WHITE
+            self.active = True
+            self.callback(True)
 
 
 class SubMenu:
@@ -1418,10 +1434,8 @@ class BodyShop(SideWindow):
                         position_y=BodyShop.FRAME_Y_SIZE - 790,
                         size_x=BodyShop.FRAME_X_SIZE - 3 * UI.MARGIN,
                         size_y=UI.BUTTON_Y_SIZE,
+                        callback=self.callback_toggle_paint_all,
                         parent=self.frame))
-
-        self.paint_all_parts_checkbutton.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                                    command=self.callback_toggle_paint_all)
 
     @staticmethod
     def set_button_mouseover_style(button, _) -> None:
@@ -1435,19 +1449,13 @@ class BodyShop(SideWindow):
         button["frameColor"] = UI.RED
         button["text_fg"] = UI.WHITE
 
-    def callback_toggle_paint_all(self, _) -> None:
+    def callback_toggle_paint_all(self, active) -> None:
 
-        logger.debug(f"Toggling \"{self.frame['text']}\" button")
-
-        if self.paint_all_parts_checkbutton.active:
-            self.paint_all_parts_checkbutton.check_button["frameColor"] = UI.RED
-            self.paint_all_parts_checkbutton.active = False
-            self.selected_part_label["text"] = BodyShop.PAINT_NONE                   # FIXME Use a callback for this
+        if active:
+            self.selected_part_label["text"] = BodyShop.PAINT_ALL
+            self.selected_tag_to_paint = None
         else:
-            self.paint_all_parts_checkbutton.check_button["frameColor"] = UI.WHITE
-            self.paint_all_parts_checkbutton.active = True
-            self.selected_part_label["text"] = BodyShop.PAINT_ALL                    # FIXME Use a callback for this
-            self.selected_tag_to_paint = None                                        # FIXME Use a callback for this
+            self.selected_part_label["text"] = BodyShop.PAINT_NONE
 
     def callback_load_car_part(self, tag: str, _) -> None:
 
