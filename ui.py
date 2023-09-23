@@ -1446,6 +1446,13 @@ class BodyShop(SideWindow):
         button["frameColor"] = UI.RED
         button["text_fg"] = UI.WHITE
 
+    def is_wheel(self, tag: str) -> bool:
+
+        if tag.startswith("wheel") or tag not in self.main.car.json["names"]:
+            return True
+        else:
+            return False
+
     def callback_toggle_paint_all(self, _) -> None:
 
         logger.debug(f"Toggling \"{self.frame['text']}\" button")
@@ -1453,12 +1460,12 @@ class BodyShop(SideWindow):
         if self.paint_all_parts_checkbutton.active:
             self.paint_all_parts_checkbutton.check_button["frameColor"] = UI.RED
             self.paint_all_parts_checkbutton.active = False
-            self.selected_part_label["text"] = BodyShop.PAINT_NONE
+            self.selected_part_label["text"] = BodyShop.PAINT_NONE  # FIXME Use a callback for this
         else:
             self.paint_all_parts_checkbutton.check_button["frameColor"] = UI.WHITE
             self.paint_all_parts_checkbutton.active = True
-            self.selected_part_label["text"] = BodyShop.PAINT_ALL
-            self.selected_tag_to_paint = None
+            self.selected_part_label["text"] = BodyShop.PAINT_ALL  # FIXME Use a callback for this
+            self.selected_tag_to_paint = None  # FIXME Use a callback for this
 
     def callback_load_car_part(self, tag: str, _) -> None:
 
@@ -1468,9 +1475,14 @@ class BodyShop(SideWindow):
             self.selected_part_label["text"] = BodyShop.PAINT_ALL
             self.selected_tag_to_paint = None
         else:
-            self.selected_part_label["text"] = self.main.car.items[tag].name  # TODO Manage wheels
             self.selected_tag_to_paint = tag
-            self.paint_preview_frame["frameColor"] = self.get_paint_color(item=self.main.car.items[tag])
+            if self.is_wheel(tag=tag):
+                wheel_item = self.main.car.items["wheels"][list(self.main.car.items["wheels"])[0]][0]
+                self.selected_part_label["text"] = wheel_item.name
+                self.paint_preview_frame["frameColor"] = self.get_paint_color(item=wheel_item)
+            else:
+                self.selected_part_label["text"] = self.main.car.items[tag].name
+                self.paint_preview_frame["frameColor"] = self.get_paint_color(item=self.main.car.items[tag])
 
         self.refresh_ui_car_items_buttons()
 
@@ -1484,15 +1496,16 @@ class BodyShop(SideWindow):
 
         if self.paint_all_parts_checkbutton.active:
             for tag in self.main.car.items:
-                if tag == "wheels":
-                    for axle in self.main.car.items[tag]:
-                        for wheel in self.main.car.items[tag][axle]:
-                            self.paint_item(item=wheel, color=new_color)
-                else:
+                if not tag == "wheels":
                     self.paint_item(item=self.main.car.items[tag], color=new_color)
         else:
             if self.selected_tag_to_paint:
-                self.paint_item(item=self.main.car.items[self.selected_tag_to_paint], color=new_color)
+                if self.is_wheel(tag=self.selected_tag_to_paint):
+                    for axle in self.main.car.items["wheels"]:
+                        for wheel in self.main.car.items["wheels"][axle]:
+                            self.paint_item(item=wheel, color=new_color)
+                else:
+                    self.paint_item(item=self.main.car.items[self.selected_tag_to_paint], color=new_color)
 
         self.refresh_ui_car_items_buttons()
 
