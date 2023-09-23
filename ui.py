@@ -1423,7 +1423,7 @@ class BodyShop(SideWindow):
         self.paint_all_parts_checkbutton.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                     command=self.callback_toggle_paint_all)
 
-    def refresh_ui(self) -> None:
+    def refresh_ui_car_items_buttons(self) -> None:
 
         for i, tag in enumerate(self.main.car.items):
 
@@ -1462,16 +1462,17 @@ class BodyShop(SideWindow):
 
     def callback_load_car_part(self, tag: str, _) -> None:
 
+        self.main.car.load_part(tag=tag)
+
         if self.paint_all_parts_checkbutton.active:
             self.selected_part_label["text"] = BodyShop.PAINT_ALL
             self.selected_tag_to_paint = None
         else:
             self.selected_part_label["text"] = self.main.car.items[tag].name  # TODO Manage wheels
             self.selected_tag_to_paint = tag
-            # self.paint_preview_frame["frameColor"] = # TODO Get selected item color
+            self.paint_preview_frame["frameColor"] = self.get_paint_color(item=self.main.car.items[tag])
 
-        self.main.car.load_part(tag=tag)
-        self.refresh_ui()
+        self.refresh_ui_car_items_buttons()
 
     def callback_update_paint_color(self) -> None:
 
@@ -1483,15 +1484,17 @@ class BodyShop(SideWindow):
 
         if self.paint_all_parts_checkbutton.active:
             for tag in self.main.car.items:
-                if tag != "wheels":
-                    self.paint_item(item=self.main.car.items[tag], color=new_color)
+                if tag == "wheels":
+                    for axle in self.main.car.items[tag]:
+                        for wheel in self.main.car.items[tag][axle]:
+                            self.paint_item(item=wheel, color=new_color)
                 else:
-                    pass  # TODO Manage wheels
+                    self.paint_item(item=self.main.car.items[tag], color=new_color)
         else:
             if self.selected_tag_to_paint:
                 self.paint_item(item=self.main.car.items[self.selected_tag_to_paint], color=new_color)
 
-        self.refresh_ui()
+        self.refresh_ui_car_items_buttons()
 
     def paint_item(self, item, color: tuple) -> None:
 
@@ -1502,6 +1505,19 @@ class BodyShop(SideWindow):
                     paint.setBaseColor(color)
                     paint.setMetallic(self.paint_metallic_slider["value"])
                     paint.setRoughness(1 - self.paint_brilliance_slider["value"])
+
+    @staticmethod
+    def get_paint_color(item) -> tuple:
+
+        paint = UI.TRANSPARENT
+
+        if item:
+            if item.model:
+                paint = item.model.findMaterial("paint").getBaseColor()
+                if paint:
+                    return paint
+
+        return paint
 
 
 class UI:
