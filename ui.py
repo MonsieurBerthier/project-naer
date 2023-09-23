@@ -1463,7 +1463,11 @@ class BodyShop(SideWindow):
                 self.paint_preview_frame["frameColor"] = self.get_paint_color(item=self.get_first_wheel())
             else:
                 self.selected_part_label["text"] = self.main.car.items[tag].name
-                self.paint_preview_frame["frameColor"] = self.get_paint_color(item=self.main.car.items[tag])
+                item_color = self.get_paint_color(item=self.main.car.items[tag])
+                if item_color:
+                    self.paint_preview_frame["frameColor"] = item_color
+                else:
+                    self.paint_preview_frame["frameColor"] = UI.TRANSPARENT
 
         self.refresh_ui_car_items_buttons()
 
@@ -1517,9 +1521,9 @@ class BodyShop(SideWindow):
 
         if item:
             if item.model:
-                paint = item.model.findMaterial("paint").getBaseColor()
+                paint = item.model.findMaterial("paint")
                 if paint:
-                    return paint
+                    return paint.getBaseColor()
 
         return paint
 
