@@ -102,6 +102,7 @@ class MenuButton:
 
 class CarItemButton:
 
+    BORDER = 2
     PART_STATUS_INSTALLED = "INSTALLED"
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
@@ -122,10 +123,18 @@ class CarItemButton:
                                              state=direct.gui.DirectGui.DGG.NORMAL,
                                              parent=parent))
 
-        self.item_color = (
-            direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
+        self.item_color_border = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
                                              frameSize=(0, UI.FONT_SIZE, 0, UI.FONT_SIZE),
                                              pos=(6, 0, (size_y - UI.FONT_SIZE) / 2),
+                                             parent=self.frame))
+
+        self.item_color = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
+                                             frameSize=(0, UI.FONT_SIZE - (2 * CarItemButton.BORDER),
+                                                        0, UI.FONT_SIZE - (2 * CarItemButton.BORDER)),
+                                             pos=(6 + CarItemButton.BORDER, 0,
+                                                  (size_y - UI.FONT_SIZE) / 2 + CarItemButton.BORDER),
                                              parent=self.frame))
 
         self.status = direct.gui.DirectGui.DirectLabel(text="",
@@ -156,6 +165,7 @@ class CarItemButton:
         self.status["text_fg"] = UI.GREY
 
         if not self.item_is_installed:
+            self.item_color_border["frameColor"] = UI.TRANSPARENT
             self.item_color["frameColor"] = UI.TRANSPARENT
 
     def set_button_mouseout_style(self, _) -> None:
@@ -167,6 +177,7 @@ class CarItemButton:
         self.status["text_fg"] = UI.WHITE
 
         if not self.item_is_installed:
+            self.item_color_border["frameColor"] = UI.TRANSPARENT
             self.item_color["frameColor"] = UI.TRANSPARENT
 
     def update_item_status(self, item: car.Item) -> None:
@@ -179,13 +190,16 @@ class CarItemButton:
 
             if item_paint:
                 self.item_color["frameColor"] = item_paint.getBaseColor()
+                self.item_color_border["frameColor"] = UI.WHITE
             else:
+                self.item_color_border["frameColor"] = UI.TRANSPARENT
                 self.item_color["frameColor"] = UI.TRANSPARENT
 
         else:
 
             self.item_is_installed = False
             self.status["text"] = ""
+            self.item_color_border["frameColor"] = UI.TRANSPARENT
             self.item_color["frameColor"] = UI.TRANSPARENT
 
 
@@ -1670,8 +1684,6 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # TODO Add 1 pixel border around color for CatItemButton
-    # TODO Implement color entry in the BodyShop
     # FIXME Reloading the same car keeps the same paint color
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
