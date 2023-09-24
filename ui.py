@@ -82,10 +82,8 @@ class MenuButton:
                                                       image_pos=(image_pos_x, 0, -UI.BUTTON_Y_SIZE / 2))
 
         if auto_event:
-
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                             command=self.set_button_mouseover_style)
-
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
                             command=self.set_button_mouseout_style)
 
@@ -174,14 +172,18 @@ class CarItemButton:
     def update_item_status(self, item: car.Item) -> None:
 
         if item.model:
+
             self.item_is_installed = True
             self.status["text"] = CarItemButton.PART_STATUS_INSTALLED
             item_paint = item.model.findMaterial("paint")
+
             if item_paint:
                 self.item_color["frameColor"] = item_paint.getBaseColor()
             else:
                 self.item_color["frameColor"] = UI.TRANSPARENT
+
         else:
+
             self.item_is_installed = False
             self.status["text"] = ""
             self.item_color["frameColor"] = UI.TRANSPARENT
@@ -235,7 +237,7 @@ class CheckButton:
             self.callback(True)
 
 
-class Material:
+class Paint:
 
     def __init__(self, color: Union[tuple, None], metallic: Union[float, None], brilliance: Union[float, None]) -> None:
 
@@ -244,7 +246,7 @@ class Material:
         self.brilliance = brilliance
 
 
-class MaterialPreview:
+class PaintPreview:
 
     HAS_PAINT = ""
     HASNT_PAINT = "NO PAINT"
@@ -263,14 +265,14 @@ class MaterialPreview:
                                              pos=(position_x, 0, position_y),
                                              parent=parent))
 
-        self.material_preview = (
+        self.paint_preview = (
             direct.gui.DirectGui.DirectFrame(frameColor=(0, 1, 0, 1),
-                                             frameSize=(0, size_x - (2 * MaterialPreview.BORDER),
-                                                        0, size_y - MaterialPreview.BORDER - 28),
-                                             pos=(MaterialPreview.BORDER, 0, MaterialPreview.BORDER + 25),
+                                             frameSize=(0, size_x - (2 * PaintPreview.BORDER),
+                                                        0, size_y - PaintPreview.BORDER - 28),
+                                             pos=(PaintPreview.BORDER, 0, PaintPreview.BORDER + 25),
                                              parent=self.border_frame))
 
-        self.material_code_entry = (
+        self.paint_code_entry = (
             direct.gui.DirectGui.DirectEntry(initialText=self.current_color_hex,
                                              text_fg=UI.GREY,
                                              entryFont=font,
@@ -295,46 +297,46 @@ class MaterialPreview:
 
     def get_user_entry(self, paint_code: str) -> None:
 
-        if bool(re.match(MaterialPreview.REGEX_COLOR_CODE, paint_code)):
+        if bool(re.match(PaintPreview.REGEX_COLOR_CODE, paint_code)):
 
             new_paint_code_upper = paint_code.upper()
-            self.material_code_entry.set(new_paint_code_upper)
+            self.paint_code_entry.set(new_paint_code_upper)
             self.current_color_hex = new_paint_code_upper
 
-            new_paint = Material(color=(self.hex_to_float(paint_code[:2]),
-                                        self.hex_to_float(paint_code[2:4]),
-                                        self.hex_to_float(paint_code[4:6])),
-                                 metallic=self.hex_to_float(paint_code[6:8]),
-                                 brilliance=self.hex_to_float(paint_code[8:10]))
-            self.callback(material=new_paint)
+            new_paint = Paint(color=(self.hex_to_float(paint_code[:2]),
+                                     self.hex_to_float(paint_code[2:4]),
+                                     self.hex_to_float(paint_code[4:6])),
+                              metallic=self.hex_to_float(paint_code[6:8]),
+                              brilliance=self.hex_to_float(paint_code[8:10]))
+            self.callback(paint=new_paint)
 
         else:
 
-            self.material_code_entry.set(self.current_color_hex)
+            self.paint_code_entry.set(self.current_color_hex)
 
-    def update_material(self, material: Material) -> None:
+    def update_paint(self, paint: Paint) -> None:
 
-        if material.color:
+        if paint.color:
 
-            self.no_paint_label["text"] = MaterialPreview.HAS_PAINT
-            self.material_preview["frameColor"] = material.color
+            self.no_paint_label["text"] = PaintPreview.HAS_PAINT
+            self.paint_preview["frameColor"] = paint.color
 
             hex_color = ""
-            for x in material.color[:3]:
+            for x in paint.color[:3]:
                 hex_color += self.float_to_hex(x)
-            hex_color += self.float_to_hex(material.metallic)
-            hex_color += self.float_to_hex(material.brilliance)
+            hex_color += self.float_to_hex(paint.metallic)
+            hex_color += self.float_to_hex(paint.brilliance)
 
-            self.material_code_entry.set(hex_color)
+            self.paint_code_entry.set(hex_color)
 
         else:
 
-            self.no_paint_label["text"] = MaterialPreview.HASNT_PAINT
-            self.material_preview["frameColor"] = UI.RED
+            self.no_paint_label["text"] = PaintPreview.HASNT_PAINT
+            self.paint_preview["frameColor"] = UI.RED
 
-            self.material_code_entry.set("")
+            self.paint_code_entry.set("")
 
-        self.current_color_hex = self.material_code_entry.get()
+        self.current_color_hex = self.paint_code_entry.get()
 
     @staticmethod
     def float_to_hex(a: float) -> str:
@@ -373,6 +375,7 @@ class SubMenu:
         items = sorted(items, key=lambda x: x[1])
 
         for i in range(len(items)):
+
             button = MenuButton(main=self.main,
                                 text=items[i][1],
                                 font=self.main.font,
@@ -883,17 +886,22 @@ class MainMenu:
     def update_autorotate_icon(self, b1press: bool) -> None:
 
         if self.main.autorotate:
+
             if b1press:
                 self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER
             else:
                 self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT
+
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseout = MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER
+
         else:
+
             if b1press:
                 self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
             else:
                 self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame["image"] = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOUT
+
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseout = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOUT
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
 
@@ -1330,7 +1338,7 @@ class BodyShop(SideWindow):
         self.paint_red_slider = None
         self.paint_green_slider = None
         self.paint_blue_slider = None
-        self.material_preview = None
+        self.paint_preview = None
         self.paint_code_entry = None
         self.paint_all_car_items_checkbutton = None
 
@@ -1387,7 +1395,7 @@ class BodyShop(SideWindow):
 
     def display_paint_selector(self) -> None:
 
-        chassis_material = self.get_material(item=self.main.car.items["chassis"])
+        chassis_paint = self.get_paint(item=self.main.car.items["chassis"])
 
         direct.gui.DirectGui.DirectLabel(text="Paint",
                                          text_fg=UI.WHITE,
@@ -1428,14 +1436,14 @@ class BodyShop(SideWindow):
 
         self.paint_red_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
-                                              value=chassis_material.color[0],
+                                              value=chassis_paint.color[0],
                                               pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 573),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_material,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectLabel(text="Green",
@@ -1449,14 +1457,14 @@ class BodyShop(SideWindow):
 
         self.paint_green_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
-                                              value=chassis_material.color[1],
+                                              value=chassis_paint.color[1],
                                               pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 613),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_material,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectLabel(text="Blue",
@@ -1470,14 +1478,14 @@ class BodyShop(SideWindow):
 
         self.paint_blue_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
-                                              value=chassis_material.color[2],
+                                              value=chassis_paint.color[2],
                                               pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 653),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_material,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectLabel(text="Metallic",
@@ -1491,14 +1499,14 @@ class BodyShop(SideWindow):
 
         self.paint_metallic_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
-                                              value=chassis_material.metallic,
+                                              value=chassis_paint.metallic,
                                               pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 693),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_material,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
         direct.gui.DirectGui.DirectLabel(text="Brilliance",
@@ -1512,23 +1520,23 @@ class BodyShop(SideWindow):
 
         self.paint_brilliance_slider = (
             direct.gui.DirectGui.DirectSlider(range=(0, 1),
-                                              value=chassis_material.brilliance,
+                                              value=chassis_paint.brilliance,
                                               pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0, BodyShop.FRAME_Y_SIZE - 733),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
-                                              command=self.callback_update_material,
+                                              command=self.callback_update_paint,
                                               parent=self.frame))
 
-        self.material_preview = MaterialPreview(font=self.main.font,
-                                                position_x=370,
-                                                position_y=BodyShop.FRAME_Y_SIZE - 715,
-                                                size_x=100,
-                                                size_y=125,
-                                                callback=self.callback_update_material_sliders,
-                                                parent=self.frame)
+        self.paint_preview = PaintPreview(font=self.main.font,
+                                          position_x=370,
+                                          position_y=BodyShop.FRAME_Y_SIZE - 715,
+                                          size_x=100,
+                                          size_y=125,
+                                          callback=self.callback_update_paint_sliders,
+                                          parent=self.frame)
 
         self.paint_all_car_items_checkbutton = (
             CheckButton(text="Paint all car parts (except wheels)",
@@ -1553,45 +1561,52 @@ class BodyShop(SideWindow):
         self.main.car.load_part(tag=tag)
 
         if self.paint_all_car_items_checkbutton.active:
+
             self.selected_item_label["text"] = BodyShop.PAINT_ALL
             self.selected_tag_to_paint = None
+
         else:
+
             self.selected_tag_to_paint = tag
+
             if self.is_wheel(tag=tag):
                 self.selected_item_label["text"] = self.get_first_wheel().name
-                current_material = self.get_material(item=self.get_first_wheel())
-                self.callback_update_material_sliders(material=current_material)
-                self.material_preview.update_material(material=current_material)
+                current_paint = self.get_paint(item=self.get_first_wheel())
+                self.callback_update_paint_sliders(paint=current_paint)
+                self.paint_preview.update_paint(paint=current_paint)
             else:
                 self.selected_item_label["text"] = self.main.car.items[tag].name
-                current_material = self.get_material(item=self.main.car.items[tag])
-                self.callback_update_material_sliders(material=current_material)
-                self.material_preview.update_material(material=current_material)
+                current_paint = self.get_paint(item=self.main.car.items[tag])
+                self.callback_update_paint_sliders(paint=current_paint)
+                self.paint_preview.update_paint(paint=current_paint)
 
         self.refresh_ui_car_items_buttons()
 
-    def callback_update_material(self) -> None:
+    def callback_update_paint(self) -> None:
 
-        new_material = Material(color=(self.paint_red_slider["value"],
-                                       self.paint_green_slider["value"],
-                                       self.paint_blue_slider["value"], 1),
-                                metallic=self.paint_metallic_slider["value"],
-                                brilliance=self.paint_brilliance_slider["value"])
+        new_paint = Paint(color=(self.paint_red_slider["value"],
+                                 self.paint_green_slider["value"],
+                                 self.paint_blue_slider["value"], 1),
+                          metallic=self.paint_metallic_slider["value"],
+                          brilliance=self.paint_brilliance_slider["value"])
 
-        self.material_preview.update_material(material=new_material)
+        self.paint_preview.update_paint(paint=new_paint)
 
         if self.paint_all_car_items_checkbutton.active:
+
             for tag in self.main.car.items:
                 if not self.is_wheel(tag=tag):
-                    self.set_material(item=self.main.car.items[tag], material=new_material)
+                    self.set_paint(item=self.main.car.items[tag], paint=new_paint)
         else:
+
             if self.selected_tag_to_paint:
+
                 if self.is_wheel(tag=self.selected_tag_to_paint):
                     for axle in self.main.car.items["wheels"]:
                         for wheel in self.main.car.items["wheels"][axle]:
-                            self.set_material(item=wheel, material=new_material)
+                            self.set_paint(item=wheel, paint=new_paint)
                 else:
-                    self.set_material(item=self.main.car.items[self.selected_tag_to_paint], material=new_material)
+                    self.set_paint(item=self.main.car.items[self.selected_tag_to_paint], paint=new_paint)
 
         self.refresh_ui_car_items_buttons()
 
@@ -1606,39 +1621,38 @@ class BodyShop(SideWindow):
 
             self.car_items_buttons[i].update_item_status(item=item)
 
-    def callback_update_material_sliders(self, material: Material) -> None:
+    def callback_update_paint_sliders(self, paint: Paint) -> None:
 
-        if material.color:
-
-            self.paint_red_slider["value"] = material.color[0]
-            self.paint_green_slider["value"] = material.color[1]
-            self.paint_blue_slider["value"] = material.color[2]
-            self.paint_metallic_slider["value"] = material.metallic
-            self.paint_brilliance_slider["value"] = material.brilliance
+        if paint.color:
+            self.paint_red_slider["value"] = paint.color[0]
+            self.paint_green_slider["value"] = paint.color[1]
+            self.paint_blue_slider["value"] = paint.color[2]
+            self.paint_metallic_slider["value"] = paint.metallic
+            self.paint_brilliance_slider["value"] = paint.brilliance
 
     @staticmethod
-    def set_material(item: car.Item, material: Material) -> None:
+    def set_paint(item: car.Item, paint: Paint) -> None:
+
+        if item:
+            if item.model:
+                paint_found = item.model.findMaterial("paint")
+                if paint_found:
+                    paint_found.setBaseColor(paint.color)
+                    paint_found.setMetallic(paint.metallic)
+                    paint_found.setRoughness(1 - paint.brilliance)
+
+    @staticmethod
+    def get_paint(item: car.Item) -> Paint:
+
+        result = Paint(color=None, metallic=None, brilliance=None)
 
         if item:
             if item.model:
                 paint = item.model.findMaterial("paint")
                 if paint:
-                    paint.setBaseColor(material.color)
-                    paint.setMetallic(material.metallic)
-                    paint.setRoughness(1 - material.brilliance)
-
-    @staticmethod
-    def get_material(item: car.Item) -> Material:
-
-        result = Material(color=None, metallic=None, brilliance=None)
-
-        if item:
-            if item.model:
-                paint = item.model.findMaterial("paint")
-                if paint:
-                    return Material(color=tuple(paint.getBaseColor()),
-                                    metallic=paint.getMetallic(),
-                                    brilliance=1 - paint.getRoughness())
+                    return Paint(color=tuple(paint.getBaseColor()),
+                                 metallic=paint.getMetallic(),
+                                 brilliance=1 - paint.getRoughness())
 
         return result
 
