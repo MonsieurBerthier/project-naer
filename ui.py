@@ -38,17 +38,17 @@ class ClickButton:
                                                       parent=parent)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                        command=self.set_button_mouseover_style)
+                        command=self.set_mouseover_style)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                        command=self.set_button_mouseout_style)
+                        command=self.set_mouseout_style)
 
-    def set_button_mouseover_style(self, _) -> None:
+    def set_mouseover_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.WHITE
         self.frame["text_fg"] = UI.GREY
 
-    def set_button_mouseout_style(self, _) -> None:
+    def set_mouseout_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.RED
         self.frame["text_fg"] = UI.WHITE
@@ -83,17 +83,17 @@ class MenuButton:
 
         if auto_event:
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                            command=self.set_button_mouseover_style)
+                            command=self.set_mouseover_style)
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                            command=self.set_button_mouseout_style)
+                            command=self.set_mouseout_style)
 
-    def set_button_mouseover_style(self, _) -> None:
+    def set_mouseover_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.WHITE
         self.frame["text_fg"] = UI.GREY
         self.frame["image"] = self.icon_mouseover
 
-    def set_button_mouseout_style(self, _) -> None:
+    def set_mouseout_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.RED
         self.frame["text_fg"] = UI.WHITE
@@ -118,19 +118,19 @@ class ListButton:
                                                       parent=parent)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                        command=self.set_button_mouseover_style)
+                        command=self.set_mouseover_style)
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                        command=self.set_button_mouseout_style)
+                        command=self.set_mouseout_style)
         self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                         command=callback,
                         extraArgs=[self.frame["text"]])
 
-    def set_button_mouseover_style(self, _) -> None:
+    def set_mouseover_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.WHITE
         self.frame["text_fg"] = UI.GREY
 
-    def set_button_mouseout_style(self, _) -> None:
+    def set_mouseout_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.RED
         self.frame["text_fg"] = UI.WHITE
@@ -183,16 +183,16 @@ class CarItemButton:
                                                        parent=self.frame)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                        command=self.set_button_mouseover_style)
+                        command=self.set_mouseover_style)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                        command=self.set_button_mouseout_style)
+                        command=self.set_mouseout_style)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                         command=callback,
                         extraArgs=[callback_arg])
 
-    def set_button_mouseover_style(self, _) -> None:
+    def set_mouseover_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.WHITE
         self.frame["text_fg"] = UI.GREY
@@ -204,7 +204,7 @@ class CarItemButton:
             self.item_color_border["frameColor"] = UI.TRANSPARENT
             self.item_color["frameColor"] = UI.TRANSPARENT
 
-    def set_button_mouseout_style(self, _) -> None:
+    def set_mouseout_style(self, _) -> None:
 
         self.frame["frameColor"] = UI.RED
         self.frame["text_fg"] = UI.WHITE
@@ -649,10 +649,10 @@ class MainMenu:
                        icon_mouseover=MainMenu.ICON_GARAGE_MOUSEOVER,
                        icon_mouseout=MainMenu.ICON_GARAGE_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                           command=self.set_button_mouseover_style,
+                                                           command=self.set_mouseover_style,
                                                            extraArgs=[self.menu_buttons[MainMenu.TEXT_GARAGE]])
         self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                           command=self.set_button_mouseout_style,
+                                                           command=self.set_mouseout_style,
                                                            extraArgs=[self.menu_buttons[MainMenu.TEXT_GARAGE]])
         self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                            command=self.display_garage)
@@ -670,10 +670,10 @@ class MainMenu:
                        icon_mouseover=MainMenu.ICON_BODY_SHOP_MOUSEOVER,
                        icon_mouseout=MainMenu.ICON_BODY_SHOP_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                              command=self.set_button_mouseover_style,
+                                                              command=self.set_mouseover_style,
                                                               extraArgs=[self.menu_buttons[MainMenu.TEXT_BODY_SHOP]])
         self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                              command=self.set_button_mouseout_style,
+                                                              command=self.set_mouseout_style,
                                                               extraArgs=[self.menu_buttons[MainMenu.TEXT_BODY_SHOP]])
         self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                               command=self.display_body_shop)
@@ -691,10 +691,10 @@ class MainMenu:
                        icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
                        icon_mouseout=MainMenu.ICON_SAVE_CAR_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_SAVE_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                             command=self.set_button_mouseover_style,
+                                                             command=self.set_mouseover_style,
                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_CAR]])
         self.menu_buttons[MainMenu.TEXT_SAVE_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                             command=self.set_button_mouseout_style,
+                                                             command=self.set_mouseout_style,
                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_CAR]])
         self.menu_buttons[MainMenu.TEXT_SAVE_CAR].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                              command=self.save_car)
@@ -712,10 +712,10 @@ class MainMenu:
                        icon_mouseover=MainMenu.ICON_LOAD_CAR_MOUSEOVER,
                        icon_mouseout=MainMenu.ICON_LOAD_CAR_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_LOAD_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                             command=self.set_button_mouseover_style,
+                                                             command=self.set_mouseover_style,
                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_LOAD_CAR]])
         self.menu_buttons[MainMenu.TEXT_LOAD_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                             command=self.set_button_mouseout_style,
+                                                             command=self.set_mouseout_style,
                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_LOAD_CAR]])
         self.menu_buttons[MainMenu.TEXT_LOAD_CAR].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                              command=self.load)
@@ -733,10 +733,10 @@ class MainMenu:
                        icon_mouseover=MainMenu.ICON_SAVE_IMAGE_MOUSEOVER,
                        icon_mouseout=MainMenu.ICON_SAVE_IMAGE_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                               command=self.set_button_mouseover_style,
+                                                               command=self.set_mouseover_style,
                                                                extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE]])
         self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                               command=self.set_button_mouseout_style,
+                                                               command=self.set_mouseout_style,
                                                                extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE]])
         self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                                command=self.save_image)
@@ -755,10 +755,10 @@ class MainMenu:
                        icon_mouseout=MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT))
         self.update_autorotate_icon(b1press=False)
         self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                               command=self.set_button_mouseover_style,
+                                                               command=self.set_mouseover_style,
                                                                extraArgs=[self.menu_buttons[MainMenu.TEXT_AUTOROTATE]])
         self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                               command=self.set_button_mouseout_style,
+                                                               command=self.set_mouseout_style,
                                                                extraArgs=[self.menu_buttons[MainMenu.TEXT_AUTOROTATE]])
         self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                                command=self.toggle_autorotate)
@@ -776,15 +776,15 @@ class MainMenu:
                        icon_mouseover=MainMenu.ICON_EXIT_MOUSEOVER,
                        icon_mouseout=MainMenu.ICON_EXIT_MOUSEOUT))
         self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                         command=self.set_button_mouseover_style,
+                                                         command=self.set_mouseover_style,
                                                          extraArgs=[self.menu_buttons[MainMenu.TEXT_EXIT]])
         self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                         command=self.set_button_mouseout_style,
+                                                         command=self.set_mouseout_style,
                                                          extraArgs=[self.menu_buttons[MainMenu.TEXT_EXIT]])
         self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                                          command=self.exit)
 
-    def set_button_mouseover_style(self, button: MenuButton, _) -> None:
+    def set_mouseover_style(self, button: MenuButton, _) -> None:
 
         self.close_all_submenus()
         button.frame["frameColor"] = UI.WHITE
@@ -792,7 +792,7 @@ class MainMenu:
         button.frame["image"] = button.icon_mouseover
 
     @staticmethod
-    def set_button_mouseout_style(button: MenuButton, _) -> None:
+    def set_mouseout_style(button: MenuButton, _) -> None:
 
         button.frame["frameColor"] = UI.RED
         button.frame["text_fg"] = UI.WHITE
