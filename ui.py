@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import math
 import tkinter.filedialog
@@ -8,7 +9,6 @@ import direct.gui.DirectGui
 
 import car
 import library.io
-
 from config.logger import logger
 
 
@@ -249,8 +249,13 @@ class MaterialPreview:
     HAS_PAINT = ""
     HASNT_PAINT = "NO PAINT"
     BORDER = 3
+    REGEX_COLOR_CODE = "^(?:[0-9a-fA-F]{2}){5}$"
 
-    def __init__(self, font, position_x: int, position_y: int, size_x: int, size_y: int, parent):
+    def __init__(self, font, position_x: int, position_y: int, size_x: int, size_y: int,
+                 callback, parent) -> None:
+
+        self.callback = callback
+        self.current_color_hex = "0" * 10
 
         self.border_frame = (
             direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
@@ -266,7 +271,7 @@ class MaterialPreview:
                                              parent=self.border_frame))
 
         self.material_code_entry = (
-            direct.gui.DirectGui.DirectEntry(initialText="0" * 10,
+            direct.gui.DirectGui.DirectEntry(initialText=self.current_color_hex,
                                              text_fg=UI.GREY,
                                              entryFont=font,
                                              frameColor=UI.TRANSPARENT,
@@ -274,6 +279,8 @@ class MaterialPreview:
                                              scale=18,
                                              width=6,
                                              pos=((size_x / 2) - 48, 0, 6),
+                                             command=self.get_user_entry,
+                                             extraArgs=[],
                                              parent=self.border_frame))
 
         self.no_paint_label = (
@@ -285,6 +292,25 @@ class MaterialPreview:
                                              text_align=UI.TEXT_JUSTIFY_CENTER,
                                              pos=(size_x / 2, 0, (size_y / 2) + 6),
                                              parent=self.border_frame))
+
+    def get_user_entry(self, paint_code: str) -> None:
+
+        if bool(re.match(MaterialPreview.REGEX_COLOR_CODE, paint_code)):
+
+            new_paint_code_upper = paint_code.upper()
+            self.material_code_entry.set(new_paint_code_upper)
+            self.current_color_hex = new_paint_code_upper
+
+            new_paint = Material(color=(self.hex_to_float(paint_code[:2]),
+                                        self.hex_to_float(paint_code[2:4]),
+                                        self.hex_to_float(paint_code[4:6])),
+                                 metallic=self.hex_to_float(paint_code[6:8]),
+                                 brilliance=self.hex_to_float(paint_code[8:10]))
+            self.callback(material=new_paint)
+
+        else:
+
+            self.material_code_entry.set(self.current_color_hex)
 
     def update_material(self, material: Material) -> None:
 
@@ -305,12 +331,20 @@ class MaterialPreview:
 
             self.no_paint_label["text"] = MaterialPreview.HASNT_PAINT
             self.material_preview["frameColor"] = UI.RED
+
             self.material_code_entry.set("")
 
+        self.current_color_hex = self.material_code_entry.get()
+
     @staticmethod
-    def float_to_hex(a):
+    def float_to_hex(a: float) -> str:
 
         return hex(int(round(a*255, 0)))[2:].upper().rjust(2, "0")
+
+    @staticmethod
+    def hex_to_float(a: str) -> float:
+
+        return int(a, 16) / 255
 
 
 class SubMenu:
@@ -1493,6 +1527,7 @@ class BodyShop(SideWindow):
                                                 position_y=BodyShop.FRAME_Y_SIZE - 715,
                                                 size_x=100,
                                                 size_y=125,
+                                                callback=self.callback_update_material_sliders,
                                                 parent=self.frame)
 
         self.paint_all_car_items_checkbutton = (
@@ -1525,12 +1560,12 @@ class BodyShop(SideWindow):
             if self.is_wheel(tag=tag):
                 self.selected_item_label["text"] = self.get_first_wheel().name
                 current_material = self.get_material(item=self.get_first_wheel())
-                self.update_material_sliders(material=current_material)
+                self.callback_update_material_sliders(material=current_material)
                 self.material_preview.update_material(material=current_material)
             else:
                 self.selected_item_label["text"] = self.main.car.items[tag].name
                 current_material = self.get_material(item=self.main.car.items[tag])
-                self.update_material_sliders(material=current_material)
+                self.callback_update_material_sliders(material=current_material)
                 self.material_preview.update_material(material=current_material)
 
         self.refresh_ui_car_items_buttons()
@@ -1571,7 +1606,7 @@ class BodyShop(SideWindow):
 
             self.car_items_buttons[i].update_item_status(item=item)
 
-    def update_material_sliders(self, material: Material) -> None:
+    def callback_update_material_sliders(self, material: Material) -> None:
 
         if material.color:
 
@@ -1621,6 +1656,7 @@ class BodyShop(SideWindow):
 
 class UI:
 
+    # TODO Add 1 pixel border around color for CatItemButton
     # TODO Implement color entry in the BodyShop
     # FIXME Reloading the same car keeps the same paint color
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
