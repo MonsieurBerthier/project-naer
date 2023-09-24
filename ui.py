@@ -1623,6 +1623,7 @@ class BodyShop(SideWindow):
 
             self.selected_item_label["text"] = BodyShop.PAINT_ALL
             self.selected_tag_to_paint = None
+            current_paint = self.get_paint(item=self.main.car.items["chassis"])
 
         else:
 
@@ -1631,13 +1632,12 @@ class BodyShop(SideWindow):
             if self.is_wheel(tag=tag):
                 self.selected_item_label["text"] = self.get_first_wheel().name
                 current_paint = self.get_paint(item=self.get_first_wheel())
-                self.callback_update_paint_sliders(paint=current_paint)
-                self.paint_preview.update_paint(paint=current_paint)
             else:
                 self.selected_item_label["text"] = self.main.car.items[tag].name
                 current_paint = self.get_paint(item=self.main.car.items[tag])
-                self.callback_update_paint_sliders(paint=current_paint)
-                self.paint_preview.update_paint(paint=current_paint)
+
+        self.callback_update_paint_sliders(paint=current_paint)
+        self.paint_preview.update_paint(paint=current_paint)
 
         self.refresh_ui_car_items_buttons()
 
