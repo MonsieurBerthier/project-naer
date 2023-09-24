@@ -1574,14 +1574,11 @@ class BodyShop(SideWindow):
     def update_material_sliders(self, material: Material) -> None:
 
         if material.color:
+
             self.paint_red_slider["value"] = material.color[0]
             self.paint_green_slider["value"] = material.color[1]
             self.paint_blue_slider["value"] = material.color[2]
-
-        if material.metallic:
             self.paint_metallic_slider["value"] = material.metallic
-
-        if material.brilliance:
             self.paint_brilliance_slider["value"] = material.brilliance
 
     @staticmethod
@@ -1624,7 +1621,6 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # FIXME Bug on wheels : set material to (white, 0, 0) close BodyShop, open BodyShop, select wheel, (White, 0.5, 1)
     # TODO Implement color entry in the BodyShop
     # FIXME Reloading the same car keeps the same paint color
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
