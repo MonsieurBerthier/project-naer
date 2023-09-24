@@ -1103,9 +1103,7 @@ class Garage(SideWindow):
                                              frameColor=UI.RED,
                                              parent=self.frame))
 
-        index = 0
-
-        for axle in self.main.car.json["wheels"]:
+        for i, axle in enumerate(self.main.car.json["wheels"]):
 
             json_wheel_diameter = self.main.car.json["wheels"][axle][0]["scale"][1]
             current_wheel_diameter = self.main.car.items["wheels"][axle][0].model.getScale()[1]
@@ -1129,7 +1127,7 @@ class Garage(SideWindow):
                                              text_scale=UI.FONT_TITLE_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
                                              pos=(0, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
-                                                  UI.FONT_TITLE_SIZE - 246 * index),
+                                                  UI.FONT_TITLE_SIZE - 246 * i),
                                              parent=self.wheels_parameters_frame)
 
             direct.gui.DirectGui.DirectLabel(text="Diameter",
@@ -1139,7 +1137,7 @@ class Garage(SideWindow):
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
                                              pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
-                                                  UI.FONT_TITLE_SIZE - 1 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                                  UI.FONT_TITLE_SIZE - 1 * (UI.MARGIN + UI.FONT_SIZE) - 246 * i),
                                              parent=self.wheels_parameters_frame)
 
             self.wheels_diameter_slider[axle] = (
@@ -1148,7 +1146,7 @@ class Garage(SideWindow):
                                                   pageSize=0.05,
                                                   pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
                                                        Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
-                                                       1 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
+                                                       1 * (UI.MARGIN + UI.FONT_SIZE) - (246 * i) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1164,7 +1162,7 @@ class Garage(SideWindow):
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
                                              pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
-                                                  UI.FONT_TITLE_SIZE - 2 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                                  UI.FONT_TITLE_SIZE - 2 * (UI.MARGIN + UI.FONT_SIZE) - 246 * i),
                                              parent=self.wheels_parameters_frame)
 
             self.wheels_width_slider[axle] = (
@@ -1173,7 +1171,7 @@ class Garage(SideWindow):
                                                   pageSize=0.1,
                                                   pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
                                                        Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
-                                                       2 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
+                                                       2 * (UI.MARGIN + UI.FONT_SIZE) - (246 * i) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1189,7 +1187,7 @@ class Garage(SideWindow):
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
                                              pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
-                                                  UI.FONT_TITLE_SIZE - 3 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                                  UI.FONT_TITLE_SIZE - 3 * (UI.MARGIN + UI.FONT_SIZE) - 246 * i),
                                              parent=self.wheels_parameters_frame)
 
             self.wheels_offset_slider[axle] = (
@@ -1198,7 +1196,7 @@ class Garage(SideWindow):
                                                   pageSize=0.02,
                                                   pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
                                                        Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
-                                                       3 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
+                                                       3 * (UI.MARGIN + UI.FONT_SIZE) - (246 * i) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1214,7 +1212,7 @@ class Garage(SideWindow):
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
                                              pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
-                                                  UI.FONT_TITLE_SIZE - 4 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                                  UI.FONT_TITLE_SIZE - 4 * (UI.MARGIN + UI.FONT_SIZE) - 246 * i),
                                              parent=self.wheels_parameters_frame)
 
             self.wheels_camber_slider[axle] = (
@@ -1223,7 +1221,7 @@ class Garage(SideWindow):
                                                   pageSize=0.5,
                                                   pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
                                                        Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
-                                                       4 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
+                                                       4 * (UI.MARGIN + UI.FONT_SIZE) - (246 * i) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1239,7 +1237,7 @@ class Garage(SideWindow):
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
                                              pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
-                                                  UI.FONT_TITLE_SIZE - 5 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                                  UI.FONT_TITLE_SIZE - 5 * (UI.MARGIN + UI.FONT_SIZE) - 246 * i),
                                              parent=self.wheels_parameters_frame)
 
             self.wheels_toe_slider[axle] = (
@@ -1248,7 +1246,7 @@ class Garage(SideWindow):
                                                   pageSize=0.3,
                                                   pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
                                                        Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
-                                                       5 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
+                                                       5 * (UI.MARGIN + UI.FONT_SIZE) - (246 * i) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1256,8 +1254,6 @@ class Garage(SideWindow):
                                                   command=self.callback_update_wheel_toe,
                                                   extraArgs=[axle],
                                                   parent=self.wheels_parameters_frame))
-
-            index += 1
 
     def display_bodykits(self) -> None:
 
@@ -1796,8 +1792,8 @@ class BodyShop(SideWindow):
 class UI:
 
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
-    # FIXME Reloading the same car keeps the same paint color
     # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
+    # FIXME Reloading the same car keeps the same paint color
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
 
@@ -1826,4 +1822,5 @@ class UI:
 
     @staticmethod
     def get_button_y_position(index: int) -> int:
+
         return -UI.MARGIN - (index * UI.BUTTON_Y_SIZE)
