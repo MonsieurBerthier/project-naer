@@ -117,7 +117,7 @@ class CarItemButton:
                                              text_font=font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             text_pos=(UI.FONT_SIZE + UI.MARGIN, size_y - UI.FONT_SIZE - 5, 0),
+                                             text_pos=(UI.FONT_SIZE + 10, size_y - UI.FONT_SIZE - 5, 0),
                                              frameSize=(0, size_x, 0, size_y),
                                              pos=(position_x, 0, position_y),
                                              state=direct.gui.DirectGui.DGG.NORMAL,
@@ -126,14 +126,14 @@ class CarItemButton:
         self.item_color_border = (
             direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
                                              frameSize=(0, UI.FONT_SIZE, 0, UI.FONT_SIZE),
-                                             pos=(6, 0, (size_y - UI.FONT_SIZE) / 2),
+                                             pos=(2, 0, (size_y - UI.FONT_SIZE) / 2),
                                              parent=self.frame))
 
         self.item_color = (
             direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
                                              frameSize=(0, UI.FONT_SIZE - (2 * CarItemButton.BORDER),
                                                         0, UI.FONT_SIZE - (2 * CarItemButton.BORDER)),
-                                             pos=(6 + CarItemButton.BORDER, 0,
+                                             pos=(2 + CarItemButton.BORDER, 0,
                                                   (size_y - UI.FONT_SIZE) / 2 + CarItemButton.BORDER),
                                              parent=self.frame))
 
@@ -957,17 +957,22 @@ class SideWindow:
 class Garage(SideWindow):
 
     SLIDER_SCALE = 80
-    FRAME_X_SIZE = 500
-    FRAME_Y_SIZE = 1080
-    NB_ITEMS_SCROLLED_FRAME = 5
+    FRAME_X_SIZE = 390
+    FRAME_Y_SIZE = 890
+    NB_ITEMS_SCROLLED_FRAME = 4
+    CAR_PARAMETERS_FRAME_Y_SIZE = 103
+    WHEELS_PARAMETERS_FRAME_Y_SIZE = 457
+    BODYKITS_FRAME_Y_SIZE = 168
 
     def __init__(self, main) -> None:
 
         super().__init__(main=main, size_x=self.FRAME_X_SIZE, size_y=self.FRAME_Y_SIZE)
 
+        self.car_parameters_frame = None
         self.car_ride_height_slider = None
         self.car_pitch_slider = None
 
+        self.wheel_parameters_frame = None
         self.wheel_diameter_slider = {}
         self.wheel_width_slider = {}
         self.wheel_offset_slider = {}
@@ -975,6 +980,7 @@ class Garage(SideWindow):
         self.wheel_toe_slider = {}
 
         self.bodykits_frame = None
+        self.bodykits_list_frame = None
         self.bodykits_buttons = []
 
         self.display_car_parameters()
@@ -983,14 +989,22 @@ class Garage(SideWindow):
 
     def display_car_parameters(self) -> None:
 
+        self.car_parameters_frame = (
+            direct.gui.DirectGui.DirectFrame(frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
+                                                        0, Garage.CAR_PARAMETERS_FRAME_Y_SIZE),
+                                             pos=(UI.MARGIN, 0,
+                                                  Garage.FRAME_Y_SIZE - Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.MARGIN),
+                                             frameColor=UI.RED,
+                                             parent=self.frame))
+
         direct.gui.DirectGui.DirectLabel(text="Car",
                                          text_fg=UI.WHITE,
                                          text_bg=UI.RED,
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_TITLE_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - UI.MARGIN - UI.FONT_SIZE * 1.5),
-                                         parent=self.frame)
+                                         pos=(0, 0, Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE),
+                                         parent=self.car_parameters_frame)
 
         direct.gui.DirectGui.DirectLabel(text="Ride Height",
                                          text_fg=UI.WHITE,
@@ -998,20 +1012,24 @@ class Garage(SideWindow):
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN * 2, 0, Garage.FRAME_Y_SIZE - 90),
-                                         parent=self.frame)
+                                         pos=(UI.MARGIN, 0,
+                                              Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                              1 * (UI.MARGIN + UI.FONT_SIZE)),
+                                         parent=self.car_parameters_frame)
 
         self.car_ride_height_slider = (
             direct.gui.DirectGui.DirectSlider(range=(-0.6, 0.6),
                                               value=self.main.car.nodepath.getPos()[2],
                                               pageSize=0.02,
-                                              pos=(Garage.FRAME_X_SIZE / 2, 0, Garage.FRAME_Y_SIZE - 82),
+                                              pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                   Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                   1 * (UI.MARGIN + UI.FONT_SIZE) + 8),
                                               scale=Garage.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
                                               command=self.update_car_ride_height,
-                                              parent=self.frame))
+                                              parent=self.car_parameters_frame))
 
         direct.gui.DirectGui.DirectLabel(text="Pitch",
                                          text_fg=UI.WHITE,
@@ -1019,22 +1037,35 @@ class Garage(SideWindow):
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN * 2, 0, Garage.FRAME_Y_SIZE - 130),
-                                         parent=self.frame)
+                                         pos=(UI.MARGIN, 0,
+                                              Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                              2 * (UI.MARGIN + UI.FONT_SIZE)),
+                                         parent=self.car_parameters_frame)
 
         self.car_pitch_slider = (
             direct.gui.DirectGui.DirectSlider(range=(-4, 4),
                                               value=self.main.car.nodepath.getHpr()[1],
                                               pageSize=0.2,
-                                              pos=(Garage.FRAME_X_SIZE / 2, 0, Garage.FRAME_Y_SIZE - 122),
+                                              pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                   Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                   2 * (UI.MARGIN + UI.FONT_SIZE) + 8),
                                               scale=Garage.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                               thumb_color=UI.WHITE,
                                               command=self.update_car_pitch,
-                                              parent=self.frame))
+                                              parent=self.car_parameters_frame))
 
     def display_wheels_parameters(self) -> None:
+
+        self.wheel_parameters_frame = (
+            direct.gui.DirectGui.DirectFrame(frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
+                                                        0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE),
+                                             pos=(UI.MARGIN, 0,
+                                                  Garage.FRAME_Y_SIZE - UI.MARGIN - Garage.CAR_PARAMETERS_FRAME_Y_SIZE -
+                                                  (2 * UI.MARGIN) - Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE),
+                                             frameColor=UI.RED,
+                                             parent=self.frame))
 
         index = 0
 
@@ -1061,8 +1092,9 @@ class Garage(SideWindow):
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_TITLE_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN, 0, -255 * index + 900),
-                                             parent=self.frame)
+                                             pos=(0, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
+                                                  UI.FONT_TITLE_SIZE - 246 * index),
+                                             parent=self.wheel_parameters_frame)
 
             direct.gui.DirectGui.DirectLabel(text="Diameter",
                                              text_fg=UI.WHITE,
@@ -1070,21 +1102,24 @@ class Garage(SideWindow):
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN * 2, 0, -250 * index + 855),
-                                             parent=self.frame)
+                                             pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
+                                                  UI.FONT_TITLE_SIZE - 1 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                             parent=self.wheel_parameters_frame)
 
             self.wheel_diameter_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.5 * json_wheel_diameter, 1.50 * json_wheel_diameter),
                                                   value=current_wheel_diameter,
                                                   pageSize=0.05,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 863),
+                                                  pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                       Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                       1 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                                   thumb_color=UI.WHITE,
                                                   command=self.update_wheel_diameter,
                                                   extraArgs=[axle],
-                                                  parent=self.frame))
+                                                  parent=self.wheel_parameters_frame))
 
             direct.gui.DirectGui.DirectLabel(text="Width",
                                              text_fg=UI.WHITE,
@@ -1092,21 +1127,24 @@ class Garage(SideWindow):
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN * 2, 0, -250 * index + 815),
-                                             parent=self.frame)
+                                             pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
+                                                  UI.FONT_TITLE_SIZE - 2 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                             parent=self.wheel_parameters_frame)
 
             self.wheel_width_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.4 * json_wheel_width, 1.6 * json_wheel_width),
                                                   value=current_wheel_width,
                                                   pageSize=0.1,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 823),
+                                                  pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                       Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                       2 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                                   thumb_color=UI.WHITE,
                                                   command=self.update_wheel_width,
                                                   extraArgs=[axle],
-                                                  parent=self.frame))
+                                                  parent=self.wheel_parameters_frame))
 
             direct.gui.DirectGui.DirectLabel(text="Offset",
                                              text_fg=UI.WHITE,
@@ -1114,21 +1152,24 @@ class Garage(SideWindow):
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN * 2, 0, -250 * index + 775),
-                                             parent=self.frame)
+                                             pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
+                                                  UI.FONT_TITLE_SIZE - 3 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                             parent=self.wheel_parameters_frame)
 
             self.wheel_offset_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(0.66 * json_wheel_offset, 1.34 * json_wheel_offset),
                                                   value=current_wheel_offset,
                                                   pageSize=0.02,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 783),
+                                                  pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                       Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                       3 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                                   thumb_color=UI.WHITE,
                                                   command=self.update_wheel_offset,
                                                   extraArgs=[axle],
-                                                  parent=self.frame))
+                                                  parent=self.wheel_parameters_frame))
 
             direct.gui.DirectGui.DirectLabel(text="Camber",
                                              text_fg=UI.WHITE,
@@ -1136,21 +1177,24 @@ class Garage(SideWindow):
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN * 2, 0, -250 * index + 735),
-                                             parent=self.frame)
+                                             pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
+                                                  UI.FONT_TITLE_SIZE - 4 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                             parent=self.wheel_parameters_frame)
 
             self.wheel_camber_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(json_wheel_camber - 45, json_wheel_camber + 45),
                                                   value=current_wheel_camber,
                                                   pageSize=0.5,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 743),
+                                                  pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                       Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                       4 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                                   thumb_color=UI.WHITE,
                                                   command=self.update_wheel_camber,
                                                   extraArgs=[axle],
-                                                  parent=self.frame))
+                                                  parent=self.wheel_parameters_frame))
 
             direct.gui.DirectGui.DirectLabel(text="Toe",
                                              text_fg=UI.WHITE,
@@ -1158,21 +1202,24 @@ class Garage(SideWindow):
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(UI.MARGIN * 2, 0, -250 * index + 695),
-                                             parent=self.frame)
+                                             pos=(UI.MARGIN, 0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
+                                                  UI.FONT_TITLE_SIZE - 5 * (UI.MARGIN + UI.FONT_SIZE) - 246 * index),
+                                             parent=self.wheel_parameters_frame)
 
             self.wheel_toe_slider[axle] = (
                 direct.gui.DirectGui.DirectSlider(range=(json_wheel_toe - 10, json_wheel_toe + 10),
                                                   value=current_wheel_toe,
                                                   pageSize=0.3,
-                                                  pos=(Garage.FRAME_X_SIZE / 2, 0, -250 * index + 703),
+                                                  pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                       Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                       5 * (UI.MARGIN + UI.FONT_SIZE) - (246 * index) + 8),
                                                   scale=Garage.SLIDER_SCALE,
                                                   color=UI.WHITE,
                                                   thumb_relief=direct.gui.DirectGui.DGG.FLAT,
                                                   thumb_color=UI.WHITE,
                                                   command=self.update_wheel_toe,
                                                   extraArgs=[axle],
-                                                  parent=self.frame))
+                                                  parent=self.wheel_parameters_frame))
 
             index += 1
 
@@ -1180,28 +1227,39 @@ class Garage(SideWindow):
 
         nb_bodykits = len(self.main.car.json["bodykits"])
 
+        self.bodykits_frame = (
+            direct.gui.DirectGui.DirectFrame(frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
+                                                        0, Garage.BODYKITS_FRAME_Y_SIZE),
+                                             pos=(UI.MARGIN, 0,
+                                                  Garage.FRAME_Y_SIZE - UI.MARGIN - Garage.CAR_PARAMETERS_FRAME_Y_SIZE -
+                                                  (2 * UI.MARGIN) - Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
+                                                  (2 * UI.MARGIN) - Garage.BODYKITS_FRAME_Y_SIZE),
+                                             frameColor=UI.RED,
+                                             parent=self.frame))
+
         direct.gui.DirectGui.DirectLabel(text="Bodykits",
                                          text_fg=UI.WHITE,
                                          text_bg=UI.RED,
                                          text_font=self.main.font,
                                          text_scale=UI.FONT_TITLE_SIZE,
                                          text_align=UI.TEXT_JUSTIFY_LEFT,
-                                         pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE - 685),
-                                         parent=self.frame)
+                                         pos=(0, 0, Garage.BODYKITS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE),
+                                         parent=self.bodykits_frame)
 
-        self.bodykits_frame = (
+        self.bodykits_list_frame = (
             direct.gui.DirectGui.DirectScrolledFrame(canvasSize=(0, Garage.FRAME_X_SIZE - (4 * UI.MARGIN),
                                                                  0, UI.BUTTON_Y_SIZE * nb_bodykits),
                                                      frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
                                                                 0, UI.BUTTON_Y_SIZE * Garage.NB_ITEMS_SCROLLED_FRAME),
-                                                     pos=(UI.MARGIN, 0, BodyShop.FRAME_Y_SIZE -
-                                                          Garage.NB_ITEMS_SCROLLED_FRAME * UI.BUTTON_Y_SIZE - 704),
+                                                     pos=(0, 0,
+                                                          Garage.BODYKITS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE - UI.MARGIN
+                                                          - (Garage.NB_ITEMS_SCROLLED_FRAME * UI.BUTTON_Y_SIZE)),
                                                      frameColor=UI.RED,
                                                      scrollBarWidth=UI.MARGIN * 1.5,
                                                      verticalScroll_color=UI.WHITE,
                                                      verticalScroll_incButton_relief=False,
                                                      verticalScroll_decButton_relief=False,
-                                                     parent=self.frame))
+                                                     parent=self.bodykits_frame))
 
         for i in range(len(self.main.car.json["bodykits"])):
 
@@ -1218,7 +1276,7 @@ class Garage(SideWindow):
                                                  pos=(UI.MARGIN, 0,
                                                       (UI.BUTTON_Y_SIZE * (nb_bodykits - 1)) - (UI.BUTTON_Y_SIZE * i)),
                                                  state=direct.gui.DirectGui.DGG.NORMAL,
-                                                 parent=self.bodykits_frame.getCanvas()))
+                                                 parent=self.bodykits_list_frame.getCanvas()))
 
             bodykit_button.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                                 command=self.set_button_mouseover_style,
@@ -1457,7 +1515,7 @@ class BodyShop(SideWindow):
                                              text_font=self.main.font,
                                              text_scale=UI.FONT_SIZE,
                                              text_align=UI.TEXT_JUSTIFY_LEFT,
-                                             pos=(180, 0,
+                                             pos=(168, 0,
                                                   BodyShop.PAINT_SELECTOR_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
                                                   UI.MARGIN - UI.FONT_SIZE),
                                              parent=self.paint_selector_frame))
@@ -1729,10 +1787,10 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # FIXME Reloading the same car keeps the same paint color
+    # TODO Update Garage menu: create a dedicated class for bodykits menu buttons
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
-    # TODO Update Garage menu: add DirectEntry at the right for each car/wheel parameter
     # TODO Encapsulate all DirectGUI elements in frames
+    # FIXME Reloading the same car keeps the same paint color
     # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
