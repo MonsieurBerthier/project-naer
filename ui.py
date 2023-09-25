@@ -56,12 +56,20 @@ class ClickButton:
 
 class MenuButton:
 
-    def __init__(self, main, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 auto_event: bool, icon_mouseover: str, icon_mouseout: str,
-                 image_pos_x: int, text_pad_x: int) -> None:
+    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
+                 auto_event: bool, icon_mouseover: str, icon_mouseout: str, image_pos_x: int, text_pad_x: int, parent,
+                 callback_b1press=None, callback_b1press_arg=None, callback_mouseover=None, callback_mouseover_arg=None,
+                 callback_mouseout=None, callback_mouseout_arg=None) -> None:
 
+        self.auto_event = auto_event
         self.icon_mouseover = icon_mouseover
         self.icon_mouseout = icon_mouseout
+        self.callback_b1press = callback_b1press
+        self.callback_b1press_arg = callback_b1press_arg
+        self.callback_mouseover = callback_mouseover
+        self.callback_mouseover_arg = callback_mouseover_arg
+        self.callback_mouseout = callback_mouseout
+        self.callback_mouseout_arg = callback_mouseout_arg
 
         self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.RED,
                                                       text=text,
@@ -76,28 +84,47 @@ class MenuButton:
                                                       frameSize=(0, size_x, 0, size_y),
                                                       pos=(position_x, 0, -position_y),
                                                       state=direct.gui.DirectGui.DGG.NORMAL,
-                                                      parent=main.pixel2d,
                                                       image=self.icon_mouseout,
                                                       image_scale=MainMenu.BUTTON_ICON_SIZE,
-                                                      image_pos=(image_pos_x, 0, -UI.BUTTON_Y_SIZE / 2))
+                                                      image_pos=(image_pos_x, 0, -UI.BUTTON_Y_SIZE / 2),
+                                                      parent=parent)
 
-        if auto_event:
+        if self.callback_b1press:
+            self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                            command=self.do_b1press_actions)
+
+        if callback_mouseover or auto_event:
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                            command=self.set_mouseover_style)
+                            command=self.do_mouseover_actions)
+
+        if callback_mouseout or auto_event:
             self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                            command=self.set_mouseout_style)
+                            command=self.do_mouseout_actions)
 
-    def set_mouseover_style(self, _) -> None:
+    def do_b1press_actions(self, _) -> None:
 
-        self.frame["frameColor"] = UI.WHITE
-        self.frame["text_fg"] = UI.GREY
-        self.frame["image"] = self.icon_mouseover
+        if self.callback_b1press:
+            self.callback_b1press(self.callback_b1press_arg)
 
-    def set_mouseout_style(self, _) -> None:
+    def do_mouseover_actions(self, _) -> None:
 
-        self.frame["frameColor"] = UI.RED
-        self.frame["text_fg"] = UI.WHITE
-        self.frame["image"] = self.icon_mouseout
+        if self.auto_event:
+            self.frame["frameColor"] = UI.WHITE
+            self.frame["text_fg"] = UI.GREY
+            self.frame["image"] = self.icon_mouseover
+
+        if self.callback_mouseover:
+            self.callback_mouseover(self.callback_mouseover_arg)
+
+    def do_mouseout_actions(self, _) -> None:
+
+        if self.auto_event:
+            self.frame["frameColor"] = UI.RED
+            self.frame["text_fg"] = UI.WHITE
+            self.frame["image"] = self.icon_mouseout
+
+        if self.callback_mouseout:
+            self.callback_mouseout(self.callback_mouseout_arg)
 
 
 class ListButton:
@@ -426,41 +453,44 @@ class SubMenu:
 
         for i in range(len(items)):
 
-            button = MenuButton(main=self.main,
-                                text=items[i][1],
+            callback = None
+            callback_arg = None
+
+            if MainMenu.TEXT_CARS.lower() in content_path:
+                callback = self.callback_load_car
+                callback_arg = items[i][0]
+            elif MainMenu.TEXT_WHEELS.lower() in content_path:
+                callback = self.callback_load_wheels
+                callback_arg = items[i][0]
+            elif MainMenu.TEXT_GROUNDS.lower() in content_path:
+                callback = self.callback_load_ground
+                callback_arg = items[i][0]
+
+            button = MenuButton(text=items[i][1],
                                 font=self.main.font,
                                 text_pad_x=SubMenu.TEXT_PADDING_LEFT,
                                 position_x=UI.MARGIN + UI.BUTTON_Y_SIZE + MainMenu.MAIN_MENU_X_SIZE,
                                 position_y=-UI.get_button_y_position(index=i),
                                 size_x=self.menu_x_size, size_y=-UI.BUTTON_Y_SIZE,
-                                auto_event=True,
                                 image_pos_x=SubMenu.BUTTON_ICON_POS,
+                                auto_event=True,
                                 icon_mouseover=self.icon_mouseover,
-                                icon_mouseout=self.icon_mouseout)
+                                icon_mouseout=self.icon_mouseout,
+                                callback_b1press=callback,
+                                callback_b1press_arg=callback_arg,
+                                parent=self.main.pixel2d)
 
-            if MainMenu.TEXT_CARS.lower() in content_path:
-                button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                  command=self.callback_load_car,
-                                  extraArgs=[items[i][0]])
-            elif MainMenu.TEXT_WHEELS.lower() in content_path:
-                button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                  command=self.callback_load_wheels,
-                                  extraArgs=[items[i][0]])
-            elif MainMenu.TEXT_GROUNDS.lower() in content_path:
-                button.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                  command=self.callback_load_ground,
-                                  extraArgs=[items[i][0]])
             self.buttons.append(button)
 
-    def callback_load_car(self, tag: str, _) -> None:
+    def callback_load_car(self, tag: str) -> None:
 
         self.main.car.load(tag=tag)
 
-    def callback_load_wheels(self, tag: str, _) -> None:
+    def callback_load_wheels(self, tag: str) -> None:
 
         self.main.car.load_wheels(tag=tag, oem=False)
 
-    def callback_load_ground(self, tag: str, _) -> None:
+    def callback_load_ground(self, tag: str) -> None:
 
         self.main.ground.change(tag=tag)
 
@@ -592,8 +622,7 @@ class MainMenu:
                                command=self.close_main_menu)
 
         self.menu_buttons[MainMenu.TEXT_CARS] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_CARS,
+            MenuButton(text=MainMenu.TEXT_CARS,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
@@ -602,13 +631,13 @@ class MainMenu:
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_CARS_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_CARS_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_CARS].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                         command=self.open_cars_submenu)
+                       icon_mouseout=MainMenu.ICON_CARS_MOUSEOUT,
+                       callback_mouseover=self.open_cars_submenu,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
         self.menu_buttons[MainMenu.TEXT_WHEELS] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_WHEELS,
+            MenuButton(text=MainMenu.TEXT_WHEELS,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
@@ -617,13 +646,13 @@ class MainMenu:
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_WHEELS_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_WHEELS_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_WHEELS].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                           command=self.open_wheels_submenu)
+                       icon_mouseout=MainMenu.ICON_WHEELS_MOUSEOUT,
+                       callback_mouseover=self.open_wheels_submenu,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
         self.menu_buttons[MainMenu.TEXT_GROUNDS] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_GROUNDS,
+            MenuButton(text=MainMenu.TEXT_GROUNDS,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
@@ -632,177 +661,136 @@ class MainMenu:
                        auto_event=False,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_GROUNDS_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_GROUNDS_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                            command=self.open_grounds_submenu)
+                       icon_mouseout=MainMenu.ICON_GROUNDS_MOUSEOUT,
+                       callback_mouseover=self.open_grounds_submenu,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
         self.menu_buttons[MainMenu.TEXT_GARAGE] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_GARAGE,
+            MenuButton(text=MainMenu.TEXT_GARAGE,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (3 * UI.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
+                       auto_event=True,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_GARAGE_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_GARAGE_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                           command=self.set_mouseover_style,
-                                                           extraArgs=[self.menu_buttons[MainMenu.TEXT_GARAGE]])
-        self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                           command=self.set_mouseout_style,
-                                                           extraArgs=[self.menu_buttons[MainMenu.TEXT_GARAGE]])
-        self.menu_buttons[MainMenu.TEXT_GARAGE].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                                           command=self.display_garage)
+                       icon_mouseout=MainMenu.ICON_GARAGE_MOUSEOUT,
+                       callback_b1press=self.display_garage,
+                       callback_b1press_arg=(),
+                       callback_mouseover=self.close_all_submenus,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
         self.menu_buttons[MainMenu.TEXT_BODY_SHOP] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_BODY_SHOP,
+            MenuButton(text=MainMenu.TEXT_BODY_SHOP,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (4 * UI.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
+                       auto_event=True,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_BODY_SHOP_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_BODY_SHOP_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                              command=self.set_mouseover_style,
-                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_BODY_SHOP]])
-        self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                              command=self.set_mouseout_style,
-                                                              extraArgs=[self.menu_buttons[MainMenu.TEXT_BODY_SHOP]])
-        self.menu_buttons[MainMenu.TEXT_BODY_SHOP].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                                              command=self.display_body_shop)
+                       icon_mouseout=MainMenu.ICON_BODY_SHOP_MOUSEOUT,
+                       callback_b1press=self.display_body_shop,
+                       callback_b1press_arg=(),
+                       callback_mouseover=self.close_all_submenus,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
         self.menu_buttons[MainMenu.TEXT_SAVE_CAR] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_SAVE_CAR,
+            MenuButton(text=MainMenu.TEXT_SAVE_CAR,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (5 * UI.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
+                       auto_event=True,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_SAVE_CAR_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_SAVE_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                             command=self.set_mouseover_style,
-                                                             extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_CAR]])
-        self.menu_buttons[MainMenu.TEXT_SAVE_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                             command=self.set_mouseout_style,
-                                                             extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_CAR]])
-        self.menu_buttons[MainMenu.TEXT_SAVE_CAR].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                                             command=self.save_car)
+                       icon_mouseout=MainMenu.ICON_SAVE_CAR_MOUSEOUT,
+                       callback_b1press=self.save_car,
+                       callback_b1press_arg=(),
+                       callback_mouseover=self.close_all_submenus,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
         self.menu_buttons[MainMenu.TEXT_LOAD_CAR] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_LOAD_CAR,
+            MenuButton(text=MainMenu.TEXT_LOAD_CAR,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (6 * UI.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
+                       auto_event=True,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_LOAD_CAR_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_LOAD_CAR_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_LOAD_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                             command=self.set_mouseover_style,
-                                                             extraArgs=[self.menu_buttons[MainMenu.TEXT_LOAD_CAR]])
-        self.menu_buttons[MainMenu.TEXT_LOAD_CAR].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                             command=self.set_mouseout_style,
-                                                             extraArgs=[self.menu_buttons[MainMenu.TEXT_LOAD_CAR]])
-        self.menu_buttons[MainMenu.TEXT_LOAD_CAR].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                                             command=self.load)
+                       icon_mouseout=MainMenu.ICON_LOAD_CAR_MOUSEOUT,
+                       callback_b1press=self.load,
+                       callback_b1press_arg=(),
+                       callback_mouseover=self.close_all_submenus,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
         self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_SAVE_IMAGE,
+            MenuButton(text=MainMenu.TEXT_SAVE_IMAGE,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (7 * UI.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
+                       auto_event=True,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_SAVE_IMAGE_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_SAVE_IMAGE_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                               command=self.set_mouseover_style,
-                                                               extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE]])
-        self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                               command=self.set_mouseout_style,
-                                                               extraArgs=[self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE]])
-        self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                                               command=self.save_image)
+                       icon_mouseout=MainMenu.ICON_SAVE_IMAGE_MOUSEOUT,
+                       callback_b1press=self.save_image,
+                       callback_b1press_arg=(),
+                       callback_mouseover=self.close_all_submenus,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
         self.menu_buttons[MainMenu.TEXT_AUTOROTATE] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_AUTOROTATE,
+            MenuButton(text=MainMenu.TEXT_AUTOROTATE,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (8 * UI.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
+                       auto_event=True,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT))
+                       icon_mouseout=MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT,
+                       callback_b1press=self.toggle_autorotate,
+                       callback_b1press_arg=(),
+                       callback_mouseover=self.close_all_submenus,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
         self.update_autorotate_icon(b1press=False)
-        self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                               command=self.set_mouseover_style,
-                                                               extraArgs=[self.menu_buttons[MainMenu.TEXT_AUTOROTATE]])
-        self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                               command=self.set_mouseout_style,
-                                                               extraArgs=[self.menu_buttons[MainMenu.TEXT_AUTOROTATE]])
-        self.menu_buttons[MainMenu.TEXT_AUTOROTATE].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                                               command=self.toggle_autorotate)
 
         self.menu_buttons[MainMenu.TEXT_EXIT] = (
-            MenuButton(main=self.main,
-                       text=MainMenu.TEXT_EXIT,
+            MenuButton(text=MainMenu.TEXT_EXIT,
                        font=self.main.font,
                        text_pad_x=MainMenu.TEXT_PADDING_LEFT,
                        position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
                        position_y=UI.MARGIN + (9 * UI.BUTTON_Y_SIZE),
                        size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
+                       auto_event=True,
                        image_pos_x=MainMenu.BUTTON_ICON_POS,
                        icon_mouseover=MainMenu.ICON_EXIT_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_EXIT_MOUSEOUT))
-        self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                                         command=self.set_mouseover_style,
-                                                         extraArgs=[self.menu_buttons[MainMenu.TEXT_EXIT]])
-        self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
-                                                         command=self.set_mouseout_style,
-                                                         extraArgs=[self.menu_buttons[MainMenu.TEXT_EXIT]])
-        self.menu_buttons[MainMenu.TEXT_EXIT].frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                                         command=self.exit)
-
-    def set_mouseover_style(self, button: MenuButton, _) -> None:
-
-        self.close_all_submenus()
-        button.frame["frameColor"] = UI.WHITE
-        button.frame["text_fg"] = UI.GREY
-        button.frame["image"] = button.icon_mouseover
-
-    @staticmethod
-    def set_mouseout_style(button: MenuButton, _) -> None:
-
-        button.frame["frameColor"] = UI.RED
-        button.frame["text_fg"] = UI.WHITE
-        button.frame["image"] = button.icon_mouseout
+                       icon_mouseout=MainMenu.ICON_EXIT_MOUSEOUT,
+                       callback_b1press=self.exit,
+                       callback_b1press_arg=(),
+                       callback_mouseover=self.close_all_submenus,
+                       callback_mouseover_arg=(),
+                       parent=self.main.pixel2d))
 
     def close_main_menu(self, _) -> None:
 
         self.close_button.destroy()
 
-        self.close_all_submenus()
+        self.close_all_submenus(None)
 
         for button in self.menu_buttons:
             self.menu_buttons[button].frame.destroy()
@@ -812,7 +800,7 @@ class MainMenu:
 
     def open_cars_submenu(self, _) -> None:
 
-        self.close_all_submenus()
+        self.close_all_submenus(None)
 
         self.menu_buttons[MainMenu.TEXT_CARS].frame["frameColor"] = UI.WHITE
         self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = UI.GREY
@@ -830,7 +818,7 @@ class MainMenu:
 
     def open_wheels_submenu(self, _) -> None:
 
-        self.close_all_submenus()
+        self.close_all_submenus(None)
 
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = UI.WHITE
         self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = UI.GREY
@@ -848,7 +836,7 @@ class MainMenu:
 
     def open_grounds_submenu(self, _) -> None:
 
-        self.close_all_submenus()
+        self.close_all_submenus(None)
 
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = UI.WHITE
         self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = UI.GREY
@@ -864,7 +852,7 @@ class MainMenu:
 
         self.submenu_grounds.close()
 
-    def close_all_submenus(self) -> None:
+    def close_all_submenus(self, _) -> None:
 
         self.close_cars_submenu(None)
         self.close_wheels_submenu(None)
