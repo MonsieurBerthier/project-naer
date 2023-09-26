@@ -99,6 +99,26 @@ class BurgerButton:
         self.background["frameColor"] = UI.TRANSPARENT
 
 
+class CloseMenuButton:
+
+    def __init__(self, size_x: int, size_y: int, callback_b1press, parent) -> None:
+
+        self.callback_b1press = callback_b1press
+
+        self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.TRANSPARENT,
+                                                      frameSize=(0, size_x, 0, -size_y),
+                                                      state=direct.gui.DirectGui.DGG.NORMAL,
+                                                      parent=parent)
+
+        self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                        command=self.delete)
+
+    def delete(self, _):
+
+        self.frame.destroy()
+        self.callback_b1press(None)
+
+
 class MenuButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
@@ -636,14 +656,10 @@ class MainMenu:
         if self.menu_buttons:
             return
 
-        self.close_main_menu_button = (
-            direct.gui.DirectGui.DirectFrame(frameColor=UI.TRANSPARENT,
-                                             frameSize=(0, self.main.window_resolution[0], 0,
-                                                        -self.main.window_resolution[1]),
-                                             state=direct.gui.DirectGui.DGG.NORMAL,
-                                             parent=self.main.pixel2d))
-        self.close_main_menu_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                                         command=self.close_main_menu)
+        self.close_main_menu_button = CloseMenuButton(size_x=self.main.window_resolution[0],
+                                                      size_y=self.main.window_resolution[1],
+                                                      callback_b1press=self.close_main_menu,
+                                                      parent=self.main.pixel2d)
 
         main_menu_buttons_data = [
             {"text": MainMenu.TEXT_CARS, "auto_event": False,
@@ -720,8 +736,6 @@ class MainMenu:
         self.update_autorotate_icon(b1press=False)
 
     def close_main_menu(self, _) -> None:
-
-        self.close_main_menu_button.destroy()
 
         self.close_all_submenus(None)
 
