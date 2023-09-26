@@ -621,170 +621,79 @@ class MainMenu:
         self.close_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                                command=self.close_main_menu)
 
-        self.menu_buttons[MainMenu.TEXT_CARS] = (
-            MenuButton(text=MainMenu.TEXT_CARS,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN,
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_CARS_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_CARS_MOUSEOUT,
-                       callback_mouseover=self.open_cars_submenu,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
+        main_menu_buttons_data = [
+            {"text": MainMenu.TEXT_CARS, "auto_event": False,
+             "icon_mouseover": MainMenu.ICON_CARS_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_CARS_MOUSEOUT,
+             "callback_b1press": None, "callback_b1press_arg": None,
+             "callback_mouseover": self.open_cars_submenu, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_WHEELS, "auto_event": False,
+             "icon_mouseover": MainMenu.ICON_WHEELS_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_WHEELS_MOUSEOUT,
+             "callback_b1press": None, "callback_b1press_arg": None,
+             "callback_mouseover": self.open_wheels_submenu, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_GROUNDS, "auto_event": False,
+             "icon_mouseover": MainMenu.ICON_GROUNDS_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_GROUNDS_MOUSEOUT,
+             "callback_b1press": None, "callback_b1press_arg": None,
+             "callback_mouseover": self.open_grounds_submenu, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_GARAGE, "auto_event": True,
+             "icon_mouseover": MainMenu.ICON_GARAGE_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_GARAGE_MOUSEOUT,
+             "callback_b1press": self.display_garage, "callback_b1press_arg": (),
+             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_BODY_SHOP, "auto_event": True,
+             "icon_mouseover": MainMenu.ICON_BODY_SHOP_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_BODY_SHOP_MOUSEOUT,
+             "callback_b1press": self.display_body_shop, "callback_b1press_arg": (),
+             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_SAVE_CAR, "auto_event": True,
+             "icon_mouseover": MainMenu.ICON_SAVE_CAR_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_SAVE_CAR_MOUSEOUT,
+             "callback_b1press": self.save_car, "callback_b1press_arg": (),
+             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_LOAD_CAR, "auto_event": True,
+             "icon_mouseover": MainMenu.ICON_LOAD_CAR_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_LOAD_CAR_MOUSEOUT,
+             "callback_b1press": self.load, "callback_b1press_arg": (),
+             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_SAVE_IMAGE, "auto_event": True,
+             "icon_mouseover": MainMenu.ICON_SAVE_IMAGE_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_SAVE_IMAGE_MOUSEOUT,
+             "callback_b1press": self.save_image, "callback_b1press_arg": (),
+             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_AUTOROTATE, "auto_event": True,
+             "icon_mouseover": MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT,
+             "callback_b1press": self.toggle_autorotate, "callback_b1press_arg": (),
+             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+            {"text": MainMenu.TEXT_EXIT, "auto_event": True,
+             "icon_mouseover": MainMenu.ICON_EXIT_MOUSEOVER,
+             "icon_mouseout": MainMenu.ICON_EXIT_MOUSEOUT,
+             "callback_b1press": self.exit, "callback_b1press_arg": (),
+             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()}]
 
-        self.menu_buttons[MainMenu.TEXT_WHEELS] = (
-            MenuButton(text=MainMenu.TEXT_WHEELS,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_WHEELS_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_WHEELS_MOUSEOUT,
-                       callback_mouseover=self.open_wheels_submenu,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
+        for i, button in enumerate(main_menu_buttons_data):
 
-        self.menu_buttons[MainMenu.TEXT_GROUNDS] = (
-            MenuButton(text=MainMenu.TEXT_GROUNDS,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + (2 * UI.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=False,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_GROUNDS_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_GROUNDS_MOUSEOUT,
-                       callback_mouseover=self.open_grounds_submenu,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
+            self.menu_buttons[button["text"]] = (
+                MenuButton(text=button["text"],
+                           font=self.main.font,
+                           text_pad_x=MainMenu.TEXT_PADDING_LEFT,
+                           position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
+                           position_y=UI.MARGIN + (i * UI.BUTTON_Y_SIZE),
+                           size_x=MainMenu.MAIN_MENU_X_SIZE,
+                           size_y=-UI.BUTTON_Y_SIZE,
+                           auto_event=button["auto_event"],
+                           image_pos_x=MainMenu.BUTTON_ICON_POS,
+                           icon_mouseover=button["icon_mouseover"],
+                           icon_mouseout=button["icon_mouseout"],
+                           callback_b1press=button["callback_b1press"],
+                           callback_b1press_arg=button["callback_b1press_arg"],
+                           callback_mouseover=button["callback_mouseover"],
+                           callback_mouseover_arg=button["callback_mouseover_arg"],
+                           parent=self.main.pixel2d))
 
-        self.menu_buttons[MainMenu.TEXT_GARAGE] = (
-            MenuButton(text=MainMenu.TEXT_GARAGE,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + (3 * UI.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=True,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_GARAGE_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_GARAGE_MOUSEOUT,
-                       callback_b1press=self.display_garage,
-                       callback_b1press_arg=(),
-                       callback_mouseover=self.close_all_submenus,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
-
-        self.menu_buttons[MainMenu.TEXT_BODY_SHOP] = (
-            MenuButton(text=MainMenu.TEXT_BODY_SHOP,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + (4 * UI.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=True,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_BODY_SHOP_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_BODY_SHOP_MOUSEOUT,
-                       callback_b1press=self.display_body_shop,
-                       callback_b1press_arg=(),
-                       callback_mouseover=self.close_all_submenus,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
-
-        self.menu_buttons[MainMenu.TEXT_SAVE_CAR] = (
-            MenuButton(text=MainMenu.TEXT_SAVE_CAR,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + (5 * UI.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=True,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_SAVE_CAR_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_SAVE_CAR_MOUSEOUT,
-                       callback_b1press=self.save_car,
-                       callback_b1press_arg=(),
-                       callback_mouseover=self.close_all_submenus,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
-
-        self.menu_buttons[MainMenu.TEXT_LOAD_CAR] = (
-            MenuButton(text=MainMenu.TEXT_LOAD_CAR,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + (6 * UI.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=True,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_LOAD_CAR_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_LOAD_CAR_MOUSEOUT,
-                       callback_b1press=self.load,
-                       callback_b1press_arg=(),
-                       callback_mouseover=self.close_all_submenus,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
-
-        self.menu_buttons[MainMenu.TEXT_SAVE_IMAGE] = (
-            MenuButton(text=MainMenu.TEXT_SAVE_IMAGE,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + (7 * UI.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=True,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_SAVE_IMAGE_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_SAVE_IMAGE_MOUSEOUT,
-                       callback_b1press=self.save_image,
-                       callback_b1press_arg=(),
-                       callback_mouseover=self.close_all_submenus,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
-
-        self.menu_buttons[MainMenu.TEXT_AUTOROTATE] = (
-            MenuButton(text=MainMenu.TEXT_AUTOROTATE,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + (8 * UI.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=True,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT,
-                       callback_b1press=self.toggle_autorotate,
-                       callback_b1press_arg=(),
-                       callback_mouseover=self.close_all_submenus,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
         self.update_autorotate_icon(b1press=False)
-
-        self.menu_buttons[MainMenu.TEXT_EXIT] = (
-            MenuButton(text=MainMenu.TEXT_EXIT,
-                       font=self.main.font,
-                       text_pad_x=MainMenu.TEXT_PADDING_LEFT,
-                       position_x=UI.MARGIN + UI.BUTTON_Y_SIZE,
-                       position_y=UI.MARGIN + (9 * UI.BUTTON_Y_SIZE),
-                       size_x=MainMenu.MAIN_MENU_X_SIZE, size_y=-UI.BUTTON_Y_SIZE,
-                       auto_event=True,
-                       image_pos_x=MainMenu.BUTTON_ICON_POS,
-                       icon_mouseover=MainMenu.ICON_EXIT_MOUSEOVER,
-                       icon_mouseout=MainMenu.ICON_EXIT_MOUSEOUT,
-                       callback_b1press=self.exit,
-                       callback_b1press_arg=(),
-                       callback_mouseover=self.close_all_submenus,
-                       callback_mouseover_arg=(),
-                       parent=self.main.pixel2d))
 
     def close_main_menu(self, _) -> None:
 
@@ -1779,6 +1688,7 @@ class BodyShop(SideWindow):
 
 class UI:
 
+    # TODO MainMenu : create a class for the MenuButton
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
     # FIXME Reloading the same car keeps the same paint color
