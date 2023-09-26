@@ -121,10 +121,10 @@ class CloseMenuButton:
 
 class MenuButton:
 
-    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 auto_event: bool, icon_mouseover: str, icon_mouseout: str, image_pos_x: int, text_pad_x: int, parent,
-                 callback_b1press=None, callback_b1press_arg=None, callback_mouseover=None, callback_mouseover_arg=None,
-                 callback_mouseout=None, callback_mouseout_arg=None) -> None:
+    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int, auto_event: bool,
+                 icon_mouseover: str, icon_mouseout: str, image_pos_x: int, icon_size_x: int, icon_size_y: int,
+                 text_pad_x: int, parent, callback_b1press=None, callback_b1press_arg=None, callback_mouseover=None,
+                 callback_mouseover_arg=None, callback_mouseout=None, callback_mouseout_arg=None) -> None:
 
         self.auto_event = auto_event
         self.icon_mouseover = icon_mouseover
@@ -150,7 +150,7 @@ class MenuButton:
                                                       pos=(position_x, 0, -position_y),
                                                       state=direct.gui.DirectGui.DGG.NORMAL,
                                                       image=self.icon_mouseout,
-                                                      image_scale=MainMenu.BUTTON_ICON_SIZE,
+                                                      image_scale=(icon_size_x, 0, icon_size_y),
                                                       image_pos=(image_pos_x, 0, -UI.BUTTON_Y_SIZE / 2),
                                                       parent=parent)
 
@@ -543,6 +543,8 @@ class SubMenu:
                                 auto_event=True,
                                 icon_mouseover=self.icon_mouseover,
                                 icon_mouseout=self.icon_mouseout,
+                                icon_size_x=MainMenu.BUTTON_ICON_SIZE_X,
+                                icon_size_y=MainMenu.BUTTON_ICON_SIZE_Y,
                                 callback_b1press=callback,
                                 callback_b1press_arg=callback_arg,
                                 parent=self.main.pixel2d)
@@ -571,7 +573,8 @@ class SubMenu:
 class MainMenu:
 
     TEXT_PADDING_LEFT = 60
-    BUTTON_ICON_SIZE = (16, 0, 11)
+    BUTTON_ICON_SIZE_X = 16
+    BUTTON_ICON_SIZE_Y = 11
     BUTTON_ICON_POS = int(TEXT_PADDING_LEFT / 2)
 
     MAIN_BUTTON_BAR_Y_SIZE = 4
@@ -727,6 +730,8 @@ class MainMenu:
                            image_pos_x=MainMenu.BUTTON_ICON_POS,
                            icon_mouseover=button["icon_mouseover"],
                            icon_mouseout=button["icon_mouseout"],
+                           icon_size_x=MainMenu.BUTTON_ICON_SIZE_X,
+                           icon_size_y=MainMenu.BUTTON_ICON_SIZE_Y,
                            callback_b1press=button["callback_b1press"],
                            callback_b1press_arg=button["callback_b1press_arg"],
                            callback_mouseover=button["callback_mouseover"],
@@ -736,6 +741,8 @@ class MainMenu:
         self.update_autorotate_icon(b1press=False)
 
     def close_main_menu(self, _) -> None:
+
+        # self.close_main_menu_button.delete()  # FIXME
 
         self.close_all_submenus(None)
 
@@ -1726,9 +1733,8 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # TODO MainMenu : create a class for the MenuButton
-    # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
+    # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # FIXME Reloading the same car keeps the same paint color
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
