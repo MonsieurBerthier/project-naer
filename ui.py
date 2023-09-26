@@ -54,6 +54,51 @@ class ClickButton:
         self.frame["text_fg"] = UI.WHITE
 
 
+class BurgerButton:
+
+    def __init__(self, position_x: int, position_y: int, size_x: int, size_y: int, bar_size_y: int,
+                 callback_within, parent) -> None:
+
+        self.callback_within = callback_within
+
+        self.background = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.TRANSPARENT,
+                                             frameSize=(0, size_x, 0, -size_y),
+                                             pos=(position_x, 0, position_y),
+                                             state=direct.gui.DirectGui.DGG.NORMAL,
+                                             parent=parent))
+        self.top_line = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                             frameSize=(0, size_x, 0, -bar_size_y),
+                                             pos=(0, 0, 0),
+                                             state=direct.gui.DirectGui.DGG.NORMAL,
+                                             parent=self.background))
+        self.middle_line = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                             frameSize=(0, size_x, 0, -bar_size_y),
+                                             pos=(0, 0, - (size_y / 2) + (bar_size_y / 2)),
+                                             state=direct.gui.DirectGui.DGG.NORMAL,
+                                             parent=self.background))
+        self.bottom_line = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
+                                             frameSize=(0, size_x, 0, -bar_size_y),
+                                             pos=(0, 0, -size_y + bar_size_y),
+                                             state=direct.gui.DirectGui.DGG.NORMAL,
+                                             parent=self.background))
+
+        self.background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
+                             command=self.set_active)
+
+    def set_active(self, _):
+
+        self.background["frameColor"] = UI.WHITE
+        self.callback_within(None)
+
+    def set_inactive(self):
+
+        self.background["frameColor"] = UI.TRANSPARENT
+
+
 class MenuButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
@@ -146,8 +191,10 @@ class ListButton:
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                         command=self.set_mouseover_style)
+
         self.frame.bind(event=direct.gui.DirectGui.DGG.WITHOUT,
                         command=self.set_mouseout_style)
+
         self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
                         command=callback,
                         extraArgs=[self.frame["text"]])
@@ -557,9 +604,16 @@ class MainMenu:
 
         self.main = main
 
-        self.open_button = {}
-        self.close_button = None
+        self.close_main_menu_button = None
         self.menu_buttons = {}
+
+        self.burger_menu = BurgerButton(position_x=UI.MARGIN,
+                                        position_y=-UI.MARGIN,
+                                        size_x=UI.BUTTON_Y_SIZE,
+                                        size_y=UI.BUTTON_Y_SIZE,
+                                        bar_size_y=MainMenu.MAIN_BUTTON_BAR_Y_SIZE,
+                                        callback_within=self.open_main_menu,
+                                        parent=self.main.pixel2d)
 
         self.submenu_cars = SubMenu(main=self.main,
                                     folder=self.main.PATH_CARS,
@@ -577,49 +631,19 @@ class MainMenu:
                                        icon_mouseover=MainMenu.ICON_GROUND_MOUSEOVER,
                                        icon_mouseout=MainMenu.ICON_GROUND_MOUSEOUT)
 
-        self.open_button["Background"] = (
-            direct.gui.DirectGui.DirectFrame(frameColor=UI.TRANSPARENT,
-                                             frameSize=(0, UI.BUTTON_Y_SIZE, 0, -UI.BUTTON_Y_SIZE),
-                                             pos=(UI.MARGIN, 0, -UI.MARGIN),
-                                             state=direct.gui.DirectGui.DGG.NORMAL,
-                                             parent=self.main.pixel2d))
-        self.open_button["TopLine"] = (
-            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
-                                             frameSize=(0, UI.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
-                                             pos=(UI.MARGIN, 0, -UI.MARGIN),
-                                             state=direct.gui.DirectGui.DGG.NORMAL,
-                                             parent=self.main.pixel2d))
-        self.open_button["MiddleLine"] = (
-            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
-                                             frameSize=(0, UI.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
-                                             pos=(UI.MARGIN, 0, - (UI.BUTTON_Y_SIZE / 2) - UI.MARGIN +
-                                                  (MainMenu.MAIN_BUTTON_BAR_Y_SIZE / 2)),
-                                             state=direct.gui.DirectGui.DGG.NORMAL,
-                                             parent=self.main.pixel2d))
-        self.open_button["BottomLine"] = (
-            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
-                                             frameSize=(0, UI.BUTTON_Y_SIZE, 0, -MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
-                                             pos=(UI.MARGIN, 0,
-                                                  -UI.BUTTON_Y_SIZE - UI.MARGIN + MainMenu.MAIN_BUTTON_BAR_Y_SIZE),
-                                             state=direct.gui.DirectGui.DGG.NORMAL,
-                                             parent=self.main.pixel2d))
-
-        self.open_button["Background"].bind(event=direct.gui.DirectGui.DGG.WITHIN,
-                                            command=self.open_main_menu)
-
     def open_main_menu(self, _) -> None:
 
         if self.menu_buttons:
             return
 
-        self.open_button["Background"]["frameColor"] = UI.WHITE
-        self.close_button = direct.gui.DirectGui.DirectFrame(frameColor=UI.TRANSPARENT,
-                                                             frameSize=(0, self.main.window_resolution[0], 0,
-                                                                        -self.main.window_resolution[1]),
-                                                             state=direct.gui.DirectGui.DGG.NORMAL,
-                                                             parent=self.main.pixel2d)
-        self.close_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                               command=self.close_main_menu)
+        self.close_main_menu_button = (
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.TRANSPARENT,
+                                             frameSize=(0, self.main.window_resolution[0], 0,
+                                                        -self.main.window_resolution[1]),
+                                             state=direct.gui.DirectGui.DGG.NORMAL,
+                                             parent=self.main.pixel2d))
+        self.close_main_menu_button.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
+                                         command=self.close_main_menu)
 
         main_menu_buttons_data = [
             {"text": MainMenu.TEXT_CARS, "auto_event": False,
@@ -697,7 +721,7 @@ class MainMenu:
 
     def close_main_menu(self, _) -> None:
 
-        self.close_button.destroy()
+        self.close_main_menu_button.destroy()
 
         self.close_all_submenus(None)
 
@@ -705,7 +729,7 @@ class MainMenu:
             self.menu_buttons[button].frame.destroy()
         self.menu_buttons = {}
 
-        self.open_button["Background"]["frameColor"] = UI.TRANSPARENT
+        self.burger_menu.set_inactive()
 
     def open_cars_submenu(self, _) -> None:
 
