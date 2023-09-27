@@ -111,9 +111,9 @@ class CloseMenuButton:
                                                       parent=parent)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                        command=self.delete)
+                        command=self.remove)
 
-    def delete(self, _):
+    def remove(self, _):
 
         self.frame.destroy()
         self.callback_b1press(None)
@@ -190,6 +190,10 @@ class MenuButton:
 
         if self.callback_mouseout:
             self.callback_mouseout(self.callback_mouseout_arg)
+
+    def remove(self):
+
+        self.frame.destroy()
 
 
 class ListButton:
@@ -742,12 +746,10 @@ class MainMenu:
 
     def close_main_menu(self, _) -> None:
 
-        # self.close_main_menu_button.delete()  # FIXME
-
         self.close_all_submenus(None)
 
         for button in self.menu_buttons:
-            self.menu_buttons[button].frame.destroy()
+            self.menu_buttons[button].remove()
         self.menu_buttons = {}
 
         self.burger_menu.set_inactive()
@@ -766,9 +768,10 @@ class MainMenu:
 
         self.submenu_cars.close()
 
-        self.menu_buttons[MainMenu.TEXT_CARS].frame["frameColor"] = UI.RED
-        self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = UI.WHITE
-        self.menu_buttons[MainMenu.TEXT_CARS].frame["image"] = MainMenu.ICON_CARS_MOUSEOUT
+        if self.menu_buttons:
+            self.menu_buttons[MainMenu.TEXT_CARS].frame["frameColor"] = UI.RED
+            self.menu_buttons[MainMenu.TEXT_CARS].frame["text_fg"] = UI.WHITE
+            self.menu_buttons[MainMenu.TEXT_CARS].frame["image"] = MainMenu.ICON_CARS_MOUSEOUT
 
     def open_wheels_submenu(self, _) -> None:
 
@@ -782,9 +785,10 @@ class MainMenu:
 
     def close_wheels_submenu(self, _) -> None:
 
-        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = UI.RED
-        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = UI.WHITE
-        self.menu_buttons[MainMenu.TEXT_WHEELS].frame["image"] = MainMenu.ICON_WHEELS_MOUSEOUT
+        if self.menu_buttons:
+            self.menu_buttons[MainMenu.TEXT_WHEELS].frame["frameColor"] = UI.RED
+            self.menu_buttons[MainMenu.TEXT_WHEELS].frame["text_fg"] = UI.WHITE
+            self.menu_buttons[MainMenu.TEXT_WHEELS].frame["image"] = MainMenu.ICON_WHEELS_MOUSEOUT
 
         self.submenu_wheels.close()
 
@@ -800,9 +804,10 @@ class MainMenu:
 
     def close_grounds_submenu(self, _) -> None:
 
-        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = UI.RED
-        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = UI.WHITE
-        self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["image"] = MainMenu.ICON_GROUNDS_MOUSEOUT
+        if self.menu_buttons:
+            self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["frameColor"] = UI.RED
+            self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["text_fg"] = UI.WHITE
+            self.menu_buttons[MainMenu.TEXT_GROUNDS].frame["image"] = MainMenu.ICON_GROUNDS_MOUSEOUT
 
         self.submenu_grounds.close()
 
@@ -816,19 +821,25 @@ class MainMenu:
 
         logger.debug("Button \"Garage\" clicked")
 
+        self.close_main_menu_button.remove(None)
         self.close_main_menu(None)
+
         Garage(main=self.main)
 
     def display_body_shop(self, _) -> None:
 
         logger.debug("Button \"Body Shop\" clicked")
 
+        self.close_main_menu_button.remove(None)
         self.close_main_menu(None)
+
         BodyShop(main=self.main)
 
     def save_car(self, _) -> None:
 
         logger.debug("Button \"Save Car\" clicked")
+
+        self.close_main_menu_button.remove(None)
 
         root = tkinter.Tk()
         root.iconify()
@@ -843,6 +854,8 @@ class MainMenu:
 
         logger.debug("Button \"Load Car\" clicked")
 
+        self.close_main_menu_button.remove(None)
+
         root = tkinter.Tk()
         root.iconify()
 
@@ -854,6 +867,8 @@ class MainMenu:
     def save_image(self, _) -> None:
 
         logger.debug("Button \"Save Image\" clicked")
+
+        self.close_main_menu_button.remove(None)
 
         root = tkinter.Tk()
         root.iconify()
