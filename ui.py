@@ -92,7 +92,7 @@ class BurgerButton:
     def set_active(self, _):
 
         self.background["frameColor"] = UI.WHITE
-        self.callback_within(None)
+        self.callback_within()
 
     def set_inactive(self):
 
@@ -116,7 +116,7 @@ class CloseMenuButton:
     def remove(self, _):
 
         self.frame.destroy()
-        self.callback_b1press(None)
+        self.callback_b1press()
 
 
 class MenuButton:
@@ -169,7 +169,10 @@ class MenuButton:
     def do_b1press_actions(self, _) -> None:
 
         if self.callback_b1press:
-            self.callback_b1press(self.callback_b1press_arg)
+            if self.callback_b1press_arg:
+                self.callback_b1press(self.callback_b1press_arg)
+            else:
+                self.callback_b1press()
 
     def do_mouseover_actions(self, _) -> None:
 
@@ -177,7 +180,10 @@ class MenuButton:
             self.set_mouseover_style()
 
         if self.callback_mouseover:
-            self.callback_mouseover(self.callback_mouseover_arg)
+            if self.callback_mouseover_arg:
+                self.callback_mouseover(self.callback_mouseover_arg)
+            else:
+                self.callback_mouseover()
 
     def do_mouseout_actions(self, _) -> None:
 
@@ -185,7 +191,10 @@ class MenuButton:
             self.set_mouseout_style()
 
         if self.callback_mouseout:
-            self.callback_mouseout(self.callback_mouseout_arg)
+            if self.callback_mouseout_arg:
+                self.callback_mouseout(self.callback_mouseout_arg)
+            else:
+                self.callback_mouseout()
 
     def set_mouseover_style(self):
 
@@ -666,7 +675,7 @@ class MainMenu:
                                        icon_mouseover=MainMenu.ICON_GROUND_MOUSEOVER,
                                        icon_mouseout=MainMenu.ICON_GROUND_MOUSEOUT)
 
-    def callback_open_main_menu(self, _) -> None:
+    def callback_open_main_menu(self) -> None:
 
         if self.menu_buttons:
             return
@@ -681,62 +690,62 @@ class MainMenu:
              "auto_event": False,
              "icon_mouseover": MainMenu.ICON_CARS_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_CARS_MOUSEOUT,
-             "callback_b1press": None, "callback_b1press_arg": None,
-             "callback_mouseover": self.open_cars_submenu, "callback_mouseover_arg": ()},
+             "callback_b1press": None,
+             "callback_mouseover": self.open_cars_submenu},
             {"text": MainMenu.TEXT_WHEELS,
              "auto_event": False,
              "icon_mouseover": MainMenu.ICON_WHEELS_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_WHEELS_MOUSEOUT,
-             "callback_b1press": None, "callback_b1press_arg": None,
-             "callback_mouseover": self.open_wheels_submenu, "callback_mouseover_arg": ()},
+             "callback_b1press": None,
+             "callback_mouseover": self.open_wheels_submenu},
             {"text": MainMenu.TEXT_GROUNDS,
              "auto_event": False,
              "icon_mouseover": MainMenu.ICON_GROUNDS_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_GROUNDS_MOUSEOUT,
-             "callback_b1press": None, "callback_b1press_arg": None,
-             "callback_mouseover": self.open_grounds_submenu, "callback_mouseover_arg": ()},
+             "callback_b1press": None,
+             "callback_mouseover": self.open_grounds_submenu},
             {"text": MainMenu.TEXT_GARAGE,
              "auto_event": True,
              "icon_mouseover": MainMenu.ICON_GARAGE_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_GARAGE_MOUSEOUT,
-             "callback_b1press": self.display_garage, "callback_b1press_arg": (),
-             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+             "callback_b1press": self.display_garage,
+             "callback_mouseover": self.close_all_submenus},
             {"text": MainMenu.TEXT_BODY_SHOP,
              "auto_event": True,
              "icon_mouseover": MainMenu.ICON_BODY_SHOP_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_BODY_SHOP_MOUSEOUT,
-             "callback_b1press": self.display_body_shop, "callback_b1press_arg": (),
-             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+             "callback_b1press": self.display_body_shop,
+             "callback_mouseover": self.close_all_submenus},
             {"text": MainMenu.TEXT_SAVE_CAR,
              "auto_event": True,
              "icon_mouseover": MainMenu.ICON_SAVE_CAR_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_SAVE_CAR_MOUSEOUT,
-             "callback_b1press": self.save_car, "callback_b1press_arg": (),
-             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+             "callback_b1press": self.save_car,
+             "callback_mouseover": self.close_all_submenus},
             {"text": MainMenu.TEXT_LOAD_CAR,
              "auto_event": True,
              "icon_mouseover": MainMenu.ICON_LOAD_CAR_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_LOAD_CAR_MOUSEOUT,
-             "callback_b1press": self.load, "callback_b1press_arg": (),
-             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+             "callback_b1press": self.load,
+             "callback_mouseover": self.close_all_submenus},
             {"text": MainMenu.TEXT_SAVE_IMAGE,
              "auto_event": True,
              "icon_mouseover": MainMenu.ICON_SAVE_IMAGE_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_SAVE_IMAGE_MOUSEOUT,
-             "callback_b1press": self.save_image, "callback_b1press_arg": (),
-             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+             "callback_b1press": self.save_image,
+             "callback_mouseover": self.close_all_submenus},
             {"text": MainMenu.TEXT_AUTOROTATE,
              "auto_event": True,
              "icon_mouseover": MainMenu.ICON_AUTOROTATE_ON_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_AUTOROTATE_ON_MOUSEOUT,
-             "callback_b1press": self.toggle_autorotate, "callback_b1press_arg": (),
-             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()},
+             "callback_b1press": self.toggle_autorotate,
+             "callback_mouseover": self.close_all_submenus},
             {"text": MainMenu.TEXT_EXIT,
              "auto_event": True,
              "icon_mouseover": MainMenu.ICON_EXIT_MOUSEOVER,
              "icon_mouseout": MainMenu.ICON_EXIT_MOUSEOUT,
-             "callback_b1press": self.exit, "callback_b1press_arg": (),
-             "callback_mouseover": self.close_all_submenus, "callback_mouseover_arg": ()}]
+             "callback_b1press": self.exit,
+             "callback_mouseover": self.close_all_submenus}]
 
         for i, button in enumerate(main_menu_buttons_data):
 
@@ -755,16 +764,14 @@ class MainMenu:
                            icon_size_x=MainMenu.BUTTON_ICON_SIZE_X,
                            icon_size_y=MainMenu.BUTTON_ICON_SIZE_Y,
                            callback_b1press=button["callback_b1press"],
-                           callback_b1press_arg=button["callback_b1press_arg"],
                            callback_mouseover=button["callback_mouseover"],
-                           callback_mouseover_arg=button["callback_mouseover_arg"],
                            parent=self.main.pixel2d))
 
         self.update_autorotate_icon(b1press=False)
 
-    def close_main_menu(self, _) -> None:
+    def close_main_menu(self) -> None:
 
-        self.close_all_submenus(None)
+        self.close_all_submenus()
 
         for button in self.menu_buttons:
             self.menu_buttons[button].remove()
@@ -772,70 +779,70 @@ class MainMenu:
 
         self.burger_menu.set_inactive()
 
-    def open_cars_submenu(self, _) -> None:
+    def open_cars_submenu(self) -> None:
 
-        self.close_all_submenus(None)
+        self.close_all_submenus()
         self.menu_buttons[MainMenu.TEXT_CARS].set_mouseover_style()
         self.submenu_cars.open(content_path=self.main.PATH_CARS)
 
-    def close_cars_submenu(self, _) -> None:
+    def close_cars_submenu(self) -> None:
 
         self.submenu_cars.close()
 
         if self.menu_buttons:
             self.menu_buttons[MainMenu.TEXT_CARS].set_mouseout_style()
 
-    def open_wheels_submenu(self, _) -> None:
+    def open_wheels_submenu(self) -> None:
 
-        self.close_all_submenus(None)
+        self.close_all_submenus()
         self.menu_buttons[MainMenu.TEXT_WHEELS].set_mouseover_style()
         self.submenu_wheels.open(content_path=self.main.PATH_WHEELS)
 
-    def close_wheels_submenu(self, _) -> None:
+    def close_wheels_submenu(self) -> None:
 
         self.submenu_wheels.close()
 
         if self.menu_buttons:
             self.menu_buttons[MainMenu.TEXT_WHEELS].set_mouseout_style()
 
-    def open_grounds_submenu(self, _) -> None:
+    def open_grounds_submenu(self) -> None:
 
-        self.close_all_submenus(None)
+        self.close_all_submenus()
         self.menu_buttons[MainMenu.TEXT_GROUNDS].set_mouseover_style()
         self.submenu_grounds.open(content_path=self.main.PATH_GROUNDS)
 
-    def close_grounds_submenu(self, _) -> None:
+    def close_grounds_submenu(self) -> None:
 
         self.submenu_grounds.close()
 
         if self.menu_buttons:
             self.menu_buttons[MainMenu.TEXT_GROUNDS].set_mouseout_style()
 
-    def close_all_submenus(self, _) -> None:
+    def close_all_submenus(self) -> None:
 
-        self.close_cars_submenu(None)
-        self.close_wheels_submenu(None)
-        self.close_grounds_submenu(None)
+        self.close_cars_submenu()
+        self.close_wheels_submenu()
+        self.close_grounds_submenu()
 
-    def display_garage(self, _) -> None:
+    def display_garage(self) -> None:
 
         logger.debug("Button \"Garage\" clicked")
 
         self.close_main_menu_button.remove(None)
-        self.close_main_menu(None)
+        self.close_main_menu()
 
         Garage(main=self.main)
 
-    def display_body_shop(self, _) -> None:
+    def display_body_shop(self) -> None:
 
         logger.debug("Button \"Body Shop\" clicked")
 
         self.close_main_menu_button.remove(None)
-        self.close_main_menu(None)
+        self.close_main_menu()
 
         BodyShop(main=self.main)
 
-    def save_car(self, _) -> None:
+    def save_car(self) -> None:
 
         logger.debug("Button \"Save Car\" clicked")
 
@@ -848,9 +855,9 @@ class MainMenu:
                                                        title="Save car",
                                                        defaultextension=".pnc")
 
-        self.close_main_menu(None)
+        self.close_main_menu()
 
-    def load(self, _) -> None:
+    def load(self) -> None:
 
         logger.debug("Button \"Load Car\" clicked")
 
@@ -862,9 +869,9 @@ class MainMenu:
         path_to_car = tkinter.filedialog.askopenfilename(title="Load a car (*.pnc)",
                                                          defaultextension=".pnc")
 
-        self.close_main_menu(None)
+        self.close_main_menu()
 
-    def save_image(self, _) -> None:
+    def save_image(self) -> None:
 
         logger.debug("Button \"Save Image\" clicked")
 
@@ -877,9 +884,9 @@ class MainMenu:
                                                          title="Save image",
                                                          defaultextension=".png")
 
-        self.close_main_menu(None)
+        self.close_main_menu()
 
-    def toggle_autorotate(self, _) -> None:
+    def toggle_autorotate(self) -> None:
 
         logger.debug("Button \"Autorotate\" clicked")
 
@@ -913,7 +920,7 @@ class MainMenu:
             self.menu_buttons[MainMenu.TEXT_AUTOROTATE].icon_mouseover = MainMenu.ICON_AUTOROTATE_OFF_MOUSEOVER
 
     @staticmethod
-    def exit(_) -> None:
+    def exit() -> None:
 
         logger.debug("Button \"Exit\" clicked")
 
