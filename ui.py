@@ -207,7 +207,7 @@ class MenuButton:
 class ListButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 callback, parent) -> None:
+                 callback_b1press, parent) -> None:
 
         self.frame = direct.gui.DirectGui.DirectFrame(text=text,
                                                       text_fg=UI.WHITE,
@@ -228,7 +228,7 @@ class ListButton:
                         command=self.set_mouseout_style)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                        command=callback,
+                        command=callback_b1press,
                         extraArgs=[self.frame["text"]])
 
     def set_mouseover_style(self, _) -> None:
@@ -248,7 +248,7 @@ class CarItemButton:
     PART_STATUS_INSTALLED = "INSTALLED"
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 callback, callback_arg, parent) -> None:
+                 callback_b1press, callback_b1press_arg, parent) -> None:
 
         self.item_is_installed = False
 
@@ -295,8 +295,8 @@ class CarItemButton:
                         command=self.set_mouseout_style)
 
         self.frame.bind(event=direct.gui.DirectGui.DGG.B1PRESS,
-                        command=callback,
-                        extraArgs=[callback_arg])
+                        command=callback_b1press,
+                        extraArgs=[callback_b1press_arg])
 
     def set_mouseover_style(self, _) -> None:
 
@@ -348,9 +348,9 @@ class CarItemButton:
 class CheckButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 callback, parent) -> None:
+                 callback_b1press, parent) -> None:
 
-        self.callback = callback
+        self.callback_b1press = callback_b1press
         self.active = False
 
         self.frame = (
@@ -386,11 +386,11 @@ class CheckButton:
         if self.active:
             self.check_button["frameColor"] = UI.RED
             self.active = False
-            self.callback(False)
+            self.callback_b1press(False)
         else:
             self.check_button["frameColor"] = UI.WHITE
             self.active = True
-            self.callback(True)
+            self.callback_b1press(True)
 
 
 class Paint:
@@ -647,7 +647,7 @@ class MainMenu:
                                         size_x=UI.BUTTON_Y_SIZE,
                                         size_y=UI.BUTTON_Y_SIZE,
                                         bar_size_y=MainMenu.MAIN_BUTTON_BAR_Y_SIZE,
-                                        callback_within=self.open_main_menu,
+                                        callback_within=self.callback_open_main_menu,
                                         parent=self.main.pixel2d)
 
         self.submenu_cars = SubMenu(main=self.main,
@@ -666,7 +666,7 @@ class MainMenu:
                                        icon_mouseover=MainMenu.ICON_GROUND_MOUSEOVER,
                                        icon_mouseout=MainMenu.ICON_GROUND_MOUSEOUT)
 
-    def open_main_menu(self, _) -> None:
+    def callback_open_main_menu(self, _) -> None:
 
         if self.menu_buttons:
             return
@@ -1258,7 +1258,7 @@ class Garage(SideWindow):
                                         position_y=(UI.BUTTON_Y_SIZE * (nb_bodykits - 1)) - (UI.BUTTON_Y_SIZE * i),
                                         size_x=Garage.FRAME_X_SIZE - 2 * UI.MARGIN,
                                         size_y=UI.BUTTON_Y_SIZE,
-                                        callback=self.callback_load_bodykit,
+                                        callback_b1press=self.callback_load_bodykit,
                                         parent=bodykits_list_frame.getCanvas())
 
             self.bodykits_buttons.append(bodykit_button)
@@ -1428,8 +1428,8 @@ class BodyShop(SideWindow):
                                             position_y=(UI.BUTTON_Y_SIZE * (nb_car_items - 1)) - (UI.BUTTON_Y_SIZE * i),
                                             size_x=BodyShop.FRAME_X_SIZE - 2 * UI.MARGIN,
                                             size_y=UI.BUTTON_Y_SIZE,
-                                            callback=self.callback_load_car_item,
-                                            callback_arg=tag,
+                                            callback_b1press=self.callback_load_car_item,
+                                            callback_b1press_arg=tag,
                                             parent=car_items_scolledframe.getCanvas())
 
             car_item_button.update_item_status(item=item)
@@ -1623,7 +1623,7 @@ class BodyShop(SideWindow):
                                     UI.MARGIN + UI.FONT_SIZE) - 10,
                         size_x=BodyShop.FRAME_X_SIZE - 4 * UI.MARGIN,
                         size_y=UI.BUTTON_Y_SIZE,
-                        callback=self.callback_toggle_paint_all,
+                        callback_b1press=self.callback_toggle_paint_all,
                         parent=self.paint_selector_frame))
 
     def callback_toggle_paint_all(self, active: bool) -> None:
