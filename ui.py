@@ -828,7 +828,6 @@ class MainMenu:
 
         logger.debug("Button \"Garage\" clicked")
 
-        self.close_main_menu_button.remove(None)
         self.close_main_menu()
 
         Garage(main=self.main)
@@ -837,7 +836,6 @@ class MainMenu:
 
         logger.debug("Button \"Body Shop\" clicked")
 
-        self.close_main_menu_button.remove(None)
         self.close_main_menu()
 
         BodyShop(main=self.main)
@@ -845,8 +843,6 @@ class MainMenu:
     def save_car(self) -> None:
 
         logger.debug("Button \"Save Car\" clicked")
-
-        self.close_main_menu_button.remove(None)
 
         root = tkinter.Tk()
         root.iconify()
@@ -861,8 +857,6 @@ class MainMenu:
 
         logger.debug("Button \"Load Car\" clicked")
 
-        self.close_main_menu_button.remove(None)
-
         root = tkinter.Tk()
         root.iconify()
 
@@ -874,8 +868,6 @@ class MainMenu:
     def save_image(self) -> None:
 
         logger.debug("Button \"Save Image\" clicked")
-
-        self.close_main_menu_button.remove(None)
 
         root = tkinter.Tk()
         root.iconify()
@@ -1757,6 +1749,7 @@ class UI:
 
     # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
+    # FIXME Inhibate MainMenu opening when Garage or BodyShop are opened
     # FIXME Reloading the same car keeps the same paint color
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
