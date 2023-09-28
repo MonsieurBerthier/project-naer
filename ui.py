@@ -506,7 +506,7 @@ class PaintPreview:
     @staticmethod
     def float_to_hex(a: float) -> str:
 
-        return hex(int(round(a*255, 0)))[2:].upper().rjust(2, "0")
+        return hex(int(round(a * 255, 0)))[2:].upper().rjust(2, "0")
 
     @staticmethod
     def hex_to_float(a: str) -> float:
@@ -1280,13 +1280,23 @@ class Garage(SideWindow):
 
     def callback_update_wheel_diameter(self, axle: str) -> None:
 
+        diameter_slider_value = self.wheels_diameter_slider[axle]["value"]
+
         for i in range(len(self.main.car.json["wheels"][axle])):
 
+            wheels_pos_json = self.main.car.json["wheels"][axle][i]["position"]
+            wheels_scale_json = self.main.car.json["wheels"][axle][i]["scale"]
             current_wheel_scale = self.main.car.items["wheels"][axle][i].model.getScale()
 
-            self.main.car.items["wheels"][axle][i].model.setScale((current_wheel_scale[0],
-                                                                   self.wheels_diameter_slider[axle]["value"],
-                                                                   self.wheels_diameter_slider[axle]["value"]))
+            self.main.car.items["wheels"][axle][i].model.setScale(
+                (current_wheel_scale[0],
+                 diameter_slider_value,
+                 diameter_slider_value))
+
+            self.main.car.items["wheels"][axle][i].model.setPos(
+                (wheels_pos_json[0],
+                 wheels_pos_json[1],
+                 wheels_pos_json[2] * (diameter_slider_value / wheels_scale_json[2])))
 
     def callback_update_wheel_width(self, axle: str) -> None:
 
@@ -1497,8 +1507,8 @@ class BodyShop(SideWindow):
                                               value=chassis_paint.color[0],
                                               pageSize=BodyShop.SLIDER_PAGE_SIZE,
                                               pos=(BodyShop.FRAME_X_SIZE / 2, 0,
-                                              BodyShop.PAINT_SELECTOR_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
-                                              2 * (UI.MARGIN + UI.FONT_SIZE) + 8),
+                                                   BodyShop.PAINT_SELECTOR_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                   2 * (UI.MARGIN + UI.FONT_SIZE) + 8),
                                               scale=BodyShop.SLIDER_SCALE,
                                               color=UI.WHITE,
                                               thumb_relief=direct.gui.DirectGui.DGG.FLAT,
@@ -1619,7 +1629,7 @@ class BodyShop(SideWindow):
                         font=self.main.font,
                         position_x=UI.MARGIN + 2,
                         position_y=BodyShop.PAINT_SELECTOR_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE - 7 * (
-                                    UI.MARGIN + UI.FONT_SIZE) - 10,
+                                UI.MARGIN + UI.FONT_SIZE) - 10,
                         size_x=BodyShop.FRAME_X_SIZE - 4 * UI.MARGIN,
                         size_y=UI.BUTTON_Y_SIZE,
                         callback_b1press=self.callback_toggle_paint_all,
