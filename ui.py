@@ -576,6 +576,9 @@ class SubMenu:
 
         self.main.car.load(tag=tag)
 
+        Garage.car_ride_height_offset = 0
+        Garage.car_pitch_offset = 0
+
     def callback_load_wheels(self, tag: str) -> None:
 
         self.main.car.load_wheels(tag=tag, oem=False)
@@ -957,6 +960,9 @@ class Garage(SideWindow):
     WHEELS_PARAMETERS_FRAME_Y_SIZE = 457
     BODYKITS_FRAME_Y_SIZE = 168
 
+    car_ride_height_offset = 0
+    car_pitch_offset = 0
+
     def __init__(self, main) -> None:
 
         super().__init__(main=main, size_x=self.FRAME_X_SIZE, size_y=self.FRAME_Y_SIZE)
@@ -1011,7 +1017,7 @@ class Garage(SideWindow):
 
         self.car_ride_height_slider = (
             direct.gui.DirectGui.DirectSlider(range=(-0.6, 0.6),
-                                              value=self.main.car.nodepath.getPos()[2],
+                                              value=self.main.car.nodepath.getPos()[2] - Garage.car_ride_height_offset,
                                               pageSize=0.02,
                                               pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
                                                    Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
@@ -1035,8 +1041,8 @@ class Garage(SideWindow):
                                          parent=self.car_parameters_frame)
 
         self.car_pitch_slider = (
-            direct.gui.DirectGui.DirectSlider(range=(-4, 4),
-                                              value=self.main.car.nodepath.getHpr()[1],
+            direct.gui.DirectGui.DirectSlider(range=(-6, 6),
+                                              value=self.main.car.nodepath.getHpr()[1] - Garage.car_pitch_offset,
                                               pageSize=0.2,
                                               pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
                                                    Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
@@ -1097,7 +1103,7 @@ class Garage(SideWindow):
                                              parent=self.wheels_parameters_frame)
 
             self.wheels_diameter_slider[axle] = (
-                direct.gui.DirectGui.DirectSlider(range=(0.5 * json_wheel_diameter, 1.50 * json_wheel_diameter),
+                direct.gui.DirectGui.DirectSlider(range=(0.8 * json_wheel_diameter, 1.2 * json_wheel_diameter),
                                                   value=current_wheel_diameter,
                                                   pageSize=0.05,
                                                   pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
@@ -1268,14 +1274,14 @@ class Garage(SideWindow):
 
         self.main.car.nodepath.setPos((current_car_position[0],
                                        current_car_position[1],
-                                       self.car_ride_height_slider["value"]))
+                                       self.car_ride_height_slider["value"] + Garage.car_ride_height_offset))
 
     def callback_update_car_pitch(self) -> None:
 
         current_car_rotation = self.main.car.nodepath.getHpr()
 
         self.main.car.nodepath.setHpr((current_car_rotation[0],
-                                       self.car_pitch_slider["value"],
+                                       self.car_pitch_slider["value"] + Garage.car_pitch_offset,
                                        current_car_rotation[2]))
 
     def callback_update_wheel_diameter(self, axle: str) -> None:
@@ -1293,10 +1299,32 @@ class Garage(SideWindow):
                  diameter_slider_value,
                  diameter_slider_value))
 
+            wheels_new_height = wheels_pos_json[2] * (diameter_slider_value / wheels_scale_json[2])
+            wheels_current_position = self.main.car.items["wheels"][axle][i].model.getPos()
             self.main.car.items["wheels"][axle][i].model.setPos(
-                (wheels_pos_json[0],
-                 wheels_pos_json[1],
-                 wheels_pos_json[2] * (diameter_slider_value / wheels_scale_json[2])))
+                (wheels_current_position[0],
+                 wheels_current_position[1],
+                 wheels_new_height))
+
+            self.update_car_ride_height_pitch_offsets()
+            self.callback_update_car_ride_height()
+            self.callback_update_car_pitch()
+
+    def update_car_ride_height_pitch_offsets(self):
+
+        if list(self.main.car.items["wheels"].keys()) == ['front', 'rear']:
+
+            wheels_front_height = self.main.car.items["wheels"]["front"][0].model.getPos()[2]
+            wheels_front_height_json = self.main.car.json["wheels"]["front"][0]["position"][2]
+            wheels_rear_height = self.main.car.items["wheels"]["rear"][0].model.getPos()[2]
+            wheels_rear_height_json = self.main.car.json["wheels"]["rear"][0]["position"][2]
+            car_wheelbase = (math.fabs(self.main.car.json["wheels"]["front"][0]["position"][1]) +
+                             math.fabs(self.main.car.json["wheels"]["rear"][0]["position"][1]))
+
+            Garage.car_ride_height_offset = ((wheels_rear_height - wheels_rear_height_json)
+                                             + (wheels_front_height - wheels_front_height_json)) / 2
+            Garage.car_pitch_offset = 2 * math.degrees(
+                math.atan(((wheels_rear_height - wheels_front_height) / car_wheelbase)))
 
     def callback_update_wheel_width(self, axle: str) -> None:
 
@@ -1757,7 +1785,6 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # TODO Update Garage menu: increasing wheel diameter should change wheel z-position and car pitch
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # FIXME Inhibate MainMenu opening when Garage or BodyShop are opened
     # FIXME Reloading the same car keeps the same paint color
