@@ -124,34 +124,40 @@ class Car:
 
     def load_wheels(self, tag: str, oem: bool) -> None:
 
+        if oem:
+            wheels_path = os.path.join(self.path, tag + ".glb")
+            wheels_name = self.json["names"][tag]
+            wheels_parameters = self.json["wheels"]
+        else:
+            wheels_path = os.path.join(self.main.PATH_WHEELS, tag, tag + ".glb")
+            wheels_name = library.io.get_json(path=os.path.join(self.main.PATH_WHEELS,
+                                                                tag, self.main.PATH_ITEMS_CONFIG_JSON))["name"]
+            wheels_parameters = {axle: [{"position": list(wheel.model.getPos()),
+                                         "rotation": list(wheel.model.getHpr()),
+                                         "scale": list(wheel.model.getScale())}
+                                        for wheel in self.items["wheels"][axle]]
+                                 for axle in self.items["wheels"]}
+
         if "wheels" in self.items:
             self.unload_wheels()
 
         logger.debug(f"Loading car wheels \"{tag}\"")
 
-        if oem:
-            wheel_path = os.path.join(self.path, tag + ".glb")
-            wheel_name = self.json["names"][tag]
-        else:
-            wheel_path = os.path.join(self.main.PATH_WHEELS, tag, tag + ".glb")
-            wheel_name = library.io.get_json(path=os.path.join(self.main.PATH_WHEELS,
-                                                               tag, self.main.PATH_ITEMS_CONFIG_JSON))["name"]
-
         self.items["wheels"] = {}
 
-        for axle in self.json["wheels"]:
+        for axle in wheels_parameters:
 
             self.items["wheels"][axle] = []
 
-            for wheel in self.json["wheels"][axle]:
+            for i, wheel in enumerate(wheels_parameters[axle]):
 
                 wheel_item = Item(tag=tag,
-                                  name=wheel_name,
-                                  model=self.main.loader.loadModel(modelPath=wheel_path))
+                                  name=wheels_name,
+                                  model=self.main.loader.loadModel(modelPath=wheels_path))
 
-                wheel_item.model.setPos(tuple(wheel["position"]))
-                wheel_item.model.setHpr(tuple(wheel["rotation"]))
-                wheel_item.model.setScale(tuple(wheel["scale"]))
+                wheel_item.model.setPos(tuple(wheels_parameters[axle][i]["position"]))
+                wheel_item.model.setHpr(tuple(wheels_parameters[axle][i]["rotation"]))
+                wheel_item.model.setScale(tuple(wheels_parameters[axle][i]["scale"]))
                 wheel_item.model.reparentTo(self.main.render)
                 self.items["wheels"][axle].append(wheel_item)
 
