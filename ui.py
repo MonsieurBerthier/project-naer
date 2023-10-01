@@ -1793,7 +1793,6 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # TODO Update Garage menu: keep wheels adjustments when changing wheels
     # FIXME Reloading the same car keeps the same paint color
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
