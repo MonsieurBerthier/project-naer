@@ -91,8 +91,9 @@ class BurgerButton:
 
     def set_active(self, _):
 
-        self.background["frameColor"] = UI.WHITE
-        self.callback_within()
+        if not MainMenu.inhibited:
+            self.background["frameColor"] = UI.WHITE
+            self.callback_within()
 
     def set_inactive(self):
 
@@ -647,6 +648,8 @@ class MainMenu:
     ICON_EXIT_MOUSEOVER = "content/images/ui/menu/icon_exit_mouseover.png"
     ICON_EXIT_MOUSEOUT = "content/images/ui/menu/icon_exit_mouseout.png"
 
+    inhibited = False
+
     def __init__(self, main) -> None:
 
         self.main = main
@@ -948,6 +951,7 @@ class SideWindow:
     def close(self, _) -> None:
 
         self.frame.destroy()
+        MainMenu.inhibited = False
 
 
 class Garage(SideWindow):
@@ -964,6 +968,8 @@ class Garage(SideWindow):
     car_pitch_offset = 0
 
     def __init__(self, main) -> None:
+
+        MainMenu.inhibited = True
 
         super().__init__(main=main, size_x=self.FRAME_X_SIZE, size_y=self.FRAME_Y_SIZE)
 
@@ -1396,6 +1402,8 @@ class BodyShop(SideWindow):
 
     def __init__(self, main) -> None:
 
+        MainMenu.inhibited = True
+
         super().__init__(main=main, size_x=BodyShop.FRAME_X_SIZE, size_y=BodyShop.FRAME_Y_SIZE)
 
         self.car_items_frame = None
@@ -1786,7 +1794,6 @@ class BodyShop(SideWindow):
 class UI:
 
     # TODO Update Garage menu: keep wheels adjustments when changing wheels
-    # FIXME Inhibate MainMenu opening when Garage or BodyShop are opened
     # FIXME Reloading the same car keeps the same paint color
     # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
     # TODO Make a fade out/in lights when changing the car (to be confirmed)
