@@ -16,8 +16,6 @@ from config.logger import logger
 
 panda3d.core.loadPrcFile("config/debug.prc")
 
-# TODO Fix the shadow under the car: could be forced in image
-
 
 class Main(direct.showbase.ShowBase.ShowBase):
 
@@ -53,7 +51,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.autorotate = True
         self.window_resolution = (self.win.getXSize(), self.win.getYSize())
         self.light_on_camera_node = None
-        self.light_node_top = None
+        self.light_shadow_node = None
 
         self.ground = ground.Ground(main=self)
         self.car = car.Car(main=self)
@@ -84,11 +82,26 @@ class Main(direct.showbase.ShowBase.ShowBase):
         light_on_camera.setAttenuation((0, 0, 0.005))
         self.render.setLight(self.light_on_camera_node)
 
-        light_top = direct.showbase.ShowBase.PointLight("TopLight")
-        light_top.setAttenuation((0, 0, 0.02))
-        self.light_node_top = self.render.attachNewNode(light_top)
-        self.light_node_top.setPos((0, 0, 7))
-        self.render.setLight(self.light_node_top)
+        # light_top = direct.showbase.ShowBase.PointLight("TopLight")
+        # light_top.setAttenuation((0, 0, 0.02))
+        # self.light_shadow_node = self.render.attachNewNode(light_top)
+        # self.light_shadow_node.setPos((0, 0, 7))
+        # self.render.setLight(self.light_shadow_node)
+        # self.ground.set_light(light=self.light_shadow_node)
+
+        # To avoid Shadow Acne on ground textures on which shadows are projected :
+        #    Blender > Material > Settings > Check "Backface culling"
+        light_shadow = direct.showbase.ShowBase.Spotlight("ShadowLight")
+        light_shadow.setAttenuation((0, 0, 0.025))
+        light_shadow.set_shadow_caster(True, 1024, 1024)
+        light_shadow.setColor((1, 1, 1, 1))
+        light_shadow_lens = direct.showbase.ShowBase.PerspectiveLens(179, 179)
+        light_shadow_lens.setNearFar(5, 10)
+        light_shadow.setLens(light_shadow_lens)
+        self.light_shadow_node = self.render.attachNewNode(light_shadow)
+        self.light_shadow_node.setPos(0, 0, 7)
+        self.light_shadow_node.lookAt(0, 0, 0)
+        self.ground.set_light(light=self.light_shadow_node)
 
         light_left = direct.showbase.ShowBase.PointLight("LeftLight")
         light_left.setAttenuation((0, 0, 0.001))
@@ -113,8 +126,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
         light_node_rear = self.render.attachNewNode(light_rear)
         light_node_rear.setPos((0, 12, 6))
         self.render.setLight(light_node_rear)
-
-        self.ground.set_light(light=self.light_node_top)
 
     def initialize_camera(self) -> None:
 

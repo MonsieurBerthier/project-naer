@@ -47,4 +47,4 @@ class Ground:
 
         self.unload()
         self.load(tag=tag)
-        self.set_light(self.main.light_node_top)
+        self.set_light(self.main.light_shadow_node)
