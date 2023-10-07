@@ -1467,10 +1467,10 @@ class BodyShop(SideWindow):
 
         for i, tag in enumerate(self.main.car.items):
 
-            if self.is_wheel(tag=tag):
-                item = self.get_first_wheel()
-            elif self.is_brake(tag=tag):
-                item = self.get_first_brake(tag=tag)
+            if self.main.car.is_wheel(tag=tag):
+                item = self.main.car.get_first_wheel()
+            elif self.main.car.is_brake(tag=tag):
+                item = self.main.car.get_first_brake(tag=tag)
             else:
                 item = self.main.car.items[tag]
 
@@ -1700,12 +1700,12 @@ class BodyShop(SideWindow):
 
             self.selected_tag_to_paint = tag
 
-            if self.is_wheel(tag=tag):
-                self.selected_item_label["text"] = self.get_first_wheel().name
-                current_paint = self.get_paint(item=self.get_first_wheel())
-            elif self.is_brake(tag=tag):
-                self.selected_item_label["text"] = self.get_first_brake(tag=tag).name
-                current_paint = self.get_paint(item=self.get_first_brake(tag=tag))
+            if self.main.car.is_wheel(tag=tag):
+                self.selected_item_label["text"] = self.main.car.get_first_wheel().name
+                current_paint = self.get_paint(item=self.main.car.get_first_wheel())
+            elif self.main.car.is_brake(tag=tag):
+                self.selected_item_label["text"] = self.main.car.get_first_brake(tag=tag).name
+                current_paint = self.get_paint(item=self.main.car.get_first_brake(tag=tag))
             else:
                 self.selected_item_label["text"] = self.main.car.items[tag].name
                 current_paint = self.get_paint(item=self.main.car.items[tag])
@@ -1728,17 +1728,17 @@ class BodyShop(SideWindow):
         if self.paint_all_car_items_checkbutton.active:
 
             for tag in self.main.car.items:
-                if not self.is_wheel(tag=tag) and not self.is_brake(tag=tag):
+                if not self.main.car.is_wheel(tag=tag) and not self.main.car.is_brake(tag=tag):
                     self.set_paint(item=self.main.car.items[tag], paint=new_paint)
         else:
 
             if self.selected_tag_to_paint:
 
-                if self.is_wheel(tag=self.selected_tag_to_paint):
+                if self.main.car.is_wheel(tag=self.selected_tag_to_paint):
                     for axle in self.main.car.items["wheels"]:
                         for wheel in self.main.car.items["wheels"][axle]:
                             self.set_paint(item=wheel, paint=new_paint)
-                elif self.is_brake(tag=self.selected_tag_to_paint):
+                elif self.main.car.is_brake(tag=self.selected_tag_to_paint):
                     for brake in self.main.car.items[self.selected_tag_to_paint]:
                         self.set_paint(item=brake, paint=new_paint)
                 else:
@@ -1750,10 +1750,10 @@ class BodyShop(SideWindow):
 
         for i, tag in enumerate(self.main.car.items):
 
-            if self.is_wheel(tag=tag):
-                item = self.get_first_wheel()
-            elif self.is_brake(tag=tag):
-                item = self.get_first_brake(tag=tag)
+            if self.main.car.is_wheel(tag=tag):
+                item = self.main.car.get_first_wheel()
+            elif self.main.car.is_brake(tag=tag):
+                item = self.main.car.get_first_brake(tag=tag)
             else:
                 item = self.main.car.items[tag]
 
@@ -1793,25 +1793,6 @@ class BodyShop(SideWindow):
                                  brilliance=1 - paint.getRoughness())
 
         return result
-
-    def get_first_wheel(self) -> car.Item:
-
-        return self.main.car.items["wheels"][list(self.main.car.items["wheels"])[0]][0]
-
-    def get_first_brake(self, tag) -> car.Item:
-
-        part_type = self.main.car.get_part_type(tag=tag)
-
-        return self.main.car.items[part_type][0]
-
-    def is_wheel(self, tag: str) -> bool:
-
-        return "brake" not in tag and (tag.startswith("wheel") or tag not in self.main.car.json["names"])
-
-    @staticmethod
-    def is_brake(tag: str) -> bool:
-
-        return "brake" in tag
 
 
 class UI:

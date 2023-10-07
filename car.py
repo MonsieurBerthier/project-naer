@@ -43,6 +43,25 @@ class Car:
 
         return self.get_part_type(tag=tag) in self.json["optional"]
 
+    def is_wheel(self, tag: str) -> bool:
+
+        return "brake" not in tag and (tag.startswith("wheel") or tag not in self.main.car.json["names"])
+
+    @staticmethod
+    def is_brake(tag: str) -> bool:
+
+        return "brake" in tag
+
+    def get_first_wheel(self) -> Item:
+
+        return self.items["wheels"][list(self.items["wheels"])[0]][0]
+
+    def get_first_brake(self, tag) -> Item:
+
+        part_type = self.get_part_type(tag=tag)
+
+        return self.items[part_type][0]
+
     @staticmethod
     def get_part_type(tag: str) -> str:
 
