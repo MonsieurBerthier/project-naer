@@ -57,7 +57,7 @@ class ClickButton:
 class BurgerButton:
 
     def __init__(self, position_x: int, position_y: int, size_x: int, size_y: int, bar_size_y: int,
-                 callback_within, parent) -> None:
+                 callback_within: callable, parent) -> None:
 
         self.callback_within = callback_within
 
@@ -102,7 +102,7 @@ class BurgerButton:
 
 class CloseMenuButton:
 
-    def __init__(self, size_x: int, size_y: int, callback_b1press, parent) -> None:
+    def __init__(self, size_x: int, size_y: int, callback_b1press: callable, parent) -> None:
 
         self.callback_b1press = callback_b1press
 
@@ -124,8 +124,9 @@ class MenuButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int, auto_event: bool,
                  icon_mouseover: str, icon_mouseout: str, image_pos_x: int, icon_size_x: int, icon_size_y: int,
-                 text_pad_x: int, parent, callback_b1press=None, callback_b1press_arg=None, callback_mouseover=None,
-                 callback_mouseover_arg=None, callback_mouseout=None, callback_mouseout_arg=None) -> None:
+                 text_pad_x: int, parent, callback_b1press: callable = None, callback_b1press_arg=None,
+                 callback_mouseover: callable = None, callback_mouseover_arg=None,
+                 callback_mouseout: callable = None, callback_mouseout_arg=None) -> None:
 
         self.auto_event = auto_event
         self.icon_mouseover = icon_mouseover
@@ -217,7 +218,7 @@ class MenuButton:
 class ListButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 callback_b1press, parent) -> None:
+                 callback_b1press: callable, parent) -> None:
 
         self.frame = direct.gui.DirectGui.DirectFrame(text=text,
                                                       text_fg=UI.WHITE,
@@ -258,7 +259,7 @@ class CarItemButton:
     PART_STATUS_INSTALLED = "INSTALLED"
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 callback_b1press, callback_b1press_arg, parent) -> None:
+                 callback_b1press: callable, callback_b1press_arg, parent) -> None:
 
         self.item_is_installed = False
 
@@ -358,7 +359,7 @@ class CarItemButton:
 class CheckButton:
 
     def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 callback_b1press, parent) -> None:
+                 callback_b1press: callable, parent) -> None:
 
         self.callback_b1press = callback_b1press
         self.active = False
@@ -420,7 +421,7 @@ class PaintPreview:
     REGEX_COLOR_CODE = "^(?:[0-9a-fA-F]{2}){5}$"
 
     def __init__(self, font, position_x: int, position_y: int, size_x: int, size_y: int,
-                 callback, parent) -> None:
+                 callback: callable, parent) -> None:
 
         self.callback = callback
         self.current_color_hex = "0" * 10
