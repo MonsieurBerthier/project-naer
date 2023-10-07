@@ -1311,6 +1311,7 @@ class Garage(SideWindow):
                 (wheels_current_position[0],
                  wheels_current_position[1],
                  wheels_new_height))
+            self.main.car.items[axle + "brakes"][i].model.setPos(self.main.car.items["wheels"][axle][i].model.getPos())
 
             self.update_car_ride_height_pitch_offsets()
             self.callback_update_car_ride_height()
@@ -1352,6 +1353,7 @@ class Garage(SideWindow):
                                                                                current_wheel_position[0]),
                                                                  current_wheel_position[1],
                                                                  current_wheel_position[2]))
+            self.main.car.items[axle + "brakes"][i].model.setPos(self.main.car.items["wheels"][axle][i].model.getPos())
 
     def callback_update_wheel_camber(self, axle: str) -> None:
 
@@ -1367,6 +1369,7 @@ class Garage(SideWindow):
             self.main.car.items["wheels"][axle][i].model.setHpr((current_wheel_rotation[0],
                                                                  current_wheel_rotation[1],
                                                                  new_wheel_camber))
+            self.main.car.items[axle + "brakes"][i].model.setHpr(self.main.car.items["wheels"][axle][i].model.getHpr())
 
     def callback_update_wheel_toe(self, axle: str) -> None:
 
@@ -1382,6 +1385,7 @@ class Garage(SideWindow):
             self.main.car.items["wheels"][axle][i].model.setHpr((new_wheel_toe,
                                                                  current_wheel_rotation[1],
                                                                  current_wheel_rotation[2]))
+            self.main.car.items[axle + "brakes"][i].model.setHpr(self.main.car.items["wheels"][axle][i].model.getHpr())
 
     def callback_load_bodykit(self, name: str, _) -> None:
 
@@ -1464,6 +1468,8 @@ class BodyShop(SideWindow):
 
             if self.is_wheel(tag=tag):
                 item = self.get_first_wheel()
+            elif self.is_brake(tag=tag):
+                item = self.get_first_brake(tag=tag)
             else:
                 item = self.main.car.items[tag]
 
@@ -1696,6 +1702,9 @@ class BodyShop(SideWindow):
             if self.is_wheel(tag=tag):
                 self.selected_item_label["text"] = self.get_first_wheel().name
                 current_paint = self.get_paint(item=self.get_first_wheel())
+            elif self.is_brake(tag=tag):
+                self.selected_item_label["text"] = self.get_first_brake(tag=tag).name
+                current_paint = self.get_paint(item=self.get_first_brake(tag=tag))
             else:
                 self.selected_item_label["text"] = self.main.car.items[tag].name
                 current_paint = self.get_paint(item=self.main.car.items[tag])
@@ -1718,7 +1727,7 @@ class BodyShop(SideWindow):
         if self.paint_all_car_items_checkbutton.active:
 
             for tag in self.main.car.items:
-                if not self.is_wheel(tag=tag):
+                if not self.is_wheel(tag=tag) and not self.is_brake(tag=tag):
                     self.set_paint(item=self.main.car.items[tag], paint=new_paint)
         else:
 
@@ -1728,6 +1737,9 @@ class BodyShop(SideWindow):
                     for axle in self.main.car.items["wheels"]:
                         for wheel in self.main.car.items["wheels"][axle]:
                             self.set_paint(item=wheel, paint=new_paint)
+                elif self.is_brake(tag=self.selected_tag_to_paint):
+                    for brake in self.main.car.items[self.selected_tag_to_paint]:
+                        self.set_paint(item=brake, paint=new_paint)
                 else:
                     self.set_paint(item=self.main.car.items[self.selected_tag_to_paint], paint=new_paint)
 
@@ -1739,6 +1751,8 @@ class BodyShop(SideWindow):
 
             if self.is_wheel(tag=tag):
                 item = self.get_first_wheel()
+            elif self.is_brake(tag=tag):
+                item = self.get_first_brake(tag=tag)
             else:
                 item = self.main.car.items[tag]
 
@@ -1783,12 +1797,20 @@ class BodyShop(SideWindow):
 
         return self.main.car.items["wheels"][list(self.main.car.items["wheels"])[0]][0]
 
+    def get_first_brake(self, tag) -> car.Item:
+
+        part_type = self.main.car.get_part_type(tag=tag)
+
+        return self.main.car.items[part_type][0]
+
     def is_wheel(self, tag: str) -> bool:
 
-        if tag.startswith("wheel") or tag not in self.main.car.json["names"]:
-            return True
-        else:
-            return False
+        return "brake" not in tag and (tag.startswith("wheel") or tag not in self.main.car.json["names"])
+
+    @staticmethod
+    def is_brake(tag: str) -> bool:
+
+        return "brake" in tag
 
 
 class UI:

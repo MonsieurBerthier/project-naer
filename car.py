@@ -54,7 +54,7 @@ class Car:
         part_type = self.get_part_type(tag=tag)
 
         for i in self.items:
-            if "wheels" not in i:
+            if "wheels" not in i and "brake" not in i:
                 if self.items[i].tag.startswith(part_type) and self.items[i].model:
                     found_items.append(self.items[i].tag)
 
@@ -91,10 +91,12 @@ class Car:
 
                 if "wheel" in item_tag:
                     self.load_wheels(tag=item_tag, oem=True)
+                elif "brake" in item_tag:
+                    self.load_brakes(tag=item_tag)
                 else:
                     self.load_part(tag=item_tag)
 
-            else:
+            elif "wheel" not in item_tag and "brake" not in item_tag:
                 self.items[item_tag] = Item(tag=item_tag, name=self.json["names"][item_tag], model=None)
 
     def load_part(self, tag: str) -> None:
@@ -161,13 +163,36 @@ class Car:
                 wheel_item.model.reparentTo(self.main.render)
                 self.items["wheels"][axle].append(wheel_item)
 
+    def load_brakes(self, tag: str) -> None:
+
+        logger.debug(f"Loading brakes \"{tag}\"")
+
+        part_type = self.get_part_type(tag=tag)
+        axle = part_type.replace("brakes", "")
+
+        if tag in self.items:
+            self.unload_brakes(tag=tag)
+        else:
+            self.items[part_type] = []
+
+        for i, wheel in enumerate(self.json["wheels"][axle]):
+            brake_item = Item(tag=tag,
+                              name=self.json["names"][tag],
+                              model=self.main.loader.loadModel(modelPath=os.path.join(self.path, tag + ".glb")))
+
+            brake_item.model.setPos(tuple(self.items["wheels"][axle][i].model.getPos()))
+            brake_item.model.setScale(tuple(self.items["wheels"][axle][i].model.getScale()))
+
+            brake_item.model.reparentTo(self.main.render)
+            self.items[part_type].append(brake_item)
+
     def load_bodykit(self, bodykit: str) -> None:
 
         logger.debug(f"Loading bodykit \"{bodykit}\"")
 
         for item in list(self.items):
 
-            if item not in ["chassis", "wheels"]:
+            if item not in ["chassis", "wheels", "frontbrakes", "rearbrakes"]:
                 self.unload_part(tag=item)
 
         bodykit_partlist = [kit["parts"] for kit in self.json["bodykits"] if kit["name"] == bodykit][0]
@@ -183,6 +208,8 @@ class Car:
 
             if isinstance(self.items[item], dict):
                 self.unload_wheels()
+            elif isinstance(self.items[item], list):
+                self.unload_brakes(tag=item)
             else:
                 self.unload_part(tag=item)
 
@@ -205,3 +232,14 @@ class Car:
                 wheel.unload_model()
 
         self.items["wheels"] = {}
+
+    def unload_brakes(self, tag: str) -> None:
+
+        logger.debug(f"Unloading car brakes")
+
+        part_type = self.get_part_type(tag=tag)
+
+        for brake in self.items[part_type]:
+            brake.unload_model()
+
+        self.items[part_type] = []

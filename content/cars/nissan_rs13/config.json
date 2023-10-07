@@ -8,6 +8,8 @@
     "taillight_oem",
     "rearbumper_oem",
     "exhaust_oem",
+    "frontbrakes_oem",
+    "rearbrakes_oem",
 	"wheel_oem"],
   "optional": [
     "sideskirts",
@@ -76,6 +78,8 @@
     "spoiler_oemkouki": "Nissan - Spoiler (Kouki)",
     "taillight_oem": "Nissan - Tail Lights (Zenki)",
     "taillight_oemkouki": "Nissan - Tail Lights (Kouki)",
+    "frontbrakes_oem": "Nissan - Front Brakes",
+    "rearbrakes_oem": "Nissan - Rear Brakes",
     "rearbumper_none": "No Rear Bumper",
     "rearbumper_bashbar": "Drift Armor - Rear Bashbar",
     "exhaust_large": "HKS - Exhaust"
