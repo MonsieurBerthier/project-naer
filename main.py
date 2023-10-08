@@ -14,7 +14,7 @@ import library.io
 
 from config.logger import logger
 
-panda3d.core.loadPrcFile("config/debug.prc")
+panda3d.core.loadPrcFile("config/release.prc")
 
 
 class Main(direct.showbase.ShowBase.ShowBase):
