@@ -850,6 +850,7 @@ class MainMenu:
 
         logger.debug("Button \"Garage\" clicked")
 
+        self.close_main_menu_button.remove(None)
         self.close_main_menu()
 
         Garage(main=self.main)
@@ -858,6 +859,7 @@ class MainMenu:
 
         logger.debug("Button \"Body Shop\" clicked")
 
+        self.close_main_menu_button.remove(None)
         self.close_main_menu()
 
         BodyShop(main=self.main)
@@ -918,6 +920,9 @@ class MainMenu:
             self.main.autorotate = True
 
         self.update_autorotate_icon(b1press=True)
+
+        self.close_main_menu_button.remove(None)
+        self.close_main_menu()
 
     def update_autorotate_icon(self, b1press: bool) -> None:
 

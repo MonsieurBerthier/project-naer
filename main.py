@@ -34,6 +34,8 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
     PATH_WHEELS = os.path.join(PATH_CONTENT, "wheels")
 
+    PATH_SCREENSHOTS = "screenshots"
+
     PATH_ITEMS_CONFIG_JSON = "config.json"
 
     def __init__(self) -> None:
@@ -48,8 +50,14 @@ class Main(direct.showbase.ShowBase.ShowBase):
                        enable_shadows=True,
                        use_330=True)
 
-        self.autorotate = True
+        self.render.setAntialias(panda3d.core.AntialiasAttrib.MMultisample)
         self.window_resolution = (self.win.getXSize(), self.win.getYSize())
+
+        self.autorotate = True
+        self.camera_node = None
+        self.mouse_b1_pressed = False
+        self.mouse_last_position = None
+
         self.light_on_camera_node = None
         self.light_shadow_node = None
         self.light_top_node = None
@@ -61,10 +69,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.initialize_lights()
         self.initialize_camera()
-
-        self.render.setAntialias(panda3d.core.AntialiasAttrib.MMultisample)
-
-        self.taskMgr.add(self.spin_camera, "SpinCameraTask")
 
     @staticmethod
     def get_cubemap_path(cubemap) -> str:
@@ -128,19 +132,54 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
     def initialize_camera(self) -> None:
 
-        self.cam.setPos(0, -4, 1.5)
-        self.cam.lookAt((0, 0, 1.1))
+        self.disableMouse()
 
-    def spin_camera(self, task):
+        self.camera_node = self.render.attachNewNode("CameraNode")
+        self.cam.reparentTo(self.camera_node)
 
-        angle_degrees = task.time * 30.0
-        angle_radians = angle_degrees * (math.pi / 180.0)
+        self.accept(event="mouse1", method=self.callback_mouse_b1_pressed)
+        self.accept(event="mouse1-up", method=self.callback_mouse_b1_released)
 
-        self.camera.setPos(20 * math.sin(angle_radians), -20 * math.cos(angle_radians), 3)
-        self.camera.setHpr(angle_degrees, 0, 0)
-        self.light_on_camera_node.setPos(self.camera.getPos())
+        self.taskMgr.add(self.update_camera_position, 'UpdateCameraPosition')
 
-        return direct.task.Task.cont
+    def callback_mouse_b1_pressed(self) -> None:
+
+        self.mouse_b1_pressed = True
+        self.mouse_last_position = None
+
+    def callback_mouse_b1_released(self) -> None:
+
+        self.mouse_b1_pressed = False
+        self.mouse_last_position = None
+
+    def update_camera_position(self, task) -> None:
+
+        if self.autorotate:
+
+            angle_degrees = task.time * 30.0
+            angle_radians = angle_degrees * (math.pi / 180.0)
+
+            self.cam.setPos(22 * math.sin(angle_radians), -22 * math.cos(angle_radians), 4.1)
+            self.cam.setHpr(angle_degrees, -7, 0)
+            self.light_on_camera_node.setPos(self.cam.getPos())
+
+            return direct.task.Task.cont
+
+        else:
+
+            if self.mouse_b1_pressed and self.mouseWatcherNode.hasMouse():
+
+                mouse_position = self.mouseWatcherNode.getMouse()
+
+                if self.mouse_last_position is None:
+                    self.mouse_last_position = panda3d.core.Point2(mouse_position)
+                else:
+                    d_heading, _ = (mouse_position - self.mouse_last_position) * 100
+                    pivot = self.camera_node
+                    pivot.set_hpr(pivot.get_h() - d_heading, 0, 0)
+                    self.mouse_last_position = panda3d.core.Point2(mouse_position)
+
+            return task.again
 
 
 main = Main()
