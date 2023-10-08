@@ -2,10 +2,12 @@ import os
 import re
 import sys
 import math
+import datetime
 import tkinter.filedialog
 from typing import Union
 
 import direct.gui.DirectGui
+import direct.showbase.ShowBase
 
 import car
 import library.io
@@ -89,15 +91,28 @@ class BurgerButton:
         self.background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                              command=self.set_active)
 
-    def set_active(self, _):
+    def set_active(self, _) -> None:
 
         if not MainMenu.inhibited:
             self.background["frameColor"] = UI.WHITE
             self.callback_within()
 
-    def set_inactive(self):
+    def set_inactive(self) -> None:
 
         self.background["frameColor"] = UI.TRANSPARENT
+
+    def set_invisible(self) -> None:
+
+        self.background["frameColor"] = UI.TRANSPARENT
+        self.top_line["frameColor"] = UI.TRANSPARENT
+        self.middle_line["frameColor"] = UI.TRANSPARENT
+        self.bottom_line["frameColor"] = UI.TRANSPARENT
+
+    def set_visible(self) -> None:
+
+        self.top_line["frameColor"] = UI.WHITE
+        self.middle_line["frameColor"] = UI.WHITE
+        self.bottom_line["frameColor"] = UI.WHITE
 
 
 class CloseMenuButton:
@@ -876,14 +891,22 @@ class MainMenu:
 
         logger.debug("Button \"Save Image\" clicked")
 
-        root = tkinter.Tk()
-        root.iconify()
-
-        path_to_image = tkinter.filedialog.asksaveasfile(mode="w",
-                                                         title="Save image",
-                                                         defaultextension=".png")
-
+        self.close_main_menu_button.remove(None)
         self.close_main_menu()
+        self.burger_menu.set_invisible()
+
+        if not os.path.exists(path=self.main.PATH_SCREENSHOTS):
+            os.mkdir(path=self.main.PATH_SCREENSHOTS)
+
+        filename = os.path.basename(self.main.car.path) + datetime.datetime.now().strftime("_%Y%m%d_%H%M%S.png")
+        fullpath = os.path.join(self.main.PATH_SCREENSHOTS, filename)
+
+        self.main.graphicsEngine.renderFrame()
+        self.main.graphicsEngine.renderFrame()
+        direct.showbase.ShowBase.ShowBase.screenshot(self.main,
+                                                     defaultFilename=False,
+                                                     namePrefix=fullpath)
+        self.burger_menu.set_visible()
 
     def toggle_autorotate(self) -> None:
 
