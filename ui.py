@@ -915,9 +915,9 @@ class MainMenu:
         logger.debug("Button \"Autorotate\" clicked")
 
         if self.main.autorotate:
-            self.main.autorotate = False
+            self.main.change_camera_rotation_mode()
         else:
-            self.main.autorotate = True
+            self.main.change_camera_rotation_mode()
 
         self.update_autorotate_icon(b1press=True)
 

@@ -38,6 +38,9 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
     PATH_ITEMS_CONFIG_JSON = "config.json"
 
+    TASK_AUTO_ROTATION = "AutoRotation"
+    TASK_MANUAL_ROTATION = "ManualRotation"
+
     def __init__(self) -> None:
 
         self.config_json = library.io.get_json(path=Main.PATH_CONFIG_JSON)
@@ -55,6 +58,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.autorotate = True
         self.camera_node = None
+        self.camera_angle_offset = 0
         self.mouse_b1_pressed = False
         self.mouse_last_position = None
 
@@ -140,7 +144,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.accept(event="mouse1", method=self.callback_mouse_b1_pressed)
         self.accept(event="mouse1-up", method=self.callback_mouse_b1_released)
 
-        self.taskMgr.add(self.update_camera_position, 'UpdateCameraPosition')
+        self.taskMgr.add(self.task_camera_auto_rotation, Main.TASK_AUTO_ROTATION)
 
     def callback_mouse_b1_pressed(self) -> None:
 
@@ -152,34 +156,56 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.mouse_b1_pressed = False
         self.mouse_last_position = None
 
-    def update_camera_position(self, task) -> None:
+    def change_camera_rotation_mode(self) -> None:
 
         if self.autorotate:
 
-            angle_degrees = task.time * 30.0
-            angle_radians = angle_degrees * (math.pi / 180.0)
-
-            self.cam.setPos(22 * math.sin(angle_radians), -22 * math.cos(angle_radians), 4.1)
-            self.cam.setHpr(angle_degrees, -7, 0)
-            self.light_on_camera_node.setPos(self.cam.getPos())
-
-            return direct.task.Task.cont
+            self.autorotate = False
+            self.taskMgr.remove(Main.TASK_AUTO_ROTATION)
+            self.taskMgr.add(self.task_camera_manual_rotation, Main.TASK_MANUAL_ROTATION)
 
         else:
 
-            if self.mouse_b1_pressed and self.mouseWatcherNode.hasMouse():
+            self.autorotate = True
+            self.camera_angle_offset = self.cam.get_h()
+            self.taskMgr.remove(Main.TASK_MANUAL_ROTATION)
+            self.taskMgr.add(self.task_camera_auto_rotation, Main.TASK_AUTO_ROTATION)
 
-                mouse_position = self.mouseWatcherNode.getMouse()
+    def task_camera_auto_rotation(self, task) -> None:
 
-                if self.mouse_last_position is None:
-                    self.mouse_last_position = panda3d.core.Point2(mouse_position)
-                else:
-                    d_heading, _ = (mouse_position - self.mouse_last_position) * 100
-                    pivot = self.camera_node
-                    pivot.set_hpr(pivot.get_h() - d_heading, 0, 0)
-                    self.mouse_last_position = panda3d.core.Point2(mouse_position)
+        angle_degrees = ((task.time * 30) + self.camera_angle_offset) % 360
+        self.set_camera_angle(angle=angle_degrees)
 
-            return task.again
+        return direct.task.Task.cont
+
+    def task_camera_manual_rotation(self, _) -> None:
+
+        if self.mouse_b1_pressed and self.mouseWatcherNode.hasMouse():
+
+            mouse_position = self.mouseWatcherNode.getMouse()
+
+            if self.mouse_last_position is None:
+
+                self.mouse_last_position = panda3d.core.Point2(mouse_position)
+
+            else:
+
+                horizontal_angle, _ = (mouse_position - self.mouse_last_position) * 100
+                angle_degrees = self.cam.get_h() - horizontal_angle
+                self.set_camera_angle(angle=angle_degrees)
+
+                self.mouse_last_position = panda3d.core.Point2(mouse_position)
+
+        return direct.task.Task.cont
+
+    def set_camera_angle(self, angle: float) -> None:
+
+        angle_degrees = angle
+        angle_radians = math.radians(angle)
+
+        self.cam.setPos(22 * math.sin(angle_radians), -22 * math.cos(angle_radians), 4.1)
+        self.cam.setHpr(angle_degrees, -7, 0)
+        self.light_on_camera_node.setPos(self.cam.getPos())
 
 
 main = Main()
