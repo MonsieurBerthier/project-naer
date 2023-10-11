@@ -1398,7 +1398,12 @@ class Garage(SideWindow):
             self.main.car.items["wheels"][axle][i].model.setHpr((current_wheel_rotation[0],
                                                                  current_wheel_rotation[1],
                                                                  new_wheel_camber))
-            self.main.car.items[axle + "brakes"][i].model.setHpr(self.main.car.items["wheels"][axle][i].model.getHpr())
+
+            new_wheel_camber = new_wheel_camber - 180 if current_wheel_rotation[2] > 90 else new_wheel_camber
+            current_brakes_rotation = self.main.car.items[axle + "brakes"][i].model.getHpr()
+            self.main.car.items[axle + "brakes"][i].model.setHpr(current_brakes_rotation[0],
+                                                                 current_brakes_rotation[1],
+                                                                 new_wheel_camber)
 
     def callback_update_wheel_toe(self, axle: str) -> None:
 
@@ -1414,7 +1419,11 @@ class Garage(SideWindow):
             self.main.car.items["wheels"][axle][i].model.setHpr((new_wheel_toe,
                                                                  current_wheel_rotation[1],
                                                                  current_wheel_rotation[2]))
-            self.main.car.items[axle + "brakes"][i].model.setHpr(self.main.car.items["wheels"][axle][i].model.getHpr())
+
+            current_brakes_rotation = self.main.car.items[axle + "brakes"][i].model.getHpr()
+            self.main.car.items[axle + "brakes"][i].model.setHpr(new_wheel_toe,
+                                                                 current_brakes_rotation[1],
+                                                                 current_brakes_rotation[2])
 
     def callback_load_bodykit(self, name: str, _) -> None:
 
