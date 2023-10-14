@@ -45,7 +45,7 @@ class Car:
 
     def is_wheel(self, tag: str) -> bool:
 
-        return "brake" not in tag and (tag.startswith("wheel") or tag not in self.main.car.json["names"])
+        return "brake" not in tag and (tag.startswith("wheel") or tag not in self.json["names"])
 
     @staticmethod
     def is_brake(tag: str) -> bool:
@@ -73,7 +73,7 @@ class Car:
         part_type = self.get_part_type(tag=tag)
 
         for i in self.items:
-            if "wheels" not in i and "brake" not in i:
+            if not self.is_wheel(tag=i) and not self.is_brake(tag=i):
                 if self.items[i].tag.startswith(part_type) and self.items[i].model:
                     found_items.append(self.items[i].tag)
 
@@ -108,21 +108,19 @@ class Car:
 
             if self.is_default(tag=item_tag):
 
-                if "wheel" in item_tag:
+                if self.is_wheel(tag=item_tag):
                     self.load_wheels(tag=item_tag, oem=True, no_cache=True)
-                elif "brake" in item_tag:
+                elif self.is_brake(tag=item_tag):
                     self.load_brakes(tag=item_tag, no_cache=True)
                 else:
                     self.load_part(tag=item_tag, no_cache=True)
 
-            elif "wheel" not in item_tag and "brake" not in item_tag:
+            elif not self.is_wheel(tag=item_tag) and not self.is_brake(tag=item_tag):
                 self.items[item_tag] = Item(tag=item_tag, name=self.json["names"][item_tag], model=None)
 
     def load_part(self, tag: str, no_cache: bool = False) -> None:
 
-        part_type = self.get_part_type(tag=tag)
-
-        if part_type == "wheel":
+        if self.is_wheel(tag=tag):
             return
         elif tag not in self.json["names"]:
             return
