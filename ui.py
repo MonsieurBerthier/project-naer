@@ -1834,10 +1834,6 @@ class BodyShop(SideWindow):
 
 class UI:
 
-    # FIXME Reloading the same car keeps the same paint color
-    # FIXME Help freeing memory when changing cars, grounds, ... with : ModelPool.releaseModel("path/to/model.egg")
-    # TODO Make a fade out/in lights when changing the car (to be confirmed)
-
     MARGIN = 16
     FONT_SIZE = 20
     FONT_TITLE_SIZE = 24
