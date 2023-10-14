@@ -109,16 +109,16 @@ class Car:
             if self.is_default(tag=item_tag):
 
                 if "wheel" in item_tag:
-                    self.load_wheels(tag=item_tag, oem=True)
+                    self.load_wheels(tag=item_tag, oem=True, no_cache=True)
                 elif "brake" in item_tag:
-                    self.load_brakes(tag=item_tag)
+                    self.load_brakes(tag=item_tag, no_cache=True)
                 else:
-                    self.load_part(tag=item_tag)
+                    self.load_part(tag=item_tag, no_cache=True)
 
             elif "wheel" not in item_tag and "brake" not in item_tag:
                 self.items[item_tag] = Item(tag=item_tag, name=self.json["names"][item_tag], model=None)
 
-    def load_part(self, tag: str) -> None:
+    def load_part(self, tag: str, no_cache: bool = False) -> None:
 
         part_type = self.get_part_type(tag=tag)
 
@@ -137,13 +137,14 @@ class Car:
 
         self.items[tag] = Item(tag=tag,
                                name=self.json["names"][tag],
-                               model=self.main.loader.loadModel(modelPath=os.path.join(self.path, tag + ".glb")))
+                               model=self.main.loader.loadModel(modelPath=os.path.join(self.path, tag + ".glb"),
+                                                                noCache=no_cache))
         self.items[tag].model.setPos(tuple(self.json["chassis"]["position"]))
         self.items[tag].model.setHpr(tuple(self.json["chassis"]["rotation"]))
         self.items[tag].model.setScale(tuple(self.json["chassis"]["scale"]))
         self.items[tag].model.reparentTo(self.nodepath)
 
-    def load_wheels(self, tag: str, oem: bool) -> None:
+    def load_wheels(self, tag: str, oem: bool, no_cache: bool = False) -> None:
 
         if oem:
             wheels_path = os.path.join(self.path, tag + ".glb")
@@ -174,7 +175,8 @@ class Car:
 
                 wheel_item = Item(tag=tag,
                                   name=wheels_name,
-                                  model=self.main.loader.loadModel(modelPath=wheels_path))
+                                  model=self.main.loader.loadModel(modelPath=wheels_path,
+                                                                   noCache=no_cache))
 
                 wheel_item.model.setPos(tuple(wheels_parameters[axle][i]["position"]))
                 wheel_item.model.setHpr(tuple(wheels_parameters[axle][i]["rotation"]))
@@ -182,7 +184,7 @@ class Car:
                 wheel_item.model.reparentTo(self.main.render)
                 self.items["wheels"][axle].append(wheel_item)
 
-    def load_brakes(self, tag: str) -> None:
+    def load_brakes(self, tag: str, no_cache: bool = False) -> None:
 
         logger.debug(f"Loading brakes \"{tag}\"")
 
@@ -197,7 +199,8 @@ class Car:
         for i, wheel in enumerate(self.json["wheels"][axle]):
             brake_item = Item(tag=tag,
                               name=self.json["names"][tag],
-                              model=self.main.loader.loadModel(modelPath=os.path.join(self.path, tag + ".glb")))
+                              model=self.main.loader.loadModel(modelPath=os.path.join(self.path, tag + ".glb"),
+                                                               noCache=no_cache))
 
             brake_item.model.setPos(tuple(self.items["wheels"][axle][i].model.getPos()))
             brake_item.model.setScale(tuple(self.items["wheels"][axle][i].model.getScale()))
