@@ -195,6 +195,7 @@ class Car:
             self.items[part_type] = []
 
         for i, wheel in enumerate(self.json["wheels"][axle]):
+
             brake_item = Item(tag=tag,
                               name=self.json["names"][tag],
                               model=self.main.loader.loadModel(modelPath=os.path.join(self.path, tag + ".glb"),
@@ -218,7 +219,7 @@ class Car:
         bodykit_partlist = [kit["parts"] for kit in self.json["bodykits"] if kit["name"] == bodykit][0]
 
         for part in bodykit_partlist:
-            self.load_part(tag=part)
+            self.load_part(tag=part, no_cache=True)
 
     def unload(self) -> None:
 
