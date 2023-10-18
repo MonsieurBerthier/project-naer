@@ -273,9 +273,10 @@ class CarItemButton:
     BORDER = 2
     PART_STATUS_INSTALLED = "INSTALLED"
 
-    def __init__(self, text: str, font, position_x: int, position_y: int, size_x: int, size_y: int,
+    def __init__(self, text: str, font, paint_name: str, position_x: int, position_y: int, size_x: int, size_y: int,
                  callback_b1press: callable, callback_b1press_arg, parent) -> None:
 
+        self.paint_name = paint_name
         self.item_is_installed = False
 
         self.frame = (
@@ -354,7 +355,7 @@ class CarItemButton:
 
             self.item_is_installed = True
             self.status["text"] = CarItemButton.PART_STATUS_INSTALLED
-            item_paint = item.model.findMaterial("paint")
+            item_paint = item.model.findMaterial(self.paint_name)
 
             if item_paint:
                 self.item_color["frameColor"] = item_paint.getBaseColor()
@@ -1513,6 +1514,7 @@ class BodyShop(SideWindow):
 
             car_item_button = CarItemButton(text=item.name,
                                             font=self.main.font,
+                                            paint_name=self.main.GLB_PAINT_NAME,
                                             position_x=UI.MARGIN,
                                             position_y=(UI.BUTTON_Y_SIZE * (nb_car_items - 1)) - (UI.BUTTON_Y_SIZE * i),
                                             size_x=BodyShop.FRAME_X_SIZE - 2 * UI.MARGIN,
@@ -1805,25 +1807,23 @@ class BodyShop(SideWindow):
             self.paint_metallic_slider["value"] = paint.metallic
             self.paint_brilliance_slider["value"] = paint.brilliance
 
-    @staticmethod
-    def set_paint(item: car.Item, paint: Paint) -> None:
+    def set_paint(self, item: car.Item, paint: Paint) -> None:
 
         if item:
             if item.model:
-                paint_found = item.model.findMaterial("paint")
+                paint_found = item.model.findMaterial(self.main.GLB_PAINT_NAME)
                 if paint_found:
                     paint_found.setBaseColor(paint.color)
                     paint_found.setMetallic(paint.metallic)
                     paint_found.setRoughness(1 - paint.brilliance)
 
-    @staticmethod
-    def get_paint(item: car.Item) -> Paint:
+    def get_paint(self, item: car.Item) -> Paint:
 
         result = Paint(color=None, metallic=None, brilliance=None)
 
         if item:
             if item.model:
-                paint = item.model.findMaterial("paint")
+                paint = item.model.findMaterial(self.main.GLB_PAINT_NAME)
                 if paint:
                     return Paint(color=tuple(paint.getBaseColor()),
                                  metallic=paint.getMetallic(),

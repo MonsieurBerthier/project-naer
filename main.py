@@ -41,6 +41,8 @@ class Main(direct.showbase.ShowBase.ShowBase):
     TASK_AUTO_ROTATION = "AutoRotation"
     TASK_MANUAL_ROTATION = "ManualRotation"
 
+    GLB_PAINT_NAME = "Paint"
+
     def __init__(self) -> None:
 
         self.config_json = library.io.get_json(path=Main.PATH_CONFIG_JSON)
