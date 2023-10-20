@@ -1,11 +1,12 @@
 import os
 import math
 
-import simplepbr
 import panda3d.core
 import direct.task.Task
 import direct.gui.DirectGui
 import direct.showbase.ShowBase
+
+import library.simplepbr
 
 import ui
 import car
@@ -48,12 +49,12 @@ class Main(direct.showbase.ShowBase.ShowBase):
         self.config_json = library.io.get_json(path=Main.PATH_CONFIG_JSON)
 
         super().__init__(self)
-        simplepbr.init(env_map=self.get_cubemap_path(cubemap=self.config_json["defaults"]["cubemap"]),
-                       use_occlusion_maps=True,
-                       use_emission_maps=True,
-                       use_normal_maps=True,
-                       enable_shadows=True,
-                       use_330=True)
+        library.simplepbr.init(env_map=self.get_cubemap_path(cubemap=self.config_json["defaults"]["cubemap"]),
+                               use_occlusion_maps=True,
+                               use_emission_maps=True,
+                               use_normal_maps=True,
+                               enable_shadows=True,
+                               use_330=True)
 
         self.render.setAntialias(panda3d.core.AntialiasAttrib.MMultisample)
         self.window_resolution = (self.win.getXSize(), self.win.getYSize())
