@@ -6,7 +6,11 @@ import datetime
 import tkinter.filedialog
 from typing import Union
 
+import panda3d.core
+import direct.task.Task
 import direct.gui.DirectGui
+import direct.gui.OnscreenText
+import direct.gui.OnscreenImage
 import direct.showbase.ShowBase
 
 import car
@@ -87,6 +91,7 @@ class BurgerButton:
                                              pos=(0, 0, -size_y + bar_size_y),
                                              state=direct.gui.DirectGui.DGG.NORMAL,
                                              parent=self.background))
+        self.set_invisible()
 
         self.background.bind(event=direct.gui.DirectGui.DGG.WITHIN,
                              command=self.set_active)
@@ -665,7 +670,7 @@ class MainMenu:
     ICON_EXIT_MOUSEOVER = "content/images/ui/menu/icon_exit_mouseover.png"
     ICON_EXIT_MOUSEOUT = "content/images/ui/menu/icon_exit_mouseout.png"
 
-    inhibited = False
+    inhibited = True
 
     def __init__(self, main) -> None:
 
@@ -1832,6 +1837,114 @@ class BodyShop(SideWindow):
         return result
 
 
+class SplashScreen:
+
+    FADE_IN_DURATION = 0.5
+    DISPLAY_DURATION = 3
+    FADE_OUT_DURATION = 0.5
+
+    BACKGROUND_SCALE = 2
+    PROJECTNAER_LOGO_SCALE = 0.48
+    PANDA3D_LOGO_SCALE = 0.3
+
+    BACKGROUND_IMAGE = "content/images/ui/splashscreen/background.png"
+    PROJECTNAER_LOGO = "content/images/ui/splashscreen/project_naer_logo.png"
+    PANDA3D_LOGO = "content/images/ui/splashscreen/panda3d_logo.png"
+
+    def __init__(self, main) -> None:
+
+        self.main = main
+
+        self.background = (
+            direct.gui.OnscreenImage.OnscreenImage(image=SplashScreen.BACKGROUND_IMAGE,
+                                                   pos=(0, 0, 0),
+                                                   scale=(SplashScreen.BACKGROUND_SCALE, 1,
+                                                          9 / 16 * SplashScreen.BACKGROUND_SCALE),
+                                                   parent=self.main.aspect2d))
+
+        self.projectnaer_logo = (
+            direct.gui.OnscreenImage.OnscreenImage(image=SplashScreen.PROJECTNAER_LOGO,
+                                                   pos=(0, 0, 0.3),
+                                                   scale=(SplashScreen.PROJECTNAER_LOGO_SCALE, 1,
+                                                          SplashScreen.PROJECTNAER_LOGO_SCALE),
+                                                   parent=self.main.aspect2d))
+        self.projectnaer_logo.setTransparency(panda3d.core.TransparencyAttrib.MAlpha)
+
+        self.projectnaer_text = (
+            direct.gui.OnscreenText.OnscreenText(text="LOADING...",
+                                                 fg=UI.WHITE,
+                                                 font=self.main.font,
+                                                 pos=(0.05, -0.3),
+                                                 scale=0.07))
+
+        self.panda3d_text = (
+            direct.gui.OnscreenText.OnscreenText(text="POWERED BY",
+                                                 fg=UI.WHITE,
+                                                 font=self.main.font,
+                                                 pos=(0.04, -0.70),
+                                                 scale=0.03))
+
+        self.panda3d_logo = (
+            direct.gui.OnscreenImage.OnscreenImage(image=SplashScreen.PANDA3D_LOGO,
+                                                   pos=(0, 0, -0.77),
+                                                   scale=(SplashScreen.PANDA3D_LOGO_SCALE, 1,
+                                                          146 / 680 * SplashScreen.PANDA3D_LOGO_SCALE),
+                                                   parent=self.main.aspect2d))
+        self.panda3d_logo.setTransparency(panda3d.core.TransparencyAttrib.MAlpha)
+
+        self.disclaimer_text = (
+            direct.gui.OnscreenText.OnscreenText(text="ALL TRADEMARKS, LOGOS AND BRAND NAMES ARE THE PROPERTY "
+                                                      "OF THEIR RESPECTIVE OWNERS.",
+                                                 fg=UI.WHITE,
+                                                 font=self.main.font,
+                                                 pos=(0, -0.95),
+                                                 scale=0.025))
+
+        self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.BLACK,
+                                                      frameSize=(0, self.main.window_resolution[0], 0,
+                                                                 -self.main.window_resolution[1]),
+                                                      parent=self.main.pixel2d)
+
+        self.main.taskMgr.add(self.task_splashscreen, self.main.TASK_SPLASH_SCREEN)
+
+    def task_splashscreen(self, task) -> None:
+
+        if task.time < SplashScreen.FADE_IN_DURATION:
+
+            fadein_time = task.time
+            self.frame["frameColor"] = (
+                tuple([1 - (fadein_time / SplashScreen.FADE_IN_DURATION) if i == 3 else x
+                       for i, x in enumerate(self.frame["frameColor"])]))
+
+        elif SplashScreen.FADE_IN_DURATION + SplashScreen.DISPLAY_DURATION < task.time:
+
+            fadeout_time = task.time - SplashScreen.FADE_IN_DURATION - SplashScreen.DISPLAY_DURATION
+            self.frame["frameColor"] = (
+                tuple([fadeout_time / SplashScreen.FADE_OUT_DURATION if i == 3 else x
+                       for i, x in enumerate(self.frame["frameColor"])]))
+
+        if task.time > SplashScreen.FADE_IN_DURATION + SplashScreen.DISPLAY_DURATION + SplashScreen.FADE_OUT_DURATION:
+
+            self.remove()
+            MainMenu.inhibited = False
+            self.main.ui.main_menu.burger_menu.set_visible()
+            return direct.task.Task.done
+
+        else:
+
+            return direct.task.Task.cont
+
+    def remove(self):
+
+        self.background.destroy()
+        self.projectnaer_text.destroy()
+        self.projectnaer_logo.destroy()
+        self.panda3d_text.destroy()
+        self.panda3d_logo.destroy()
+        self.disclaimer_text.destroy()
+        self.frame.destroy()
+
+
 class UI:
 
     MARGIN = 16
@@ -1842,6 +1955,7 @@ class UI:
     BUTTON_TEXT_Y_OFFSET = 1
     BUTTON_MEDIUM_X_SIZE = 100
 
+    BLACK = (0, 0, 0, 1)
     GREY = (0.2, 0.2, 0.2, 1)
     RED = (1, 0, 0, 1)
     WHITE = (1, 1, 1, 1)

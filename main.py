@@ -39,6 +39,7 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
     PATH_ITEMS_CONFIG_JSON = "config.json"
 
+    TASK_SPLASH_SCREEN = "SplashScreen"
     TASK_AUTO_ROTATION = "AutoRotation"
     TASK_MANUAL_ROTATION = "ManualRotation"
 
@@ -46,9 +47,14 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
     def __init__(self) -> None:
 
+        super().__init__(self)
+        self.font = self.loader.loadFont(self.PATH_FONT_MENU)
+        self.window_resolution = (self.win.getXSize(), self.win.getYSize())
+
+        self.splashscreen = ui.SplashScreen(main=self)
+
         self.config_json = library.io.get_json(path=Main.PATH_CONFIG_JSON)
 
-        super().__init__(self)
         library.simplepbr.init(env_map=self.get_cubemap_path(cubemap=self.config_json["defaults"]["cubemap"]),
                                use_occlusion_maps=True,
                                use_emission_maps=True,
@@ -57,7 +63,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
                                use_330=True)
 
         self.render.setAntialias(panda3d.core.AntialiasAttrib.MMultisample)
-        self.window_resolution = (self.win.getXSize(), self.win.getYSize())
 
         self.autorotate = True
         self.camera_node = None
@@ -71,7 +76,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         self.ground = ground.Ground(main=self)
         self.car = car.Car(main=self)
-        self.font = self.loader.loadFont(self.PATH_FONT_MENU)
         self.ui = ui.UI(main=self)
 
         self.initialize_lights()
