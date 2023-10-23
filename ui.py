@@ -1845,9 +1845,11 @@ class SplashScreen:
     FADE_OUT_DURATION = 0.2
     WAIT_OUT_DURATION = 1
 
-    IN_DURATION = WAIT_IN_DURATION + FADE_IN_DURATION
-    TOTAL_DURATION = WAIT_IN_DURATION + FADE_IN_DURATION + DISPLAY_DURATION + FADE_OUT_DURATION + WAIT_OUT_DURATION
-    OUT_DURATION = FADE_OUT_DURATION + WAIT_OUT_DURATION
+    T1 = WAIT_IN_DURATION
+    T2 = T1 + FADE_IN_DURATION
+    T3 = T2 + DISPLAY_DURATION
+    T4 = T3 + FADE_OUT_DURATION
+    T5 = T4 + WAIT_OUT_DURATION
 
     BACKGROUND_SCALE = 2
     PROJECTNAER_LOGO_SCALE = 0.48
@@ -1915,32 +1917,30 @@ class SplashScreen:
 
     def task_splashscreen(self, task) -> None:
 
-        if SplashScreen.WAIT_IN_DURATION < task.time < SplashScreen.IN_DURATION:
+        if SplashScreen.T1 < task.time < SplashScreen.T2:
 
-            fadein_time = task.time - SplashScreen.WAIT_IN_DURATION
+            fadein_time = task.time - SplashScreen.T1
             self.frame["frameColor"] = (
                 tuple([1 - (fadein_time / SplashScreen.FADE_IN_DURATION) if i == 3 else x
                        for i, x in enumerate(self.frame["frameColor"])]))
 
-        elif (SplashScreen.IN_DURATION + SplashScreen.DISPLAY_DURATION < task.time <
-              SplashScreen.IN_DURATION + SplashScreen.DISPLAY_DURATION + SplashScreen.FADE_OUT_DURATION):
+        elif SplashScreen.T3 < task.time < SplashScreen.T4:
 
-            fadeout_time = task.time - SplashScreen.IN_DURATION - SplashScreen.DISPLAY_DURATION
+            fadeout_time = task.time - SplashScreen.T3
             self.frame["frameColor"] = (
                 tuple([fadeout_time / SplashScreen.FADE_OUT_DURATION if i == 3 else x
                        for i, x in enumerate(self.frame["frameColor"])]))
 
-        elif task.time > SplashScreen.TOTAL_DURATION - SplashScreen.WAIT_OUT_DURATION:
+        elif SplashScreen.T4 < task.time < SplashScreen.T5:
 
             self.remove_elements()
 
-            waitout_time = (task.time - SplashScreen.IN_DURATION - SplashScreen.DISPLAY_DURATION -
-                            SplashScreen.FADE_OUT_DURATION)
+            waitout_time = task.time - SplashScreen.T4
             self.frame["frameColor"] = (
                 tuple([1 - (waitout_time / SplashScreen.WAIT_OUT_DURATION) if i == 3 else x
                        for i, x in enumerate(self.frame["frameColor"])]))
 
-        if task.time > SplashScreen.TOTAL_DURATION:
+        if task.time > SplashScreen.T5:
 
             self.remove_frame()
             MainMenu.inhibited = False
