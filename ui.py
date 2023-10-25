@@ -1934,6 +1934,7 @@ class SplashScreen:
         elif SplashScreen.T4 < task.time < SplashScreen.T5:
 
             self.remove_elements()
+            self.main.ui.main_menu.burger_menu.set_visible()
 
             waitout_time = task.time - SplashScreen.T4
             self.frame["frameColor"] = (
@@ -1944,7 +1945,6 @@ class SplashScreen:
 
             self.remove_frame()
             MainMenu.inhibited = False
-            self.main.ui.main_menu.burger_menu.set_visible()
             return direct.task.Task.done
 
         else:
