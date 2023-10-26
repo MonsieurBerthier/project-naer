@@ -1908,6 +1908,13 @@ class SplashScreen:
                                                  pos=(0, -0.95),
                                                  scale=0.025))
 
+        self.version_text = (
+            direct.gui.OnscreenText.OnscreenText(text="v" + ".".join([str(i) for i in self.main.VERSION]),
+                                                 fg=UI.GREY,
+                                                 font=self.main.font,
+                                                 pos=(1.7, -0.95),
+                                                 scale=0.025))
+
         self.frame = direct.gui.DirectGui.DirectFrame(frameColor=UI.BLACK,
                                                       frameSize=(0, self.main.window_resolution[0], 0,
                                                                  -self.main.window_resolution[1]),
@@ -1959,6 +1966,7 @@ class SplashScreen:
         self.panda3d_text.destroy()
         self.panda3d_logo.destroy()
         self.disclaimer_text.destroy()
+        self.version_text.destroy()
 
     def remove_frame(self) -> None:
 

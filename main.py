@@ -20,6 +20,8 @@ panda3d.core.loadPrcFile("config/release.prc")
 
 class Main(direct.showbase.ShowBase.ShowBase):
 
+    VERSION = [0, 8, 0]
+
     PATH_CONFIG = "config"
     PATH_CONFIG_JSON = os.path.join(PATH_CONFIG, "config.json")
 
