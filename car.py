@@ -4,8 +4,6 @@ import panda3d.core
 
 import library.io
 
-from config.logger import logger
-
 
 class Item:
 
@@ -94,8 +92,6 @@ class Car:
         if self.items:
             self.unload()
 
-        logger.debug(f"Loading car \"{tag}\"")
-
         self.path = os.path.join(self.main.PATH_CARS, tag)
         self.json = library.io.get_json(path=os.path.join(self.path, self.main.PATH_ITEMS_CONFIG_JSON))
         self.nodepath = panda3d.core.NodePath("car")
@@ -128,8 +124,6 @@ class Car:
             self.unload_part(tag=tag)
             return
 
-        logger.debug(f"Loading car part \"{tag}\"")
-
         for part in self.get_items_of_same_part_type(tag=tag):
             self.items[part].unload_model()
 
@@ -161,8 +155,6 @@ class Car:
         if "wheels" in self.items:
             self.unload_wheels()
 
-        logger.debug(f"Loading car wheels \"{tag}\"")
-
         self.items["wheels"] = {}
 
         for axle in wheels_parameters:
@@ -183,8 +175,6 @@ class Car:
                 self.items["wheels"][axle].append(wheel_item)
 
     def load_brakes(self, tag: str, no_cache: bool = False) -> None:
-
-        logger.debug(f"Loading brakes \"{tag}\"")
 
         part_type = self.get_part_type(tag=tag)
         axle = part_type.replace("brakes", "")
@@ -209,8 +199,6 @@ class Car:
 
     def load_bodykit(self, bodykit: str) -> None:
 
-        logger.debug(f"Loading bodykit \"{bodykit}\"")
-
         for item in list(self.items):
 
             if item not in ["chassis", "wheels", "frontbrakes", "rearbrakes"]:
@@ -222,8 +210,6 @@ class Car:
             self.load_part(tag=part, no_cache=True)
 
     def unload(self) -> None:
-
-        logger.debug(f"Unloading car")
 
         for item in list(self.items):
 
@@ -240,13 +226,9 @@ class Car:
 
     def unload_part(self, tag: str) -> None:
 
-        logger.debug(f"Unloading car part \"{tag}\"")
-
         self.items[tag].unload_model()
 
     def unload_wheels(self) -> None:
-
-        logger.debug(f"Unloading car wheels")
 
         for axle in self.items["wheels"]:
             for wheel in self.items["wheels"][axle]:
@@ -255,8 +237,6 @@ class Car:
         self.items["wheels"] = {}
 
     def unload_brakes(self, tag: str) -> None:
-
-        logger.debug(f"Unloading car brakes")
 
         part_type = self.get_part_type(tag=tag)
 

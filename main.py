@@ -13,8 +13,6 @@ import car
 import ground
 import library.io
 
-from config.logger import logger
-
 panda3d.core.loadPrcFile("config/release.prc")
 
 
@@ -88,7 +86,6 @@ class Main(direct.showbase.ShowBase.ShowBase):
 
         current_cubemap_path = os.path.join(Main.PATH_CUBEMAPS, cubemap)
 
-        logger.debug(f"Loading cubemap \"{cubemap}\"")
         return os.path.join(current_cubemap_path,
                             library.io.get_file_path(path=current_cubemap_path,
                                                      extension="env"))

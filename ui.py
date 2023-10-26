@@ -15,7 +15,6 @@ import direct.showbase.ShowBase
 
 import car
 import library.io
-from config.logger import logger
 
 
 class ClickButton:
@@ -854,8 +853,6 @@ class MainMenu:
 
     def display_garage(self) -> None:
 
-        logger.debug("Button \"Garage\" clicked")
-
         self.close_main_menu_button.remove(None)
         self.close_main_menu()
 
@@ -863,16 +860,12 @@ class MainMenu:
 
     def display_body_shop(self) -> None:
 
-        logger.debug("Button \"Body Shop\" clicked")
-
         self.close_main_menu_button.remove(None)
         self.close_main_menu()
 
         BodyShop(main=self.main)
 
     def save_car(self) -> None:
-
-        logger.debug("Button \"Save Car\" clicked")
 
         root = tkinter.Tk()
         root.iconify()
@@ -885,8 +878,6 @@ class MainMenu:
 
     def load(self) -> None:
 
-        logger.debug("Button \"Load Car\" clicked")
-
         root = tkinter.Tk()
         root.iconify()
 
@@ -896,8 +887,6 @@ class MainMenu:
         self.close_main_menu()
 
     def save_image(self) -> None:
-
-        logger.debug("Button \"Save Image\" clicked")
 
         self.close_main_menu_button.remove(None)
         self.close_main_menu()
@@ -917,8 +906,6 @@ class MainMenu:
         self.burger_menu.set_visible()
 
     def toggle_autorotate(self) -> None:
-
-        logger.debug("Button \"Autorotate\" clicked")
 
         if self.main.autorotate:
             self.main.change_camera_rotation_mode()
@@ -954,8 +941,6 @@ class MainMenu:
 
     @staticmethod
     def exit() -> None:
-
-        logger.debug("Button \"Exit\" clicked")
 
         sys.exit()
 

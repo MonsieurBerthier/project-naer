@@ -17,7 +17,6 @@ This projet has been developed with the version `1.10.13` of Panda3D SDK. This i
 Also, the following Python modules need to be installed:
 
 ```bash
-pip install loguru
 pip install typing-extensions
 pip install panda3d-gltf
 pip install panda3d-simplepbr

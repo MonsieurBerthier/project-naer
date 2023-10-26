@@ -1,8 +1,6 @@
 import os
 import library.io
 
-from config.logger import logger
-
 
 class Ground:
 
@@ -21,8 +19,6 @@ class Ground:
         if self.model:
             self.unload()
 
-        logger.debug(f"Loading ground \"{tag}\"")
-
         self.tag = tag
         self.path = os.path.join(self.main.PATH_GROUNDS, tag)
 
@@ -32,8 +28,6 @@ class Ground:
         self.model.reparentTo(self.main.render)
 
     def unload(self) -> None:
-
-        logger.debug(f"Unloading ground \"{self.tag}\"")
 
         self.tag = None
         self.path = None
