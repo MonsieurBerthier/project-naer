@@ -51,6 +51,8 @@
        "mirrors_oem",
        "taillight_oem",
        "rearbumper_oem",
+       "rearfenders_oem",
+       "trunk_oem",
        "exhaust_oem"]},
     {"name": "Nissan OEM Chuki",
      "parts": [
@@ -64,6 +66,8 @@
        "spoiler_oem",
        "taillight_oem",
        "rearbumper_oem",
+       "rearfenders_oem",
+       "trunk_oem",
        "exhaust_oem"]},
     {"name": "Nissan OEM Kouki",
      "parts": [
@@ -78,6 +82,8 @@
        "spoiler_oemkouki",
        "taillight_oemkouki",
        "rearbumper_oemkouki",
+       "rearfenders_oem",
+       "trunk_oem",
        "exhaust_oem"]}],
   "names": {
     "chassis": "Nissan 180SX Main Body",
