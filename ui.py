@@ -453,7 +453,7 @@ class PaintPreview:
                                              parent=parent))
 
         self.paint_preview = (
-            direct.gui.DirectGui.DirectFrame(frameColor=(0, 1, 0, 1),
+            direct.gui.DirectGui.DirectFrame(frameColor=UI.WHITE,
                                              frameSize=(0, size_x - (2 * PaintPreview.BORDER),
                                                         0, size_y - PaintPreview.BORDER - 28),
                                              pos=(PaintPreview.BORDER, 0, PaintPreview.BORDER + 25),
@@ -978,9 +978,10 @@ class Garage(SideWindow):
 
     SLIDER_SCALE = 80
     FRAME_X_SIZE = 390
-    FRAME_Y_SIZE = 890
+    FRAME_Y_SIZE = 1080
     NB_ITEMS_SCROLLED_FRAME = 4
     CAR_PARAMETERS_FRAME_Y_SIZE = 103
+    EXHAUST_PARAMETERS_FRAME_Y_SIZE = 139
     WHEELS_PARAMETERS_FRAME_Y_SIZE = 457
     BODYKITS_FRAME_Y_SIZE = 168
 
@@ -997,6 +998,11 @@ class Garage(SideWindow):
         self.car_ride_height_slider = None
         self.car_pitch_slider = None
 
+        self.exhaust_parameters_frame = None
+        self.exhaust_horizontal_slider = None
+        self.exhaust_vertical_slider = None
+        self.exhaust_offset_slider = None
+
         self.wheels_parameters_frame = None
         self.wheels_diameter_slider = {}
         self.wheels_width_slider = {}
@@ -1008,6 +1014,7 @@ class Garage(SideWindow):
         self.bodykits_buttons = []
 
         self.display_car_parameters()
+        self.display_exhaust_parameters()
         self.display_wheels_parameters()
         self.display_bodykits()
 
@@ -1016,8 +1023,8 @@ class Garage(SideWindow):
         self.car_parameters_frame = (
             direct.gui.DirectGui.DirectFrame(frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
                                                         0, Garage.CAR_PARAMETERS_FRAME_Y_SIZE),
-                                             pos=(UI.MARGIN, 0,
-                                                  Garage.FRAME_Y_SIZE - Garage.CAR_PARAMETERS_FRAME_Y_SIZE - UI.MARGIN),
+                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE
+                                                  - UI.MARGIN - Garage.CAR_PARAMETERS_FRAME_Y_SIZE),
                                              frameColor=UI.RED,
                                              parent=self.frame))
 
@@ -1080,13 +1087,117 @@ class Garage(SideWindow):
                                               command=self.callback_update_car_pitch,
                                               parent=self.car_parameters_frame))
 
+    def display_exhaust_parameters(self) -> None:
+
+        json_exhaust_position = self.main.car.json["chassis"]["position"]
+
+        exhaust_tag = self.main.car.get_items_of_same_part_type(tag="exhaust")
+        if exhaust_tag:
+            exhaust_position = self.main.car.items[exhaust_tag[0]].model.getPos()
+        else:
+            exhaust_position = (0, 0, 0)
+
+        self.exhaust_parameters_frame = (
+            direct.gui.DirectGui.DirectFrame(frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
+                                                        0, Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE),
+                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE -
+                                                  (2 * UI.MARGIN) - Garage.CAR_PARAMETERS_FRAME_Y_SIZE -
+                                                  UI.MARGIN - Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE),
+                                             frameColor=UI.RED,
+                                             parent=self.frame))
+
+        direct.gui.DirectGui.DirectLabel(text="Exhaust",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_TITLE_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(0, 0, Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE),
+                                         parent=self.exhaust_parameters_frame)
+
+        direct.gui.DirectGui.DirectLabel(text="Horizontal",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN, 0,
+                                              Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                              1 * (UI.MARGIN + UI.FONT_SIZE)),
+                                         parent=self.exhaust_parameters_frame)
+
+        self.exhaust_horizontal_slider = (
+            direct.gui.DirectGui.DirectSlider(range=(json_exhaust_position[0] + 1, json_exhaust_position[0] - 1),
+                                              value=exhaust_position[0],
+                                              pageSize=0.02,
+                                              pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                   Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                   1 * (UI.MARGIN + UI.FONT_SIZE) + 8),
+                                              scale=Garage.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.callback_update_exhaust_horizontal,
+                                              parent=self.exhaust_parameters_frame))
+
+        direct.gui.DirectGui.DirectLabel(text="Vertical",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN, 0,
+                                              Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                              2 * (UI.MARGIN + UI.FONT_SIZE)),
+                                         parent=self.exhaust_parameters_frame)
+
+        self.exhaust_vertical_slider = (
+            direct.gui.DirectGui.DirectSlider(range=(json_exhaust_position[2] - 1, json_exhaust_position[2] + 1),
+                                              value=exhaust_position[2],
+                                              pageSize=0.02,
+                                              pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                   Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                   2 * (UI.MARGIN + UI.FONT_SIZE) + 8),
+                                              scale=Garage.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.callback_update_exhaust_offset,
+                                              parent=self.exhaust_parameters_frame))
+
+        direct.gui.DirectGui.DirectLabel(text="Offset",
+                                         text_fg=UI.WHITE,
+                                         text_bg=UI.RED,
+                                         text_font=self.main.font,
+                                         text_scale=UI.FONT_SIZE,
+                                         text_align=UI.TEXT_JUSTIFY_LEFT,
+                                         pos=(UI.MARGIN, 0,
+                                              Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                              3 * (UI.MARGIN + UI.FONT_SIZE)),
+                                         parent=self.exhaust_parameters_frame)
+
+        self.exhaust_offset_slider = (
+            direct.gui.DirectGui.DirectSlider(range=(json_exhaust_position[1] - 1, json_exhaust_position[1] + 1),
+                                              value=exhaust_position[1],
+                                              pageSize=0.02,
+                                              pos=((Garage.FRAME_X_SIZE / 2) + 40, 0,
+                                                   Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE - UI.FONT_TITLE_SIZE -
+                                                   3 * (UI.MARGIN + UI.FONT_SIZE) + 8),
+                                              scale=Garage.SLIDER_SCALE,
+                                              color=UI.WHITE,
+                                              thumb_relief=direct.gui.DirectGui.DGG.FLAT,
+                                              thumb_color=UI.WHITE,
+                                              command=self.callback_update_exhaust_vertical,
+                                              parent=self.exhaust_parameters_frame))
+
     def display_wheels_parameters(self) -> None:
 
         self.wheels_parameters_frame = (
             direct.gui.DirectGui.DirectFrame(frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
                                                         0, Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE),
-                                             pos=(UI.MARGIN, 0,
-                                                  Garage.FRAME_Y_SIZE - UI.MARGIN - Garage.CAR_PARAMETERS_FRAME_Y_SIZE -
+                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE -
+                                                  UI.MARGIN - Garage.CAR_PARAMETERS_FRAME_Y_SIZE -
+                                                  (2 * UI.MARGIN) - Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE -
                                                   (2 * UI.MARGIN) - Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE),
                                              frameColor=UI.RED,
                                              parent=self.frame))
@@ -1250,8 +1361,9 @@ class Garage(SideWindow):
         self.bodykits_frame = (
             direct.gui.DirectGui.DirectFrame(frameSize=(0, Garage.FRAME_X_SIZE - (2 * UI.MARGIN),
                                                         0, Garage.BODYKITS_FRAME_Y_SIZE),
-                                             pos=(UI.MARGIN, 0,
-                                                  Garage.FRAME_Y_SIZE - UI.MARGIN - Garage.CAR_PARAMETERS_FRAME_Y_SIZE -
+                                             pos=(UI.MARGIN, 0, Garage.FRAME_Y_SIZE -
+                                                  UI.MARGIN - Garage.CAR_PARAMETERS_FRAME_Y_SIZE -
+                                                  (2 * UI.MARGIN) - Garage.EXHAUST_PARAMETERS_FRAME_Y_SIZE -
                                                   (2 * UI.MARGIN) - Garage.WHEELS_PARAMETERS_FRAME_Y_SIZE -
                                                   (2 * UI.MARGIN) - Garage.BODYKITS_FRAME_Y_SIZE),
                                              frameColor=UI.RED,
@@ -1309,6 +1421,30 @@ class Garage(SideWindow):
         self.main.car.nodepath.setHpr((current_car_rotation[0],
                                        self.car_pitch_slider["value"] + Garage.car_pitch_offset,
                                        current_car_rotation[2]))
+
+    def callback_update_exhaust_horizontal(self) -> None:
+
+        exhaust_tag = self.main.car.get_items_of_same_part_type(tag="exhaust")
+
+        if exhaust_tag:
+            exhaust_item = self.main.car.items[exhaust_tag[0]]
+            exhaust_item.model.set_x(self.exhaust_horizontal_slider["value"])
+
+    def callback_update_exhaust_vertical(self) -> None:
+
+        exhaust_tag = self.main.car.get_items_of_same_part_type(tag="exhaust")
+
+        if exhaust_tag:
+            exhaust_item = self.main.car.items[exhaust_tag[0]]
+            exhaust_item.model.set_y(self.exhaust_offset_slider["value"])
+
+    def callback_update_exhaust_offset(self) -> None:
+
+        exhaust_tag = self.main.car.get_items_of_same_part_type(tag="exhaust")
+
+        if exhaust_tag:
+            exhaust_item = self.main.car.items[exhaust_tag[0]]
+            exhaust_item.model.set_z(self.exhaust_vertical_slider["value"])
 
     def callback_update_wheel_diameter(self, axle: str) -> None:
 
