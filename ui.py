@@ -702,6 +702,9 @@ class MainMenu:
                                        icon_mouseover=MainMenu.ICON_GROUND_MOUSEOVER,
                                        icon_mouseout=MainMenu.ICON_GROUND_MOUSEOUT)
 
+        self.garage = None
+        self.body_shop = None
+
     def callback_open_main_menu(self) -> None:
 
         if self.menu_buttons:
@@ -856,14 +859,14 @@ class MainMenu:
         self.close_main_menu_button.remove(None)
         self.close_main_menu()
 
-        Garage(main=self.main)
+        self.garage = Garage(main=self.main)
 
     def display_body_shop(self) -> None:
 
         self.close_main_menu_button.remove(None)
         self.close_main_menu()
 
-        BodyShop(main=self.main)
+        self.body_shop = BodyShop(main=self.main)
 
     def save_car(self) -> None:
 
@@ -886,9 +889,11 @@ class MainMenu:
 
         self.close_main_menu()
 
-    def save_image(self) -> None:
+    def save_image(self, shortcut=False) -> None:
 
-        self.close_main_menu_button.remove(None)
+        if not shortcut:
+            self.close_main_menu_button.remove(None)
+
         self.close_main_menu()
         self.burger_menu.set_invisible()
 
@@ -905,17 +910,16 @@ class MainMenu:
                                                      namePrefix=fullpath)
         self.burger_menu.set_visible()
 
-    def toggle_autorotate(self) -> None:
+    def toggle_autorotate(self, shortcut=False) -> None:
 
-        if self.main.autorotate:
-            self.main.change_camera_rotation_mode()
-        else:
-            self.main.change_camera_rotation_mode()
+        self.main.change_camera_rotation_mode()
 
-        self.update_autorotate_icon(b1press=True)
+        if self.menu_buttons:
+            self.update_autorotate_icon(b1press=False)
 
-        self.close_main_menu_button.remove(None)
-        self.close_main_menu()
+        if not shortcut:
+            self.close_main_menu_button.remove(None)
+            self.close_main_menu()
 
     def update_autorotate_icon(self, b1press: bool) -> None:
 
@@ -2114,11 +2118,45 @@ class UI:
     TEXT_JUSTIFY_RIGHT = 1
     TEXT_JUSTIFY_CENTER = 2
 
+    SHORTCUT_AUTOROTATE = "a"
+    SHORTCUT_BODYSHOP = "b"
+    SHORTCUT_GARAGE = "g"
+    SHORTCUT_SAVEIMAGE = "i"
+
     def __init__(self, main) -> None:
 
         self.main = main
 
         self.main_menu = MainMenu(main=self.main)
+
+        self.main.accept(event=UI.SHORTCUT_AUTOROTATE, method=self.callback_shortcut_autorotate)
+        self.main.accept(event=UI.SHORTCUT_BODYSHOP, method=self.callback_shortcut_body_shop)
+        self.main.accept(event=UI.SHORTCUT_GARAGE, method=self.callback_shortcut_garage)
+        self.main.accept(event=UI.SHORTCUT_SAVEIMAGE, method=self.callback_shortcut_save_image)
+
+    def callback_shortcut_autorotate(self) -> None:
+
+        self.main_menu.toggle_autorotate(shortcut=True)
+
+    def callback_shortcut_body_shop(self) -> None:
+
+        if self.main_menu.body_shop:
+            self.main_menu.body_shop.close(None)
+            self.main_menu.body_shop = None
+        elif not self.main_menu.garage:
+            self.main_menu.body_shop = BodyShop(main=self.main)
+
+    def callback_shortcut_garage(self) -> None:
+
+        if self.main_menu.garage:
+            self.main_menu.garage.close(None)
+            self.main_menu.garage = None
+        elif not self.main_menu.body_shop:
+            self.main_menu.garage = Garage(main=self.main)
+
+    def callback_shortcut_save_image(self) -> None:
+
+        self.main_menu.save_image(shortcut=True)
 
     @staticmethod
     def get_button_y_position(index: int) -> int:
