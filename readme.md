@@ -100,6 +100,20 @@ If you want to change it, edit the file `config/release.prc`
 and search for the parameter named `win-size`.
 
 
+Shortcuts
+=========
+
+Some actions can be triggered, or menus displayed, using the following shortcuts : 
+
+- `A` to toggle ON/OFF the autorotation of the camera around the car
+- `B` to display the body shop menu 
+- `G` to display the garage menu
+- `I` to save the image to the screenshot folder
+
+These shortcuts are customizable by editing `config/config.json` and searching
+for `shortcuts`.
+
+
 License
 =======
 

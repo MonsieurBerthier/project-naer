@@ -2,5 +2,10 @@
   "defaults": {
     "cubemap": "lightbars",
     "ground": "asphalt",
-    "car": "nissan_rs13"}
+    "car": "nissan_rs13"},
+  "shortcuts": {
+    "autorotate": "a",
+    "bodyshop": "b",
+    "garage": "g",
+    "saveimage": "i"}
 }

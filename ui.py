@@ -2118,21 +2118,20 @@ class UI:
     TEXT_JUSTIFY_RIGHT = 1
     TEXT_JUSTIFY_CENTER = 2
 
-    SHORTCUT_AUTOROTATE = "a"
-    SHORTCUT_BODYSHOP = "b"
-    SHORTCUT_GARAGE = "g"
-    SHORTCUT_SAVEIMAGE = "i"
-
     def __init__(self, main) -> None:
 
         self.main = main
 
         self.main_menu = MainMenu(main=self.main)
 
-        self.main.accept(event=UI.SHORTCUT_AUTOROTATE, method=self.callback_shortcut_autorotate)
-        self.main.accept(event=UI.SHORTCUT_BODYSHOP, method=self.callback_shortcut_body_shop)
-        self.main.accept(event=UI.SHORTCUT_GARAGE, method=self.callback_shortcut_garage)
-        self.main.accept(event=UI.SHORTCUT_SAVEIMAGE, method=self.callback_shortcut_save_image)
+        self.main.accept(event=self.main.config_json["shortcuts"]["autorotate"],
+                         method=self.callback_shortcut_autorotate)
+        self.main.accept(event=self.main.config_json["shortcuts"]["bodyshop"],
+                         method=self.callback_shortcut_body_shop)
+        self.main.accept(event=self.main.config_json["shortcuts"]["garage"],
+                         method=self.callback_shortcut_garage)
+        self.main.accept(event=self.main.config_json["shortcuts"]["saveimage"],
+                         method=self.callback_shortcut_save_image)
 
     def callback_shortcut_autorotate(self) -> None:
 
