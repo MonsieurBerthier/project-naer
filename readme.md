@@ -45,10 +45,8 @@ Screenshots
 Content
 =======
 
-Keep in mind that new content will be added bit by bit during the development.
-
 Available cars:
-- Nissan 180SX (RS13) : 24 parts to install
+- Nissan 180SX (RS13) : 8 different bodykits
 - _more soon ..._
 
 Available wheels:
@@ -68,6 +66,34 @@ Available grounds:
 - Mud
 - Sand
 
+Keep in mind that new content will be added bit by bit during the development.
+
+
+Shortcuts
+=========
+
+Some actions can be triggered, or menus displayed, using the following shortcuts : 
+
+- `A` to toggle ON/OFF the autorotation of the camera around the car
+- `B` to display the body shop menu 
+- `G` to display the garage menu
+- `I` to save the image to the screenshot folder
+
+When the autorotation is OFF, holding ``LMB`` allows you to 
+manually rotate the camera around the car.
+
+These shortcuts are customizable by editing `config/config.json` and searching
+for `shortcuts`.
+
+
+Configuration
+=============
+
+The default resolution is `1920 x 1080`.
+
+If you want to change it, edit the file `config/release.prc`
+and search for the parameter named `win-size`.
+
 
 Dependencies
 ============
@@ -75,7 +101,8 @@ Dependencies
 The 3D engine used for this project is Panda3D. 
 It can be downloaded here: [panda3d.org/download/sdk-1-10-13/](http://www.panda3d.org/download/sdk-1-10-13/)
 
-This projet has been developed with the version `1.10.13` of Panda3D SDK. This is the recommended version of you want to avoid any surprises.
+This projet has been developed with the version `1.10.13` of Panda3D SDK. This is 
+the recommended version of you want to avoid any surprises.
 
 Also, the following Python modules need to be installed:
 
@@ -89,29 +116,6 @@ because it is included in the package.
 
 More information on `panda3d-simplepbr` can be found here:
 [github.com/Moguri/panda3d-simplepbr](https://github.com/Moguri/panda3d-simplepbr)
-
-
-Configuration
-=============
-
-The default resolution is `1920 x 1080`.
-
-If you want to change it, edit the file `config/release.prc`
-and search for the parameter named `win-size`.
-
-
-Shortcuts
-=========
-
-Some actions can be triggered, or menus displayed, using the following shortcuts : 
-
-- `A` to toggle ON/OFF the autorotation of the camera around the car
-- `B` to display the body shop menu 
-- `G` to display the garage menu
-- `I` to save the image to the screenshot folder
-
-These shortcuts are customizable by editing `config/config.json` and searching
-for `shortcuts`.
 
 
 License
