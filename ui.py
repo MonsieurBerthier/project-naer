@@ -2142,7 +2142,7 @@ class UI:
         if self.main_menu.body_shop:
             self.main_menu.body_shop.close(None)
             self.main_menu.body_shop = None
-        elif not self.main_menu.garage:
+        elif not self.main_menu.garage and not self.main_menu.body_shop:
             self.main_menu.body_shop = BodyShop(main=self.main)
 
     def callback_shortcut_garage(self) -> None:
@@ -2150,7 +2150,7 @@ class UI:
         if self.main_menu.garage:
             self.main_menu.garage.close(None)
             self.main_menu.garage = None
-        elif not self.main_menu.body_shop:
+        elif not self.main_menu.body_shop and not self.main_menu.garage:
             self.main_menu.garage = Garage(main=self.main)
 
     def callback_shortcut_save_image(self) -> None:
