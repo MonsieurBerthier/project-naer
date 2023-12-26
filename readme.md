@@ -50,6 +50,7 @@ Available cars:
 - _more soon ..._
 
 Available wheels:
+- BBS LM
 - Japan Racing JR3
 - Japan Racing JR7
 - _more soon ..._
