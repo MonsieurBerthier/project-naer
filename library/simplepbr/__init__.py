@@ -1,7 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field, InitVar
+from dataclasses import (
+    dataclass,
+    field,
+    Field,
+    InitVar,
+    MISSING,
+)
 import builtins
+import functools
 import math
 import os
 import typing
@@ -32,8 +39,6 @@ except ImportError:
 
 
 __all__ = [
-    'load_sdr_lut',
-    'sdr_lut_screenshot',
     'init',
     'Pipeline',
     'EnvMap',
@@ -42,77 +47,6 @@ __all__ = [
 ]
 
 ShaderDefinesType: TypeAlias = 'dict[str, Any]'
-
-
-def load_sdr_lut(filename: str) -> p3d.Texture:
-    '''Load an SDR color LUT embedded in a screenshot'''
-    path = p3d.Filename(filename)
-    vfs = p3d.VirtualFileSystem.get_global_ptr()
-    failed = (
-        not vfs.resolve_filename(path, p3d.get_model_path().value)
-        or not path.is_regular_file()
-    )
-    if failed:
-        raise RuntimeError('Failed to find file {}'.format(filename))
-
-    image = p3d.PNMImage(path)
-
-    lutdim = 64
-    xsize, ysize = image.get_size()
-    tiles_per_row = xsize // lutdim
-    num_rows = math.ceil(lutdim / tiles_per_row)
-    ysize -= num_rows * lutdim
-
-    texture = p3d.Texture()
-    texture.setup_3d_texture(
-        lutdim, lutdim, lutdim,
-        p3d.Texture.T_unsigned_byte,
-        p3d.Texture.F_rgb8
-    )
-    texture.minfilter = p3d.Texture.FT_linear
-    texture.magfilter = p3d.Texture.FT_linear
-
-    for tileidx in range(lutdim):
-        xstart = tileidx % tiles_per_row * lutdim
-        ystart = tileidx // tiles_per_row * lutdim + ysize
-        islice = p3d.PNMImage(lutdim, lutdim, 3, 255)
-        islice.copy_sub_image(image, 0, 0, xstart, ystart, lutdim, lutdim)
-        texture.load(islice, tileidx, 0)
-    return texture
-
-
-def sdr_lut_screenshot(showbase: ShowBase, *args, **kwargs) -> str | None: # type: ignore[no-untyped-def]
-    '''Take a screenshot with an embedded SDR color LUT'''
-    filename = showbase.screenshot(*args, **kwargs)
-
-    if not filename:
-        return filename
-
-    lutdim = 64
-    stepsize = 256 // lutdim
-
-    image = p3d.PNMImage(filename)
-    xsize, ysize = image.get_size()
-    tiles_per_row = xsize // lutdim
-    num_rows = math.ceil(lutdim / tiles_per_row)
-
-    image.expand_border(0, 0, num_rows * lutdim, 0, (0, 0, 0, 1))
-
-    steps = list(range(0, 256, stepsize))
-    maxoffset = len(steps) - 1
-
-    for tileidx, bcol in enumerate(steps):
-        xbase = tileidx % tiles_per_row * lutdim
-        ybase = tileidx // tiles_per_row * lutdim + ysize
-        for xoff, rcol in enumerate(steps):
-            xcoord = xbase + xoff
-            for yoff, gcol in enumerate(steps):
-                ycoord = ybase + maxoffset - yoff
-                image.set_xel_val(xcoord, ycoord, rcol, gcol, bcol)
-
-    image.write(filename)
-
-    return filename
 
 
 def _load_texture(texturepath: str) -> p3d.Texture:
@@ -151,7 +85,51 @@ def _get_default_330() -> bool:
 
     return False
 
+
+def add_prc_fields(cls: type) -> type:
+    prc_types = {
+        'int': p3d.ConfigVariableInt,
+        'bool': p3d.ConfigVariableBool,
+        'float': p3d.ConfigVariableDouble,
+        'str': p3d.ConfigVariableString,
+    }
+
+    def factoryfn(attrname: str, attrtype: str, default_value: Any) -> Any:
+        name=f'simplepbr-{attrname.replace("_", "-")}'
+        if isinstance(default_value, Field):
+            if default_value.default_factory is not MISSING:
+                default_value = default_value.default_factory()
+            elif default_value.default is not MISSING:
+                default_value = default_value.default
+        return prc_types[attrtype](
+            name=name,
+            default_value=default_value,
+        ).value
+
+    def wrap(cls: type) -> type:
+        annotations = cls.__dict__.get('__annotations__', {})
+        for attrname, attrtype in annotations.items():
+            if attrname.startswith('_'):
+                # Private member, skip
+                continue
+
+            default_value = getattr(cls, attrname)
+            if attrtype.startswith('Literal') and isinstance(default_value, int):
+                attrtype = 'int'
+
+            if attrtype not in prc_types:
+                # Not a currently supported type, skip
+                continue
+
+            # pylint:disable-next=invalid-field-call
+            setattr(cls, attrname, field(
+                default_factory=functools.partial(factoryfn, attrname, attrtype, default_value)
+            ))
+        return cls
+    return wrap(cls)
+
 @dataclass()
+@add_prc_fields
 class Pipeline:
     # Class variables
     _EMPTY_ENV_MAP: ClassVar[EnvMap] = EnvMap.create_empty()
@@ -159,11 +137,12 @@ class Pipeline:
     _PBR_VARS: ClassVar[list[str]] = [
         'enable_fog',
         'enable_hardware_skinning',
-        'enable_shadows',
+        'shadow_bias',
         'max_lights',
         'use_emission_maps',
         'use_normal_maps',
         'use_occlusion_maps',
+        'calculate_normalmap_blue',
     ]
     _POST_PROC_VARS: ClassVar[list[str]] = [
         'camera_node',
@@ -173,7 +152,9 @@ class Pipeline:
     ]
 
     # Public instance variables
-    render_node: p3d.NodePath[p3d.PandaNode] = field(default_factory=lambda: _get_showbase_attr('render'))
+    render_node: p3d.NodePath[p3d.PandaNode] = field(
+        default_factory=lambda: _get_showbase_attr('render')
+    )
     window: p3d.GraphicsOutput = field(default_factory=lambda: _get_showbase_attr('win'))
     camera_node: p3d.NodePath[p3d.Camera] = field(default_factory=lambda: _get_showbase_attr('cam'))
     taskmgr: TaskManager = field(default_factory=lambda: _get_showbase_attr('task_mgr'))
@@ -184,6 +165,7 @@ class Pipeline:
     use_occlusion_maps: bool = False
     exposure: float = 1.0
     enable_shadows: bool = True
+    shadow_bias: float = 0.005
     enable_fog: bool  = False
     use_330: bool = field(default_factory=_get_default_330)
     use_hardware_skinning: InitVar[bool | None] = None
@@ -191,17 +173,20 @@ class Pipeline:
     sdr_lut: p3d.Texture | None = None
     sdr_lut_factor: float = 1.0
     env_map: EnvMap | str | None = None
+    calculate_normalmap_blue: bool = True
 
     # Private instance variables
     _shader_ready: bool = False
     _filtermgr: FilterManager = field(init=False)
     _post_process_quad: p3d.NodePath[p3d.GeomNode] = field(init=False)
 
-    def __post_init__(self, use_hardware_skinning: bool) -> None:
+    def __post_init__(self, use_hardware_skinning: bool | None) -> None:
         self._shader_ready = False
 
         # Create a FilterManager instance
         self._filtermgr = FilterManager(self.window, self.camera_node)
+        if self._filtermgr.nextsort == -1000:
+            self._filtermgr.nextsort = -9
 
         # Do not force power-of-two textures
         p3d.Texture.set_textures_power_2(p3d.ATS_none)
@@ -209,8 +194,14 @@ class Pipeline:
         # Make sure we have AA for if/when MSAA is enabled
         self.render_node.set_antialias(p3d.AntialiasAttrib.M_auto)
 
+        # Add a default/fallback material
+        fallback_material = p3d.Material('simplepbr-fallback')
+        self.render_node.set_material(fallback_material)
+
         # PBR Shader
-        self.enable_hardware_skinning = use_hardware_skinning if use_hardware_skinning is not None else self.use_330
+        if use_hardware_skinning is None:
+            use_hardware_skinning = self.use_330
+        self.enable_hardware_skinning = use_hardware_skinning
         self._recompile_pbr()
 
         # Tonemapping
@@ -236,6 +227,8 @@ class Pipeline:
         def resetup_tonemap() -> None:
             # Destroy previous buffers so we can re-create
             self._filtermgr.cleanup()
+            if self._filtermgr.nextsort == -1000:
+                self._filtermgr.nextsort = -9
 
             # Create a new FilterManager instance
             self._filtermgr = FilterManager(self.window, self.camera_node)
@@ -247,6 +240,8 @@ class Pipeline:
             self._post_process_quad.set_shader_input('sdr_lut_factor', self.sdr_lut_factor)
         elif name == 'env_map':
             self._set_env_map_uniforms()
+        elif name == 'shadow_bias':
+            self.render_node.set_shader_input('global_shadow_bias', self.shadow_bias)
 
         if name in self._PBR_VARS and prev_value != value:
             self._recompile_pbr()
@@ -264,7 +259,10 @@ class Pipeline:
         self.render_node.set_shader_input('brdf_lut', self._BRDF_LUT)
         filtered_env_map = env_map.filtered_env_map
         self.render_node.set_shader_input('filtered_env_map', filtered_env_map)
-        self.render_node.set_shader_input('max_reflection_lod', filtered_env_map.num_loadable_ram_mipmap_images)
+        self.render_node.set_shader_input(
+            'max_reflection_lod',
+            filtered_env_map.num_loadable_ram_mipmap_images
+        )
 
     def _recompile_pbr(self) -> None:
         pbr_defines = {
@@ -276,6 +274,7 @@ class Pipeline:
             'USE_OCCLUSION_MAP': self.use_occlusion_maps,
             'USE_330': self.use_330,
             'ENABLE_SKINNING': self.enable_hardware_skinning,
+            'CALC_NORMAL_Z': self.calculate_normalmap_blue,
         }
 
         pbrshader = shaderutils.make_shader(
@@ -284,10 +283,11 @@ class Pipeline:
             'simplepbr.frag',
             pbr_defines
         )
-        attr = typing.cast(p3d.ShaderAttrib, p3d.ShaderAttrib.make(pbrshader))
+        attr = p3d.ShaderAttrib.make(pbrshader)
         if self.enable_hardware_skinning:
-            attr = typing.cast(p3d.ShaderAttrib, attr.set_flag(p3d.ShaderAttrib.F_hardware_skinning, True))
+            attr = attr.set_flag(p3d.ShaderAttrib.F_hardware_skinning, True)
         self.render_node.set_attrib(attr)
+        self.render_node.set_shader_input('global_shadow_bias', self.shadow_bias)
         self._set_env_map_uniforms()
 
     def _setup_tonemapping(self) -> None:
@@ -343,10 +343,17 @@ class Pipeline:
             for dispregion in win.active_display_regions
         ]
 
+        def is_caster(node: p3d.NodePath[p3d.PandaNode]) -> bool:
+            if node.is_empty():
+                return False
+
+            pandanode = node.node()
+            return hasattr(pandanode, 'is_shadow_caster') and pandanode.is_shadow_caster()
+
         return [
             i.node()
             for i in cameras
-            if not i.is_empty() and hasattr(i.node(), 'is_shadow_caster') and i.node().is_shadow_caster()
+            if is_caster(i)
         ]
 
     def _create_shadow_shader_attrib(self) -> p3d.ShaderAttrib:
@@ -360,9 +367,9 @@ class Pipeline:
             'shadow.frag',
             defines
         )
-        attr = typing.cast(p3d.ShaderAttrib, p3d.ShaderAttrib.make(shader))
+        attr = p3d.ShaderAttrib.make(shader)
         if self.enable_hardware_skinning:
-            attr = typing.cast(p3d.ShaderAttrib, attr.set_flag(p3d.ShaderAttrib.F_hardware_skinning, True))
+            attr = attr.set_flag(p3d.ShaderAttrib.F_hardware_skinning, True)
         return attr
 
     def _update(self, task: p3d.PythonTask) -> int:
@@ -370,7 +377,9 @@ class Pipeline:
         # Use a simpler, faster shader for shadows
         for caster in self.get_all_casters():
             if isinstance(caster, p3d.PointLight):
-                logging.warning(f'PointLight shadow casters are not supported, disabling {caster.name}')
+                logging.warning(
+                    f'PointLight shadow casters are not supported, disabling {caster.name}'
+                )
                 caster.set_shadow_caster(False)
                 recompile = True
                 continue
@@ -378,10 +387,14 @@ class Pipeline:
             if not state.has_attrib(p3d.ShaderAttrib):
                 attr = self._create_shadow_shader_attrib()
                 state = state.add_attrib(attr, 1)
+                state = state.remove_attrib(p3d.CullFaceAttrib)
                 caster.set_initial_state(state)
 
         if recompile:
             self._recompile_pbr()
+
+        # Copy window background color so ShowBase.set_background_color() works
+        self._filtermgr.buffers[0].set_clear_color(self.window.get_clear_color())
 
         return task.DS_cont
 

@@ -3,10 +3,14 @@ from __future__ import annotations
 import os
 
 from typing_extensions import (
+    TYPE_CHECKING,
     TypeAlias,
 )
 
 import panda3d.core as p3d
+
+if TYPE_CHECKING:
+    from typing import Any
 
 try:
     from .shaders import shaders # type: ignore
@@ -28,7 +32,6 @@ def _add_shader_defines(shaderstr: str, defines: ShaderDefinesType) -> str:
         raise RuntimeError('Failed to find GLSL version string')
     shaderlines.remove(version_line)
 
-
     define_lines = [
         f'#define {define} {value if value is not True else ""}'
         for define, value in defines.items()
@@ -44,12 +47,14 @@ def _add_shader_defines(shaderstr: str, defines: ShaderDefinesType) -> str:
 
 
 def _load_shader_str(shaderpath: str, defines: ShaderDefinesType | None = None) -> str:
+    shaderstr = ''
+
     if shaders:
         shaderstr = shaders[shaderpath]
     else:
         shader_dir = os.path.join(os.path.dirname(__file__), 'shaders')
 
-        with open(os.path.join(shader_dir, shaderpath)) as shaderfile:
+        with open(os.path.join(shader_dir, shaderpath), encoding='utf8') as shaderfile:
             shaderstr = shaderfile.read()
 
     if defines is None:
@@ -57,11 +62,8 @@ def _load_shader_str(shaderpath: str, defines: ShaderDefinesType | None = None) 
 
     defines['p3d_TextureBaseColor'] = 'p3d_TextureModulate'
     defines['p3d_TextureMetalRoughness'] = 'p3d_TextureSelector'
-    defines['p3d_TextureNormal'] = 'p3d_TextureNormal'
-    defines['p3d_TextureEmission'] = 'p3d_TextureEmission'
 
     shaderstr = _add_shader_defines(shaderstr, defines)
-
     if 'USE_330' in defines:
         shaderstr = shaderstr.replace('#version 120', '#version 330')
         if shaderpath.endswith('vert'):

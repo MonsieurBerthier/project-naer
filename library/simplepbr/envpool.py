@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import panda3d.core as p3d
 
-from .envmap import EnvMap
+from .envmap import (
+    EnvMap,
+    DEFAULT_PREFILTERED_SIZE,
+    DEFAULT_PREFILTERED_SAMPLES,
+)
 from . import logging
 
 
@@ -22,7 +28,15 @@ class EnvPool:
         envmap = future.result()
         envmap.write(self._get_cache_path(envmap))
 
-    def load(self, filepath: p3d.Filename | str) -> EnvMap:
+    def load(
+        self,
+        filepath: p3d.Filename | Path | str,
+        prefiltered_size: int = DEFAULT_PREFILTERED_SIZE,
+        prefiltered_samples: int = DEFAULT_PREFILTERED_SAMPLES,
+    ) -> EnvMap:
+        if isinstance(filepath, Path):
+            filepath = p3d.Filename(filepath)
+
         if not isinstance(filepath, p3d.Filename):
             filepath = p3d.Filename.from_os_specific(filepath)
 
@@ -35,12 +49,21 @@ class EnvPool:
             self._envmaps[filepath] = envmap
             return envmap
 
-        envmap = EnvMap.from_file_path(filepath, skip_prepare=True)
+        envmap = EnvMap.from_file_path(
+            filepath,
+            skip_prepare=True,
+            prefiltered_size=prefiltered_size,
+            prefiltered_samples=prefiltered_samples,
+        )
         cache_file = self._get_cache_path(envmap)
 
         if cache_file.exists():
             logging.info(f'EnvPool: loaded {filepath} from disk cache')
-            envmap = EnvMap.from_file_path(cache_file)
+            envmap = EnvMap.from_file_path(
+                cache_file,
+                prefiltered_size=prefiltered_size,
+                prefiltered_samples=prefiltered_samples,
+            )
         else:
             envmap.prepare()
             envmap.is_prepared.add_done_callback(self._write_cache)

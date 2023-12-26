@@ -72,6 +72,10 @@ uniform sampler2D brdf_lut;
 uniform samplerCube filtered_env_map;
 uniform float max_reflection_lod;
 
+#ifdef ENABLE_SHADOWS
+uniform float global_shadow_bias;
+#endif
+
 const vec3 F0 = vec3(0.04);
 const float PI = 3.141592653589793;
 const float SPOTSMOOTH = 0.001;
@@ -135,6 +139,29 @@ float diffuse_function() {
     return 1.0 / PI;
 }
 
+#ifdef ENABLE_SHADOWS
+float shadow_caster_contrib(sampler2DShadow shadowmap, vec4 shadowpos) {
+    vec3 light_space_coords = shadowpos.xyz / shadowpos.w;
+    light_space_coords.z -= global_shadow_bias;
+    float shadow = texture(shadowmap, light_space_coords);
+
+    return shadow;
+}
+#endif
+
+vec3 get_normalmap_data() {
+#ifdef CALC_NORMAL_Z
+    vec2 normalXY = 2.0 * texture2D(p3d_TextureNormal, v_texcoord).rg - 1.0;
+    float normalZ = sqrt(clamp(1.0 - dot(normalXY, normalXY), 0.0, 1.0));
+    return vec3(
+        normalXY,
+        normalZ
+    );
+#else
+    return 2.0 * texture2D(p3d_TextureNormal, v_texcoord).rgb - 1.0;
+#endif
+}
+
 vec3 irradiance_from_sh(vec3 normal) {
     return
         + sh_coeffs[0] * 0.282095
@@ -153,11 +180,11 @@ void main() {
     float metallic = clamp(p3d_Material.metallic * metal_rough.b, 0.0, 1.0);
     float perceptual_roughness = clamp(p3d_Material.roughness * metal_rough.g,  0.0, 1.0);
     float alpha_roughness = perceptual_roughness * perceptual_roughness;
-    vec4 base_color = p3d_Material.baseColor * v_color * p3d_ColorScale * texture2D(p3d_TextureBaseColor, v_texcoord);
+    vec4 base_color = p3d_Material.baseColor * v_color * p3d_ColorScale * (texture2D(p3d_TextureBaseColor, v_texcoord) + p3d_TexAlphaOnly);
     vec3 diffuse_color = (base_color.rgb * (vec3(1.0) - F0)) * (1.0 - metallic);
     vec3 spec_color = mix(F0, base_color.rgb, metallic);
 #ifdef USE_NORMAL_MAP
-    vec3 normalmap = 2.0 * texture2D(p3d_TextureNormal, v_texcoord).rgb - 1.0;
+    vec3 normalmap = get_normalmap_data();
     vec3 n = normalize(v_tbn * normalmap);
     vec3 world_normal = normalize(v_world_tbn * normalmap);
 #else
@@ -179,7 +206,7 @@ void main() {
     vec3 emission = vec3(0.0);
 #endif
 
-    vec4 color = vec4(vec3(0.0), base_color.a) + p3d_TexAlphaOnly;
+    vec4 color = vec4(vec3(0.0), base_color.a);
 
     float n_dot_v = clamp(abs(dot(n, v)), 0.0, 1.0);
 
@@ -200,15 +227,11 @@ void main() {
         float spotcutoff = p3d_LightSource[i].spotCosCutoff;
         float shadowSpot = smoothstep(spotcutoff-SPOTSMOOTH, spotcutoff+SPOTSMOOTH, spotcos);
 #ifdef ENABLE_SHADOWS
-#ifdef USE_330
-        float shadowCaster = textureProj(p3d_LightSource[i].shadowMap, v_shadow_pos[i]);
+        float shadow_caster = shadow_caster_contrib(p3d_LightSource[i].shadowMap, v_shadow_pos[i]);
 #else
-        float shadowCaster = shadow2DProj(p3d_LightSource[i].shadowMap, v_shadow_pos[i]).r;
+        float shadow_caster = 1.0;
 #endif
-#else
-        float shadowCaster = 1.0;
-#endif
-        float shadow = shadowSpot * shadowCaster * attenuation_factor;
+        float shadow = shadowSpot * shadow_caster * attenuation_factor;
 
         FunctionParamters func_params;
         func_params.n_dot_l = clamp(dot(n, l), 0.0, 1.0);
@@ -230,7 +253,6 @@ void main() {
         vec3 spec_contrib = vec3(F * V * D);
         color.rgb += func_params.n_dot_l * lightcol * (diffuse_contrib + spec_contrib) * shadow;
     }
-
 
     // Indirect diffuse + specular (IBL)
     vec3 ibl_f = fresnelSchlickRoughness(n_dot_v, spec_color, perceptual_roughness);
