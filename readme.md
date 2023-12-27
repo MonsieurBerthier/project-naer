@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Version-v0.8.0-blue.svg" />
   <img src="https://img.shields.io/badge/Panda3D-1.10.13-blue.svg" />
-  <img src="https://img.shields.io/badge/Python-3.7-blue.svg" />
+  <img src="https://img.shields.io/badge/Python-3.11-blue.svg" />
   <img src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-blue.svg" />
 </p>
 
@@ -99,24 +99,18 @@ and search for the parameter named `win-size`.
 Dependencies
 ============
 
-The 3D engine used for this project is Panda3D. 
-It can be downloaded here: [panda3d.org/download/sdk-1-10-13/](http://www.panda3d.org/download/sdk-1-10-13/)
-
-This projet has been developed with the version `1.10.13` of Panda3D SDK. This is 
-the recommended version of you want to avoid any surprises.
-
-Also, the following Python modules need to be installed:
+The following Python modules need to be installed:
 
 ```bash
 pip install typing-extensions
-pip install panda3d-gltf
+pip install panda3d==1.10.13.post1
+pip install panda3d-gltf==1.1.0
+pip install panda3d-simplepbr==0.11.2
 ````
 
-The dependency to `panda3d-simplepbr` is already satisfied
-because it is included in the package.
+The above versions are the recommended ones.
 
-More information on `panda3d-simplepbr` can be found here:
-[github.com/Moguri/panda3d-simplepbr](https://github.com/Moguri/panda3d-simplepbr)
+If you experience any error or glitch, it is recommended to switch to the above versions.  
 
 
 License
