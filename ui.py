@@ -3,7 +3,6 @@ import re
 import sys
 import math
 import datetime
-import tkinter.filedialog
 from typing import Union
 
 import panda3d.core
@@ -870,22 +869,9 @@ class MainMenu:
 
     def save_car(self) -> None:
 
-        root = tkinter.Tk()
-        root.iconify()
-
-        path_to_car = tkinter.filedialog.asksaveasfile(mode="w",
-                                                       title="Save car",
-                                                       defaultextension=".pnc")
-
         self.close_main_menu()
 
     def load(self) -> None:
-
-        root = tkinter.Tk()
-        root.iconify()
-
-        path_to_car = tkinter.filedialog.askopenfilename(title="Load a car (*.pnc)",
-                                                         defaultextension=".pnc")
 
         self.close_main_menu()
 
