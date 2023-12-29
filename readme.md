@@ -6,10 +6,10 @@
 </p>
 
 <p align="center">
-  <img src="content\images\github\preview.gif" />
+  <img src="content/images/github/preview.gif" />
 </p>
 
-<img src="content\images\github\logo.png" align="right"/>
+<img src="content/images/github/logo.png" align="right"/>
 
 
 Project Naer
@@ -36,17 +36,17 @@ automatically and added to the corresponding menu.
 Screenshots
 ===========
 
-<img src="content\images\github\garage.png"/>
-<img src="content\images\github\bodyshop.png"/>
-<img src="content\images\github\mainmenu.png"/>
-<img src="content\images\github\nissan_rs13.png"/>
+<img src="content/images/github/garage.png"/>
+<img src="content/images/github/bodyshop.png"/>
+<img src="content/images/github/mainmenu.png"/>
+<img src="content/images/github/nissan_rs13.png"/>
 
 
 Content
 =======
 
 Available cars:
-- Nissan 180SX (RS13) : 8 different bodykits
+- Nissan 180SX (RS13) : 9 different bodykits
 - _more soon ..._
 
 Available wheels:
