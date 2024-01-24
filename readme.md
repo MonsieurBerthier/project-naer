@@ -108,9 +108,15 @@ pip install panda3d-gltf==1.1.0
 pip install panda3d-simplepbr==0.11.2
 ````
 
-The above versions are the recommended ones.
+The versions above are the recommended ones.
 
-If you experience any error or glitch, it is recommended to switch to the above versions.  
+If you experience any error or glitch, it is recommended to switch to the versions 
+above.  
+
+> :warning: It is not recommended to use Panda3D 1.10.14, a known bug causes 
+> menus to be incorrectly placed on the screen. It will be fixed with Panda3D 
+> 1.10.15:
+> [github.com/panda3d/panda3d/issues/1594](https://github.com/panda3d/panda3d/issues/1594)
 
 
 License
